@@ -3,6 +3,8 @@ require "aaa"
 Nsv= Object:new{file = "data.csv",
 	       using       = {},
 	       compilers   = {},
+	       dep         = {},
+	       arity       = 0,
 	       chars       = {
     whitespace = "[ \t\n]*", -- kill all whitespace
     comment    = "#.*",        -- kill all comments
@@ -19,26 +21,29 @@ Nsv= Object:new{file = "data.csv",
     dep        = "[=<>]"
 }}
 
+Row=Object:new{x={},y={}}
+
 function Nsv:has(txt,pat) 
   return found(txt, self.chars[pat]) end
 
-function Nsv:header(cells)
-  local j = 0
+function Nsv:header(cells,    j) 
   for i,x in ipairs(cells) do
     if not self:has(x,"ignorep") then
-      j = j + 1
+      self.arity = self.arity + 1 
+      local j    = self.arity
       self.using[j]     = i
       self.compilers[j] = self:has(x, "nump") 
+      self.dep[j]       = self:has(x,  "dep")
 end end end
 
 function Nsv:row(cells)
-  local out={}
+  assert(self.arity == #cells, "wrong number of cells")
+  local out=Row:new{}
   for _,j in ipairs(self.using)  do
-    local x = cells[j]
-    if self.compilers[j] then x = tonumber(x) end
-    out[#out+1]= x
+    local z = cells[j]
+    if self.compilers[j] then z = tonumber(z) end
+    if self.dep[j] then add(out.y,z) else add(out.x,z) end
   end
-  assert(#out == #self.compilers, "line wrong size")
   return out
 end
     

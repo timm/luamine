@@ -1,5 +1,5 @@
-package = "LuaMine"
- version = "0.1"
+package = "LuaMine" 
+version = "1.0"
  source = {
     url = "git://github.com/timm/luamine.git"  
  }
@@ -7,7 +7,7 @@ package = "LuaMine"
     summary = "Tools for combining data mining and optimization.",
     maintainer="tim.menzies@gmail.com",
     detailed = [[
-       LuaMine documents common data mining   patterns. These tools
+      LuaMine documents common data mining   patterns. These tools
       learn, from examples, a approximation to some function
 
               y = Fun(x)
@@ -25,9 +25,9 @@ package = "LuaMine"
  build = {
      type       = "builtin",
      modules    = {
-      utils1    = "Makefile"
+      utils1    = "Makefile",
       utils2    = "aaa.lua",
-      tests0    = "aaaok.lua"
+      tests0    = "aaaok.lua",
       columns   = "cols.lua",
       tests1    = "colsok.lua",
       discretization= "divs.lua",
@@ -35,7 +35,7 @@ package = "LuaMine"
       functions = "fun.lua",
       tests3    = "funok.lua",
       csvReader = "nsv.lua",
-      tests4    = "nsvok.lua",
-      },
+      tests4    = "nsvok.lua"
+      } ,
       copy_directories = {"data"}
  }

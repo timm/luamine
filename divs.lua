@@ -11,6 +11,7 @@ function Split:div(t,    all,out)
   all = Num:new():adds(map(self.get,t))
   self.small  = self.small  or all.sd*self.cohen
   self.enough = self.enough or all.n/self.maxBins
+  print("small",self.small,self.enough)
   out= {} 
   self:div1(t, #t, all, out)
   return out

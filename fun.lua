@@ -5,14 +5,16 @@ Fun=Object:new{
   name="",     rows   = {},
   x      = {}, y      = {}, headers= {},
   spec   = {}, more   = {}, less   = {},
-  klass  = {}, nums   = {}, syms   = {}
+  klass  = {}, nums   = {}, syms   = {},
+  xnums  = {}, ynums  = {},
+  xsyms  = {}, ysyms  = {}
 }
-Row=Object:new{x={},y=nil}
+Row=Object:new{x={},y={}}
 
 function Fun:row(t,row)
-  row=Row:new()
-  for j,h in ipairs(self.x) do add(row.x,h:add(t[j])) end
-  for j,h in ipairs(self.y) do add(row.y,h:add(t[j])) end
+  row=Row:new{}
+  for _,h in ipairs(self.x) do add(row.x,h:add(t[h.pos])) end
+  for _,h in ipairs(self.y) do add(row.y,h:add(t[h.pos])) end
   return row
 end
 
@@ -25,13 +27,15 @@ function Fun:header(nsv,n,x)
   if nsv:has(x, "klass") then add(self.klass, h) end
   if nump == true        then add(self.nums,  h)
                          else add(self.syms,  h) end
-  if nsv:has(x, "dep") then 
-    add(self.y,h)
-    h.pos = {self.y, #self.y}
+  if nsv:has(x, "dep")  
+  then 
+    add(self.y,h); h.pos = #self.y 
+    if nump then add(self.ynums,h) else add(self.ysyms,h) end
   else 
-    add(self.x,h) 
-    h.pos = {self.x, #self.x}
+    add(self.x,h); h.pos = #self.x 
+    if nump then add(self.xnums,h) else add(self.xsyms,h) end
   end 
+  
 end
 
 function Fun:import(file) 

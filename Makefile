@@ -29,6 +29,6 @@ timm:
 	@git config --global user.email tim.menzies@gmail.com
 
 oks:	
-	$(foreach f,$(shell ls *ok.lua),echo ""; echo "--| $f |---------"; lua $f;)
+	@ $(foreach f,$(shell ls *ok.lua),echo ""; echo "--| $f |---------"; lua $f;)
 
  
