@@ -1,0 +1,9 @@
+goals
+what, visualize ;  stuff
+where: cluster
+which: contrast
+when: update
+
+notes:
+a global for defaults
+anomaly detection
