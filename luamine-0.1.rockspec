@@ -13,7 +13,7 @@ package = "LuaMine"
               y = Fun(x)
 
       where y can be a single or multiple goals. The general tactic is
-      be to approximate complex functions via a few
+      to approximate complex functions via a few
       dimensions, divided into a small number of ranges.
     ]],
     homepage = "https://github.com/timm/luamine/blob/master/README.md",  
@@ -25,7 +25,8 @@ package = "LuaMine"
  build = {
      type       = "builtin",
      modules    = {
-      lib       = "aaa.lua",
+      utils1    = "Makefile"
+      utils2    = "aaa.lua",
       tests0    = "aaaok.lua"
       columns   = "cols.lua",
       tests1    = "colsok.lua",
@@ -35,7 +36,6 @@ package = "LuaMine"
       tests3    = "funok.lua",
       csvReader = "nsv.lua",
       tests4    = "nsvok.lua",
-      utils1    = "Makefile"
       },
       copy_directories = {"data"}
  }
