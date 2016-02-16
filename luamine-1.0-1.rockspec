@@ -1,5 +1,5 @@
 package = "LuaMine" 
-version = "1.0"
+version = "1.0-1"
  source = {
     url = "git://github.com/timm/luamine.git"  
  }
