@@ -25,7 +25,6 @@ version = "1.0-1"
  build = {
      type       = "builtin",
      modules    = {
-      utils1    = "Makefile",
       utils2    = "aaa.lua",
       tests0    = "aaaok.lua",
       columns   = "cols.lua",
