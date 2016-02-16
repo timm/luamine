@@ -2,7 +2,7 @@ require "aaa"
 require "cols"
 
 Split=Object:new{enough=nil, get=last, cohen=  0.2, 
-                 maxBins=16,
+                 maxBins=8, minBinSize=4,
                  small =nil, id= 1,    trivial=1.05}
 
 function Split:div(t,    all,out)
@@ -10,7 +10,8 @@ function Split:div(t,    all,out)
                   return self.get(a) < self.get(b) end)
   all = Num:new():adds(map(self.get,t))
   self.small  = self.small  or all.sd*self.cohen
-  self.enough = self.enough or all.n/self.maxBins
+  self.enough = self.enough or max{self.minBinSize,
+                                   all.n/self.maxBins}
   print("small",self.small,self.enough)
   out= {} 
   self:div1(t, #t, all, out)

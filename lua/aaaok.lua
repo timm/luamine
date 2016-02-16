@@ -36,6 +36,8 @@ function _lists(t,t1,sub23)
   assert(t1[4]==40,"! fourty")
   sub23 = sub({1,2,3,4,5,6,7},4,7)
   assert(sub23[4] == 7, "! seven")
+  assert(min{3,4,4,5,2,1,3}== 1)
+  assert(max{3,4,4,5,2,1,3}== 5)
 end
 
 function _string(t)

@@ -33,6 +33,19 @@ function rn(what, precision)
           / math.pow(10,precision)
 end
 
+function gt(a,b) return a > b end
+function lt(a,b) return a < b end
+
+function max(t) return min(t,-10^32, gt) end
+  
+function min(t, out, better)
+  out    = out or 10^32
+  better = better or lt
+  for _,x in pairs(t) do
+    if better(x,out) then out = x end end
+  return out
+end
+
 -- Table stuff ------------------------
 add = table.insert
 
