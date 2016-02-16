@@ -1,3 +1,5 @@
+#!/usr/bin/make
+
 Make = $(MAKE) --no-print-directory #
 
 typo:  ready 
