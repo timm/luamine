@@ -9,7 +9,7 @@ function _divs(n,s,d)
   for i,range in pairs(s:div(n)) do
     print(i,r3(range.lo),r3(range.up),range.n) end
   f= Fun:new()
-  f:import('data/weather.csv')
+  f:import('../data/weather.csv')
   print(#f.nums)
   os.exit()
   for _,num in ipairs(f.xnums) do

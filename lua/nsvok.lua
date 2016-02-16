@@ -2,7 +2,7 @@ require "nsv"
 
 function _nsv(f,tmp,i,n,tmp)
   i=0
-  f= f or 'data/weather.csv'
+  f= f or '../data/weather.csv'
   n = Nsv:new{file=f}
   for datap,row in  n:rows() do 
     tmp=row
@@ -13,6 +13,6 @@ function _nsv(f,tmp,i,n,tmp)
   assert(n == 71)
 end
 
-_nsv('data/weather.csv')
+_nsv('../data/weather.csv')
 
 rogue()

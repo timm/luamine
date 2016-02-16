@@ -51,7 +51,7 @@ function _string(t)
 end
 
 function _lines(t)
-  io.input("data/weather.csv")
+  io.input("../data/weather.csv")
   t={}
   for line in lines(" *","#.*") do
     add(t,len(line))

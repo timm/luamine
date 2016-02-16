@@ -29,16 +29,16 @@ version = "1.0-2"
  build = {
      type       = "builtin",
      modules    = {
-      utils2    = "aaa.lua",
-      tests0    = "aaaok.lua",
-      columns   = "cols.lua",
-      tests1    = "colsok.lua",
-      discretization= "divs.lua",
-      tests2    = "divsok.lua",
-      functions = "fun.lua",
-      tests3    = "funok.lua",
-      csvReader = "nsv.lua",
-      tests4    = "nsvok.lua"
+      utils2    = "lua/aaa.lua",
+      tests0    = "lua/aaaok.lua",
+      columns   = "lua/cols.lua",
+      tests1    = "lua/colsok.lua",
+      discretization= "lua/divs.lua",
+      tests2    = "lua/divsok.lua",
+      functions = "lua/fun.lua",
+      tests3    = "lua/funok.lua",
+      csvReader = "lua/nsv.lua",
+      tests4    = "lua/nsvok.lua"
       } ,
       copy_directories = {"data"}
  }
