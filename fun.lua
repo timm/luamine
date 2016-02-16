@@ -3,48 +3,45 @@ require "cols"
 
 Fun=Object:new{
   name="",     rows   = {},
-  x      = {}, y      = {}, headers= {},
+  x      = {}, y      = {},  
   spec   = {}, more   = {}, less   = {},
-  klass  = {}, nums   = {}, syms   = {},
+  klass  = {},  
   xnums  = {}, ynums  = {},
   xsyms  = {}, ysyms  = {}
 }
 Row=Object:new{x={},y={}}
 
-function Fun:row(t,row)
-  row=Row:new{}
-  for _,h in ipairs(self.x) do add(row.x,h:add(t[h.pos])) end
-  for _,h in ipairs(self.y) do add(row.y,h:add(t[h.pos])) end
-  return row
-end
+function Fun:add(data,meta) 
+  for i = 1,#meta do 
+    meta[i]:add(data[i]) end
+end 
 
-function Fun:header(nsv,n,x)  
-  nump  = nsv:has(x,"nump")
-  h     = nump and Num:new{name=x} or Sym:new{name=x} 
-  add(self.headers, h) 
-  if nsv:has(x, "more")  then add(self.more,  h) end
-  if nsv:has(x, "less")  then add(self.less,  h) end
-  if nsv:has(x, "klass") then add(self.klass, h) end
-  if nump == true        then add(self.nums,  h)
-                         else add(self.syms,  h) end
-  if nsv:has(x, "dep")  
-  then 
-    add(self.y,h); h.pos = #self.y 
-    if nump then add(self.ynums,h) else add(self.ysyms,h) end
-  else 
-    add(self.x,h); h.pos = #self.x 
-    if nump then add(self.xnums,h) else add(self.xsyms,h) end
-  end 
-  
-end
+function Fun:header(nsv,t,out)  
+  for pos,x in ipairs(t) do
+    nump = nsv:has(x,"nump")
+    h    = nump and Num:new{name=x} or Sym:new{name=x}
+    add(out,h)
+    h.pos = pos
+    if out == self.x then
+      if nump then add(self.xnums,h) else add(self.xsyms,h) end
+    else  
+      if nump then add(self.ynums,h) else add(self.ysyms,h) end
+      if nsv:has(x, "more")  then add(self.more,  h) end
+      if nsv:has(x, "less")  then add(self.less,  h) end
+      if nsv:has(x, "klass") then add(self.klass, h) end 
+end end end
 
 function Fun:import(file) 
   local nsv = Nsv:new{file=file} 
-  for line in nsv:rows() do   
-    if #self.headers == 0 then 
-      self.spec = line   
-      for n,x in ipairs(line) do  
-       	self:header(nsv,n,x)  end
-    else   
-      add(self.rows, self:row(line,{}))
-end end end
+  for datap,xy in nsv:rows() do   
+    if datap then
+      add(self.rows,xy)
+      self:add(xy.x,self.x)
+      self:add(xy.y,self.y)
+    else
+      self.spec = xy   
+      self:header(nsv,xy.x,self.x)  
+      self:header(nsv,xy.y,self.y)  
+  end end 
+  return self
+end

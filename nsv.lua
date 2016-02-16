@@ -27,24 +27,28 @@ function Nsv:has(txt,pat)
   return found(txt, self.chars[pat]) end
 
 function Nsv:header(cells,    j) 
-  for i,x in ipairs(cells) do
-    if not self:has(x,"ignorep") then
+  local x,y={},{}
+  for i,z in ipairs(cells) do
+    if not self:has(z,"ignorep") then
       self.arity = self.arity + 1 
-      local j    = self.arity
+      local j    = self.arity 
       self.using[j]     = i
-      self.compilers[j] = self:has(x, "nump") 
-      self.dep[j]       = self:has(x,  "dep")
-end end end
+      self.compilers[j] = self:has(z, "nump") 
+      self.dep[j]       = self:has(z,  "dep")
+      if self.dep[j] then add(y,z) else add(x,z) end
+  end end 
+  return Row:new{x=x,y=y}
+end
 
 function Nsv:row(cells)
-  assert(self.arity == #cells, "wrong number of cells")
-  local out=Row:new{}
+  local x,y={},{}
   for _,j in ipairs(self.using)  do
     local z = cells[j]
     if self.compilers[j] then z = tonumber(z) end
-    if self.dep[j] then add(out.y,z) else add(out.x,z) end
+    if self.dep[j] then add(y,z) else add(x,z) end
   end
-  return out
+  return Row:new{x=x,y=y}
+  
 end
     
 function Nsv:rows()
@@ -55,8 +59,7 @@ function Nsv:rows()
                      ) do
       local cells = explode(line, self.chars["sep"])
       if #self.using==0 then
-	      self:header(cells)
-	      return cells
+	      return false,self:header(cells)
       else
-	      return self:row(cells)
+	      return true,self:row(cells)
 end end end end

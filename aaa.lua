@@ -164,6 +164,7 @@ function same(x) return x end
 function rogue(x) 
   local builtin = { "true","math","package","table","coroutine",
        "os","io","bit32","string","arg","debug","_VERSION","_G"}
+  print("-- Any rogues?")
   for k,v in pairs( _G ) do
     if type(v) ~= 'function' then  
        if not member(k, builtin) then 
