@@ -24,9 +24,7 @@ paper  [Statistical Modeling: The Two Cultures](https://projecteuclid.org/downlo
 (in _Statistical Science 2001, 16(3), 199–231_) comments that the dominant cultere in data
 science  tries to map observations
 into a (small) number of  stochastic data models (if you know this stuff, think Gaussians or
-Poisson  distrubtions, or some other parametric form).  Why is this approach dominate? 
-Cause there is more theory there, more results, and hence more that can be taught about
-that kind of reasoning.
+Poisson  distrubtions, or some other parametric form).  
 
 Another reasoning culture are the _algorithmic modelers_, like me,
 who do not try to  fit data to (say) a few parametric models.  My experience is that most
@@ -37,7 +35,17 @@ let the diamonds reveal themselves. The results are not necessarily some fit to 
 function but instead is a set of instances that can be used to get quick answers
 related to the specifics of the next question.
 
-But how to blow away the dust? Well, welcome to _data carving_...
+Why is the data modeling  approach dominate? 
+Cause there is more theory there, more results, and hence more that can be taught about
+that kind of reasoning. To get more people more excited about algorithmic modeling,
+we need a compelling theory that can be readily taught and quickly learnt. Sadly,
+the way many people study data science, is that the algorithmic modeling approach
+is present as set of algorithms with minimal connection between them (Naive Bayes, C4.5, 
+feature selection, etc). I think that can be fixed since if you look inside these
+tools, then there is much commonality that can be learned and exploited for
+real world applications.
+
+For example,  consider the wonderful world of _data carving_...
 
 ## Data Carving
 
