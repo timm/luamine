@@ -19,8 +19,29 @@ Those methods were the basis of dozens of  refereed scientific publications, thr
 glance all the  techniques  in that book all seemed different. Yet underneath them all were a few simple ideas. So I decided to write another book,
 this time focusing on the underlying machinery.
 
-That machinery has a few simple ideas, the main one being
-_data carving_. Data carving is the pruning away of spurious details.
+This book is from the _other_ tradition of data science. Leo Brieman's classic
+paper  [Statistical Modeling: The Two Cultures](https://projecteuclid.org/download/pdf_1/euclid.ss/1009213726)
+(in _Statistical Science 2001, 16(3), 199–231_) comments that the dominant cultere in data
+science  tries to map observations
+into a (small) number of  stochastic data models (if you know this stuff, think Gaussians or
+Poisson  distrubtions, or some other parametric form).  Why is this approach dominate? 
+Cause there is more theory there, more results, and hence more that can be taught about
+that kind of reasoning.
+
+Another reasoning culture are the _algorithmic modelers_, like me,
+who do not try to  fit data to (say) a few parametric models.  My experience is that most
+data is irrelevant to a particualr task
+and can be safely ignored. If you start with that
+perspective, then the goal of data science is to blow away the dust and
+let the diamonds reveal themselves. The results are not necessarily some fit to a pre-defined
+function but instead is a set of instances that can be used to get quick answers
+related to the specifics of the next question.
+
+But how to blow away the dust? Well, welcome to _data carving_...
+
+## Data Carving
+
+Data carving is the pruning away of spurious details.
 According to the Renaissance artist Michelangelo di Lodovico Buonarroti Simoni:
 
 + Every block of stone has a statue inside it and it is the task of the sculptor to discover it.
