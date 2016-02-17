@@ -16,8 +16,7 @@ For example, mid-2014   I was finishing up a
 book on [analytics in software engineering](http://www.amazon.com/Sharing-Data-Models-Software-Engineering/dp/0124172954).
 That  book described data mining methods used by myself, my graduate students, and my colleagues.
 Those methods were the basis of dozens of  refereed scientific publications, three Ph.D.s, and a dozen masters-by-research projects. At first
-glance all the  techniques  in that book all seemed different.  
-Yet underneath them all were a few simple ideas. So I decided to write another book,
+glance all the  techniques  in that book all seemed different. Yet underneath them all were a few simple ideas. So I decided to write another book,
 this time focusing on the underlying machinery.
 
 That machinery has a few simple ideas, the main one being
