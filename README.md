@@ -5,6 +5,40 @@ _(CAUTION: major bug found with v1. V2 now under-construction. Best wait till it
 
 # Fun with Lua
 
+You never know what you are doing, while you are doing in. But afterwards, looking back, patterns emerge.
+
+For example, mid-2014   I was finishing up a book on analytics in software engineering. It suddenly occured to me that
+most of the techniques in that book were really reusing a core, small, set of _data carving_ operators (which I'll explain
+in a moment).  That  book described data mining methods used by myself, my graduate students, and my colleagues.
+Those methods were the basis of dozens of articles, three Ph.D.s, and a dozen masters-by-research projects. At first
+glance those techniques  all seemed different.  Yet underneath them all were a few simple ideas.
+
+The first idea was that much of data mining is really _data carving_; i.e. the pruning away of spurious details.
+According to the Renaissance artist Michelangelo di Lodovico Buonarroti Simoni:
+
++ Every block of stone has a statue inside it and it is the task of the sculptor to discover it.
+
+While sculptors like Michelangelo carved blocks of marble, data scientists carve into blocks of data. So, with apologies to Senor Simoni, 
+I say:
+
+<strike>Every</strike> Some <strike>stone</strike> databases have <strike>statue</strike>
+a model inside and it is the task of the sculptor data scientist to discover check for it.
+Figure 10.1 Horse, carved from stone, 15,000 BC. From wikipedia.org/wiki/Sculpture; license: goo.gl/C4byU4.
+            Enter data mining. Decades of research has resulted in many automatic ways to wield the knife that slices and refines the data. All these data miners have the following form:
+1. Find the crap (where “crap” might also be called “superfluous details”); 2. Cut the crap;
+3. Gotostep1
+4. 
+
+Turns out the best thing to do with data is throw most of it away:
+
++ Represent numeric distributions as a small set of cliffs and plateaus;
++ Ignore those parts of those distributions that are not significantly different in different desired outcomes;
++ 
+
+
+
+After finishing a book on analytics
+
 This general goal of this code 
 is to document common data mining processing patterns
 (see elsewhere for the excellent 
