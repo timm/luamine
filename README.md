@@ -3,17 +3,18 @@ width=500 align=right>
 
 _(CAUTION: major bug found with v1. V2 now under-construction. Best wait till it is ready.)_
 
-# Fun with Lua
+# LuaMine (data mining and optimization in Lua)
 
 You never know what you are doing, while you are doing in. But afterwards, looking back, patterns emerge.
 
-For example, mid-2014   I was finishing up a book on analytics in software engineering. It suddenly occured to me that
-most of the techniques in that book were really reusing a core, small, set of _data carving_ operators (which I'll explain
-in a moment).  That  book described data mining methods used by myself, my graduate students, and my colleagues.
+For example, mid-2014   I was finishing up a 
+book on [analytics in software engineering](http://www.amazon.com/Sharing-Data-Models-Software-Engineering/dp/0124172954).
+That  book described data mining methods used by myself, my graduate students, and my colleagues.
 Those methods were the basis of dozens of articles, three Ph.D.s, and a dozen masters-by-research projects. At first
-glance those techniques  all seemed different.  Yet underneath them all were a few simple ideas.
+glance those techniques  all seemed different.  Yet underneath them all were a few simple ideas,
+the main one being _data carving_.
 
-The first idea was that much of data mining is really _data carving_; i.e. the pruning away of spurious details.
+_Data carving_ is the pruning away of spurious details.
 According to the Renaissance artist Michelangelo di Lodovico Buonarroti Simoni:
 
 + Every block of stone has a statue inside it and it is the task of the sculptor to discover it.
@@ -21,31 +22,65 @@ According to the Renaissance artist Michelangelo di Lodovico Buonarroti Simoni:
 While sculptors like Michelangelo carved blocks of marble, data scientists carve into blocks of data. So, with apologies to Senor Simoni, 
 I say:
 
-<strike>Every</strike> Some <strike>stone</strike> databases have <strike>statue</strike>
-a model inside and it is the task of the sculptor data scientist to discover check for it.
-Figure 10.1 Horse, carved from stone, 15,000 BC. From wikipedia.org/wiki/Sculpture; license: goo.gl/C4byU4.
-            Enter data mining. Decades of research has resulted in many automatic ways to wield the knife that slices and refines the data. All these data miners have the following form:
-1. Find the crap (where “crap” might also be called “superfluous details”); 2. Cut the crap;
-3. Gotostep1
-4. 
++ <strike>Every</strike> Some <strike>stone</strike> databases have <strike>statue</strike>
+a model inside and it is the task of the <strike>sculptor</strike> data scientist to <strike>discover</strike> check for it.
 
-Turns out the best thing to do with data is throw most of it away:
-
-+ Represent numeric distributions as a small set of cliffs and plateaus;
-+ Ignore those parts of those distributions that are not significantly different in different desired outcomes;
-+ 
+_Data carving_ can prune data in many ways:
 
 
++ _Cohen pruning_: Prune away small differences in numerical data.
++ _Discretization_: Prune numerics back to a handful of bins. 
++ _Column pruning_: (feature selection): 
+  Prune  columns that are not redundant and/or noisy.
++ _Dimensionality reduction_: Prune the remaining _N_ columns, map them into their
+  lower number of _M_ intrinsic dimensions (and _M &#8810; N_)
++ _Row pruning_: Prune the rows in a table back to just the least number
+  of most representative examples.
++ _Cluster pruning_ : Cluster the remaining rows into _C_ clusters and
+  prune away the clusters that are too small or too noisey;
++ _Constrast pruning_: Prune away all data that does not distinquish between
+  the clusters.
 
-After finishing a book on analytics
+Sounds complicated, yes? Maybe not. As shown here, all the above can be implemented
+with not much code.  And once that is running, then this simplifies
+the process of extracting signals from data:
 
-This general goal of this code 
-is to document common data mining processing patterns
-(see elsewhere for the excellent 
-[functional programming in Lua library](http://rtsisyk.github.io/luafun/)).
 
-The more specific goal of `Fun` is to learn, from examples,
-a approximation to the function
++ Within that reduced space, it is clearer to see the main inferences. So
+  explanation and rule generation (a.k.a. what-is reasoning)
++ Not only can we reveal patterns this way, we can also show what interventions
+  might most change and improve whatever is being represented in the data. So
+  this code supports optimization (a.k.a. what-if reasoning).
++ Also, seemingly large data sets can be expressed as tiny tables. This makes storing
+  and transferring data much easier. 
++ Further, data in the reduced space can be mutated, a little, 
+  such that no individual from the training data exists. So not only can we
+  share data, we can also maintain privacy.
++ Lastly, once we can share, while maintaining privacy, we can audit analytics better.
+  Now, when someone offers a conclusion, they can also publish the reasons for
+  that conclusion (so that others might critique that conclusion). 
+  So this kinds of reasoning better supports the growing knowledge economy.
+
+## Why Lua?
+
+1. Lua is a very simple language that can be readily embedded in most "C"-based systems, with
+   mininal compilation effort. This makes its an excellent candidate from cross-platform 
+   deployment as well as for embedded systems.
+2. I use LuaMine teach graduate students. The idea is that I show them short code fragments 
+   in a language they probably have not seen before and ask them to, each week, code up small parts
+   of it. They can use what ever language they want (hint: "C" probably not a good idea; 
+   Python probably a better idea).
+
+This code is an experiment i
+Or not. This is work in progress. Watch this space.
+
+
+
+## The Main Data Strcuture
+
+The care data structure within all this is
+`Fun`. That is,  from examples,
+we seek a approximation to the function
 
     y = Fun(x)
     
@@ -53,14 +88,6 @@ whey `y` can be a single or multiple goals. The general tactic
 will be to approximate complex functions via few  
 dimensions, divided into a small number of ranges.  
 
-## Why Fun? 
-
-This code is an experiment in a combined data mining/multi-objective
-optimization toolkit. Given 
-[recent success with adding data mining inside an optimizer](http://goo.gl/nOAc7w), it might be possible to simplify and unify
-data mining and optimization with a single simple set of data structures.
-
-Or not. This is work in progress. Watch this space.
 
 ## Installation
 
