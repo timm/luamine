@@ -15,11 +15,13 @@ You never know what you are doing, while you are doing in. But afterwards, looki
 For example, mid-2014   I was finishing up a 
 book on [analytics in software engineering](http://www.amazon.com/Sharing-Data-Models-Software-Engineering/dp/0124172954).
 That  book described data mining methods used by myself, my graduate students, and my colleagues.
-Those methods were the basis of dozens of articles, three Ph.D.s, and a dozen masters-by-research projects. At first
-glance those techniques  all seemed different.  Yet underneath them all were a few simple ideas,
-the main one being _data carving_.
+Those methods were the basis of dozens of  refereed scientific publications, three Ph.D.s, and a dozen masters-by-research projects. At first
+glance all the  techniques  in that book all seemed different.  
+Yet underneath them all were a few simple ideas. So I decided to write another book,
+this time focusing on the underlying machinery.
 
-_Data carving_ is the pruning away of spurious details.
+That machinery has a few simple ideas, the main one being
+_data carving_. Data carving is the pruning away of spurious details.
 According to the Renaissance artist Michelangelo di Lodovico Buonarroti Simoni:
 
 + Every block of stone has a statue inside it and it is the task of the sculptor to discover it.
