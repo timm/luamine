@@ -13,7 +13,7 @@ function _divs(n,s,d)
   for _,num in ipairs(f.xnums) do
       local get=function (row) return row.x[num.pos] end
       s=Split:new{get=get,cohen=0.1}:div(f.rows)
-      if #s==1 then
+      if #s>0 then
         print("")
         tprint{what=num.name, pos=num.pos, mu= r3(num.mu),sd= r3(num.sd), lo = num.lo, up=num.up} 
         for j,range in pairs(s) do

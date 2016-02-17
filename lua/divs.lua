@@ -2,7 +2,7 @@ require "aaa"
 require "cols"
 
 Split=Object:new{enough=nil, get=last, cohen=  0.2, 
-                 maxBins=8, minBinSize=4,
+                 maxBins=8,  minBinSize=4,
                  small =nil, id= 1,    trivial=1.05}
 
 function Split:div(t,    all,out)

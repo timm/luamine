@@ -7,16 +7,27 @@ Fun=Object:new{
   spec   = {}, more   = {}, less   = {},
   klass  = {},  
   xnums  = {}, ynums  = {},
-  xsyms  = {}, ysyms  = {}
-}
+  xsyms  = {}, ysyms  = {}}
+
 Row=Object:new{x={},y={}}
 
-function Fun:add(data,meta) 
-  for i = 1,#meta do 
-    meta[i]:add(data[i]) end
-end 
+function Fun:add(xy)
+   add(self.rows, xy)
+   self:add1(xy.x, self.x)
+   self:add1(xy.y, self.y)
+end
 
-function Fun:header(nsv,t,out)  
+function Fun:add1(data,meta) 
+  for i = 1,#meta do meta[i]:add(data[i]) end end 
+
+function Fun:header(nsv,xy)
+  self.spec = xy   
+  tprint(xy.x)
+  self:header1(nsv, xy.x, self.x)  
+  self:header1(nsv, xy.y, self.y)  
+end
+
+function Fun:header1(nsv,t,out)  
   for pos,x in ipairs(t) do
     nump = nsv:has(x,"nump")
     h    = nump and Num:new{name=x} or Sym:new{name=x}
@@ -31,17 +42,20 @@ function Fun:header(nsv,t,out)
       if nsv:has(x, "klass") then add(self.klass, h) end 
 end end end
 
+function Fun:clone()
+  local nsv = Nsv:new()
+  local tmp = Fun:new()
+  tmp:header(nsv, self.spec)
+  return tmp
+end
+
 function Fun:import(file) 
   local nsv = Nsv:new{file=file} 
   for datap,xy in nsv:rows() do   
-    if datap then
-      add(self.rows,xy)
-      self:add(xy.x,self.x)
-      self:add(xy.y,self.y)
-    else
-      self.spec = xy   
-      self:header(nsv,xy.x,self.x)  
-      self:header(nsv,xy.y,self.y)  
+    if datap then 
+      io.write(1); self:add(xy) 
+    else 
+      io.write(2); self:header(nsv, xy)
   end end 
   return self
 end
