@@ -38,16 +38,15 @@ related to the specifics of the next question.
 Why does the data modeling  approach dominate? 
 I think because there is more simpler theory there and hence more that can be taught about
 that kind of reasoning.  
-
-So how to Tget more people more excited about algorithmic modeling?
-Well, suppose we had a compelling theory that can be readily taught and quickly learnt?
-Sadly, that compelling theory is not apparent. (XXX: need notes here about 
-things like PAC   and why it confused folks).
-
-the way many people study data science, is that the algorithmic modeling approach
-is present as set of algorithms with minimal connection between them (Naive Bayes, C4.5, 
-feature selection, etc). I think that can be fixed since if you look inside these
-tools, then there is much commonality that can be learned and exploited for
+To get more people more excited about algorithmic modeling,
+we need a compelling framework that can be readily taught and quickly learnt.
+Sadly, that compelling framework is somewhat absent from data science
+education. 
+The way most people are taught  algorithmic modeling in  data science, is 
+as set of algorithms with minimal connection between them (Naive Bayes, C4.5, 
+feature selection, etc). It took me decades to recover from that kind of
+teaching and to learn the   commonality  in these algorithmic models
+that can be exploited for
 real world applications.
 
 For example,  consider the wonderful world of _data carving_...
