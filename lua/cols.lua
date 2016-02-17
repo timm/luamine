@@ -29,9 +29,7 @@ end
      
 -- Log  --------------------------------
 function Log:adds(t)
-  for _,x in pairs(t) do
-    self:add(x)
-  end 
+  for _,x in pairs(t) do self:add(x) end
   return self
 end
 

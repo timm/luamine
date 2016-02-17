@@ -6,8 +6,8 @@ function _some()
   for _ = 1,1000000 do
     some:keep(r())
   end
-  assert(implode(map(r3,sort(some.kept))) == 
-        "{0.14,0.196,0.404,0.57,0.601,0.634,0.659,0.821}")
+  assert(implode(map(r3,sort(some.kept))) ==
+	 "{0.139,0.185,0.524,0.689,0.781,0.898,0.942,0.943}")
 end
 
 function _syms()
@@ -27,7 +27,7 @@ function _syms()
   assert(r3(num.sd)==1.871)
   local num1=num:copy()
   for i=1,1000 do num1:add(r()^3) end
-  assert(r3(num1.sd)==0.394)
+  assert(r3(num1.sd)==0.403)
   tmp = Num:new():adds{1,2,3,4,5,6}.sd*0.1
   assert(r3(tmp)==0.187)
   local t,r0,r1={},{},{}
