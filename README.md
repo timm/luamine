@@ -21,24 +21,29 @@ this time focusing on the underlying machinery.
 
 This book is from the _other_ tradition of data science. Leo Brieman's classic
 paper  [Statistical Modeling: The Two Cultures](https://projecteuclid.org/download/pdf_1/euclid.ss/1009213726)
-(in _Statistical Science 2001, 16(3), 199–231_) comments that the dominant cultere in data
+(in _Statistical Science 2001, 16(3), 199–231_) comments that the dominant approach in data
 science  tries to map observations
-into a (small) number of  stochastic data models (if you know this stuff, think Gaussians or
+into a (small) number of  stochastic _data models_ (if you know this stuff, think Gaussians or
 Poisson  distrubtions, or some other parametric form).  
 
-Another reasoning culture are the _algorithmic modelers_, like me,
+An alternative  culture, says Brieman, are the _algorithmic modelers_ (like me)
 who do not try to  fit data to (say) a few parametric models.  My experience is that most
 data is irrelevant to a particualr task
 and can be safely ignored. If you start with that
 perspective, then the goal of data science is to blow away the dust and
 let the diamonds reveal themselves. The results are not necessarily some fit to a pre-defined
-function but instead is a set of instances that can be used to get quick answers
+data model but instead is a set of instances that can be used to get quick answers
 related to the specifics of the next question.
 
-Why is the data modeling  approach dominate? 
-Cause there is more theory there, more results, and hence more that can be taught about
-that kind of reasoning. To get more people more excited about algorithmic modeling,
-we need a compelling theory that can be readily taught and quickly learnt. Sadly,
+Why does the data modeling  approach dominate? 
+I think because there is more simpler theory there and hence more that can be taught about
+that kind of reasoning.  
+
+So how to Tget more people more excited about algorithmic modeling?
+Well, suppose we had a compelling theory that can be readily taught and quickly learnt?
+Sadly, that compelling theory is not apparent. (XXX: need notes here about 
+things like PAC   and why it confused folks).
+
 the way many people study data science, is that the algorithmic modeling approach
 is present as set of algorithms with minimal connection between them (Naive Bayes, C4.5, 
 feature selection, etc). I think that can be fixed since if you look inside these
