@@ -1,9 +1,14 @@
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/RGBCube_b.svg/2000px-RGBCube_b.svg.png" 
 width=500 align=right>
 
-_(CAUTION: major bug found with v1. V2 now under-construction. Best wait till it is ready.)_
 
 # LuaMine (data mining and optimization in Lua)
+
+## Status
+
+_(CAUTION: major bug found with v1. V2 now under-construction. Best wait till it is ready.)_
+
+## About
 
 You never know what you are doing, while you are doing in. But afterwards, looking back, patterns emerge.
 
@@ -70,9 +75,6 @@ the process of extracting signals from data:
    in a language they probably have not seen before and ask them to, each week, code up small parts
    of it. They can use what ever language they want (hint: "C" probably not a good idea; 
    Python probably a better idea).
-
-This code is an experiment i
-Or not. This is work in progress. Watch this space.
 
 
 
