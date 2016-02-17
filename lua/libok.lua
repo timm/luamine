@@ -1,4 +1,4 @@
-require "aaa"
+require "lib"
 
 function _test1()
   assert(1==1,"or else")

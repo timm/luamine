@@ -151,7 +151,7 @@ end
 -- OO stuff --------------------
 Object={}
 
-function Object:s()
+function Object:sss()
   return tstring(self)
 end
 

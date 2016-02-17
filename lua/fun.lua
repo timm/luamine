@@ -18,7 +18,11 @@ function Fun:add(xy)
 end
 
 function Fun:add1(data,meta) 
-  for i = 1,#meta do meta[i]:add(data[i]) end end 
+  for i = 1,#meta do 
+    h = meta[i]
+    print(i,type(h), h.name)
+    meta[i]:add(data[i]) 
+end end 
 
 function Fun:header(nsv,xy)
   self.spec = xy   
@@ -52,10 +56,11 @@ end
 function Fun:import(file) 
   local nsv = Nsv:new{file=file} 
   for datap,xy in nsv:rows() do   
-    if datap then 
-      io.write(1); self:add(xy) 
-    else 
-      io.write(2); self:header(nsv, xy)
-  end end 
+    if datap  then
+      self:add(xy)
+    else
+      self:header(nsv, xy)
+  end end
   return self
 end
+

@@ -1,4 +1,4 @@
-require "aaa"
+require "lib"
 
 Nsv= Object:new{file = "data.csv",
 	       using       = {},

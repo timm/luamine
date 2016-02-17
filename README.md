@@ -105,7 +105,14 @@ the process of extracting signals from data:
 1. Lua is a very simple language that can be readily embedded in most "C"-based systems, with
    mininal compilation effort. This makes its an excellent candidate from cross-platform 
    deployment as well as for embedded systems.
-2. I use LuaMine teach graduate students. The idea is that I show them short code fragments 
+2. Also, Lua is a good teaching language.
+   The language is compact with a clean, conventional syntax which is easy to read. 
+   Functions are first-class values and may be anonymous, 
+   so that functional styles can be learned (to help that,
+   proper closures and tail-call recursion are supported).
+   It runs interactively so exploring the language and its libraries are quick to learn.
+4. Lua is also a useful executable specification langauge--
+   which is why I use it to teach graduate students. The idea is that I show them short code fragments 
    in a language they probably have not seen before and ask them to, each week, code up small parts
    of it. They can use what ever language they want (hint: "C" probably not a good idea; 
    Python probably a better idea).

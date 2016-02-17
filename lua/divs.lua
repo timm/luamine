@@ -1,4 +1,4 @@
-require "aaa"
+require "lib"
 require "cols"
 
 Split=Object:new{enough=nil, get=last, cohen=  0.2, 
