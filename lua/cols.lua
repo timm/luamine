@@ -39,7 +39,7 @@ function Log:add(x)
       self.n = self.n + 1
       self:add1(x)
       self.some:keep(x)
-    end end 
+  end end 
   return x
 end 
  
@@ -60,7 +60,7 @@ function Num:add1(x)
   if self.n > 1 then
     self.sd = (self.m2/(self.n - 1))^0.5  
 end end 
-    
+
 function Num:sub(x)
   self.n = self.n - 1
   local delta = x - self.mu

@@ -1,22 +1,27 @@
 require "fun"
 
-function _fun(f, d)
+function _fun(f, d0,d1,h2)
   f= f or '../data/maxwell.csv'
-  d= Fun:new{f=f}
-  d:import(f)
-  print(1)
-  local d1= d:clone()
-  print(#d.rows[1].x)
-  for i,xy in pairs(d.rows) do  print(last(xy.x)) end
-  for i,h1 in pairs(d.xnums) do
-    h2 = d1.xnums[i]
-    -- print(i,h1.name,h2.name,r3(h1.mu),r3(h2.mu))
+  d0= Fun:new{f=f}
+  d0:import(f)
+  local d1= d0:clone()
+  print(d1.spec.y[1])
+  assert(#d0.rows[1].x == 26)
+  for _,xy in pairs(d0.rows) do
+    -- print(xy.x[1])
+    d1:add(xy)
   end
-    -- print(xy)
-    --d1.add(xy) end
-    -- end
-  -- d:close()
-  --print(#d.rows); print(d.x[1]); print(d.y[1])
+  
+  print("d1 rows",#d1.rows)
+  -- for i,xy in pairs(d.rows) do  print(last(xy.x)) end
+  for i,h1 in pairs(d0.xnums) do
+    print(d1.xnums[i])
+    h2 = d1.xnums[i]
+    assert(h1.name   == h2.name)
+    assert(h1 == h2)
+    assert(r3(h1.sd) == r3(h2.sd))
+  end
 end
 
+print(20000)
 _fun() 

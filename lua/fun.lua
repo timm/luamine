@@ -1,15 +1,24 @@
 require "nsv"
 require "cols"
 
-Fun=Object:new{
+function fun0() return {
   name="",     rows   = {},
   x      = {}, y      = {},  
   spec   = {}, more   = {}, less   = {},
   klass  = {},  
   xnums  = {}, ynums  = {},
-  xsyms  = {}, ysyms  = {}}
+  xsyms  = {}, ysyms  = {}} end
+
+Fun=Object:new(fun0())
 
 Row=Object:new{x={},y={}}
+
+function Row:copy()
+  local xs,ys = {}, {}
+  for _,x in ipairs(self.x) do add(xs,x) end
+  for _,y in ipairs(self.y) do add(ys,y) end
+  return Row:new{x=x,y=y}
+end
 
 function Fun:add(xy)
    add(self.rows, xy)
@@ -18,26 +27,24 @@ function Fun:add(xy)
 end
 
 function Fun:add1(data,meta) 
-  for i = 1,#meta do 
-    h = meta[i]
-    print(i,type(h), h.name)
-    meta[i]:add(data[i]) 
+  for i,h in ipairs(meta) do
+    --h = meta[i]
+    h:add(data[i]) 
 end end 
 
 function Fun:header(nsv,xy)
-  self.spec = xy   
-  tprint(xy.x)
-  self:header1(nsv, xy.x, self.x)  
-  self:header1(nsv, xy.y, self.y)  
+  self.spec = xy
+  self:header1(nsv, xy.x, self.x,true)  
+  self:header1(nsv, xy.y, self.y,false)  
 end
 
-function Fun:header1(nsv,t,out)  
+function Fun:header1(nsv,t,out,indep)
   for pos,x in ipairs(t) do
     nump = nsv:has(x,"nump")
     h    = nump and Num:new{name=x} or Sym:new{name=x}
     add(out,h)
     h.pos = pos
-    if out == self.x then
+    if indep then
       if nump then add(self.xnums,h) else add(self.xsyms,h) end
     else  
       if nump then add(self.ynums,h) else add(self.ysyms,h) end
@@ -47,10 +54,10 @@ function Fun:header1(nsv,t,out)
 end end end
 
 function Fun:clone()
-  local nsv = Nsv:new()
-  local tmp = Fun:new()
-  tmp:header(nsv, self.spec)
-  return tmp
+  local fun= Fun:new(fun0())
+  fun:header( Nsv:new(),
+	      self.spec:copy())
+  return fun
 end
 
 function Fun:import(file) 
@@ -63,4 +70,5 @@ function Fun:import(file)
   end end
   return self
 end
+
 

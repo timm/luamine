@@ -33,7 +33,7 @@ do
 end
 
 function rseed(seed)
-  return seed --math.randomseed(seed and seed or 1)
+  return seed -- math.randomseed(seed and seed or 1)
 end
 
 function round(x)
@@ -76,7 +76,7 @@ end
 
 function o(t,s)
   s = s or ">"
-  for i,x in ipairs(t) do print(s,i,"["..x.."]") end
+  for i,x in ipairs(t) do print(s,i,"["..tostring(x).."]") end
 end
 
 function items(t)
@@ -112,10 +112,10 @@ end
 
 function tstring(t) 
     local out,sep="{",":"
-    for xx,yy in pairs(t) do
-      if type(yy) ~= 'function' then
-        if string.sub(xx,1,1) ~= "_" then
-            out = out..sep..xx.." "..yy 
+    for x,y in ipairs(t) do
+      if type(y) ~= 'function' then
+        if string.sub(x,1,1) ~= "_" then
+            out = out..sep..x.." "..y 
           sep = " :"
     end end end  
     return out..'}'
@@ -129,6 +129,22 @@ function reverse(t)
   end
   return t
 end
+
+function table.copy(t)
+  local u = { }
+  for k, v in pairs(t) do u[k] = v end
+  setmetatable(u, getmetatable(t))
+  return u
+end
+
+
+function table.blank(t)
+  local u = { }
+  for k, v in pairs(t) do u[k] = {} end
+  setmetatable(u, getmetatable(t))
+  return u
+end
+
 
 -- String stuff --------------------
 function len(x)
@@ -173,7 +189,6 @@ function Object:new(o)
    o = o or {} 
    setmetatable(o,self)  
    self.__index = self
-   self.__tostring =  o.s
    return o
 end
 
@@ -184,6 +199,22 @@ function Object:copy()
    for x,y in pairs(self) do o[x] = y end
    return o
 end
+
+function deepcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[deepcopy(orig_key)] = deepcopy(orig_value)
+        end
+        setmetatable(copy, deepcopy(getmetatable(orig)))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
 
 -- Meta stuff -------------------------
 function same(x) return x end
