@@ -49,7 +49,8 @@ function _syms()
     if j >= 1 then
       num:sub(n)
       downs[j] = num:copy()
-      print("num",num)
+      print("b4",num)
+      print("af",downs[j])
   end end
   
   for i = 1,#ups-1 do

@@ -100,7 +100,7 @@ function tostring(t)
     if string.sub(x,1,1) ~= "_" then
       out = out..sep..x.." "..tostring(y) 
       sep = " :"
-      if #out > lines*50 then
+      if #out > lines*1000 then
 	lines = lines+1
 	sep = "\n  :"
       end
