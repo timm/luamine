@@ -54,8 +54,12 @@ function _syms()
   end end
   
   for i = 1,#ups-1 do
+    print(i)
+    print(r3(downs[i].mu), r3(ups[i].mu))
     assert(r3(downs[i].mu) == r3(ups[i].mu))
+    print(r3(downs[i].sd), r3(ups[i].sd))
     assert(r3(downs[i].sd) == r3(ups[i].sd))
+    print(r3(downs[i].n), r3(ups[i].n))
     assert(r3(downs[i].n) == r3(ups[i].n))
 end end
 
