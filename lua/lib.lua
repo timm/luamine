@@ -16,26 +16,6 @@ Share and enjoy!
 
 -- Number stuff -----------------------
 
-do
-  -- on the advice of http://goo.gl/jJQsry
-  -- i am not using the random built into lua
-  local A1, A2 = 727595, 798405  -- 5^17=D20*A1+A2
-  local D20, D40 = 1048576, 1099511627776  -- 2^20, 2^40
-  local X1, X2 = 0, 1
-  function r()
-    local U = X2*A2
-    local V = (X1*A2 + X2*A1) % D20
-    V = (V*D20 + U) % D40
-    X1 = math.floor(V/D20)
-    X2 = V - X1*D20
-    return V/D40
-  end
-end
-
-function rseed(seed)
-  return seed -- math.randomseed(seed and seed or 1)
-end
-
 function round(x)
   return math.floor(x + 0.5)
 end
@@ -110,18 +90,23 @@ function sub(t, first, last)
   return out
 end
 
-function tstring(t) 
-    local out,sep="{",":"
-    for x,y in ipairs(t) do
-      if type(y) ~= 'function' then
-        if string.sub(x,1,1) ~= "_" then
-            out = out..sep..x.." "..y 
-          sep = " :"
-    end end end  
-    return out..'}'
+_tostring = tostring
+function tostring(t)
+  if type(t) ~= 'table' then
+    return _tostring(t)
+  end
+  local out,sep,lines="{",":",1
+  for x,y in pairs(t) do
+    if string.sub(x,1,1) ~= "_" then
+      out = out..sep..x.." "..tostring(y) 
+      sep = " :"
+      if #out > lines*50 then
+	lines = lines+1
+	sep = "\n  :"
+      end
+  end end 
+  return out..'}'
 end  
-
-function tprint(t) print(tstring(t)) end
 
 function reverse(t)
   for i=1, math.floor(#t / 2) do
@@ -130,19 +115,16 @@ function reverse(t)
   return t
 end
 
-function table.copy(t)
-  local u = { }
-  for k, v in pairs(t) do u[k] = v end
-  setmetatable(u, getmetatable(t))
-  return u
+function tand(t1,t2) -- table and
+  if t2 then
+    for k,v in pairs(t2) do
+      t1[k] = v
+  end end
+  return t1
 end
 
-
-function table.blank(t)
-  local u = { }
-  for k, v in pairs(t) do u[k] = {} end
-  setmetatable(u, getmetatable(t))
-  return u
+function new(k,t1,t2)
+  return tand( tand( k:new(),t2),t1)
 end
 
 
@@ -180,10 +162,6 @@ end
 
 -- OO stuff --------------------
 Object={}
-
-function Object:sss()
-  return tstring(self)
-end
 
 function Object:new(o)
    o = o or {} 
