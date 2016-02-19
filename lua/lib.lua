@@ -123,8 +123,8 @@ function tand(t1,t2) -- table and
   return t1
 end
 
-function new(k,t1,t2)
-  return tand( tand( k:new(),t2),t1)
+function fresh(k,t1,t2)
+  return tand( tand( k:new(), t2), t1)
 end
 
 

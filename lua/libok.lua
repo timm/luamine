@@ -70,12 +70,10 @@ ok{_test1,_test2, _maths,
 
 
 Emp=Object:new()
-function emp0(t) return new(
-    Emp,t,
+function emp0(t) return new(Emp,t,
     {name='tim',
      age= 23,
-     jobs={}})
-end
+     jobs={}}) end
 
 print(emp0{name='jane',
 	   jobs={'manager',
@@ -85,9 +83,10 @@ print(emp0{name='jane',
 	         'banker'}})
 
 
+do
+  local one = emp0()
+  local two = emp0()
+   assert(one.jobs ~= two.jobs)
+end
 
-
-
-one = emp0()
-two = emp0()
-assert(one.jobs ~= two.jobs)
+rogue()

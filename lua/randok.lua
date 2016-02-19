@@ -2,8 +2,8 @@ require "lib"
 require "rand"
 
 function _rand(repeats)
-  repeats = repeats or 10^6
-  local function minmax( lo,up,tmp)
+  repeats = repeats or 10^5
+  local function minmax( lo,hi,tmp)
     lo = 10^32
     hi =- 1*10^32
     for i = 1,repeats do
@@ -36,3 +36,4 @@ function _rand(repeats)
 end
 
 ok{_rand}
+rogue()

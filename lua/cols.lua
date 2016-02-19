@@ -1,30 +1,54 @@
-require "nsv"
+require "lib"
 
-Some = Object:new{max = 256,
-		             kept = {},
-		                n = 0}
-Log = Object:new{name = "",
-		  pass = "[\\?]",
-                    n = 0,
-                 some = Some:new()}
-Sym = Log:new{ counts = {},
-	               mode = nil,
-	               most = 0}
-Num = Log:new{     up = -1*10^32,
-	                 lo = 10^32,
-	                 mu = 0,
-                   m2 = 0,
-                   sd = 0}
-Logs = Object:new{has = {},some=Some:new{}}
+print(lt)
+print("new",new)
+
+Some = Object:new()
+function some0(t) return fresh(Some,t,
+    {max = 256,
+     _kept = {},
+     n = 0}) end
+
+Log = Object:new()
+function log0(t) return fresh(Log,t,
+     {name = "",
+      pass = "[\\?]",
+      n = 0,
+      some = some0()}) end
+
+Sym = Log:new()
+function sym0(t) return fresh(Sym,log0(t),
+    {counts = {},
+     mode = nil,
+     most = 0}) end
+
+Num = Log:new()
+function num0(t) return fresh(Num,log0(t), {
+      up = -1*10^32,
+      lo = 10^32,
+      mu = 0,
+      m2 = 0,
+      sd = 0}) end
+
+Logs = Object:new()
+function logs0(t) return fresh(Logs,t,
+    { has  = {},
+      some = some0()}) end
 
 -- Some --------------------------------
 function Some:keep(x)
   self.n  = self.n + 1
-  local k = #self.kept
-  if     k < self.max     then add(self.kept,x) 
-  elseif r() < k / self.n then self.kept[round(r()*k)]= x
+  local k = #self._kept
+  if     k < self.max     then add(self._kept,x) 
+  elseif r() < k / self.n then self._kept[round(r()*k)]= x
   end 
   return x
+end
+
+function Some:copy(x)
+  local tmp = some0(self)
+  self._kept = {}
+  return self
 end
      
 -- Log  --------------------------------
@@ -32,6 +56,8 @@ function Log:adds(t)
   for _,x in pairs(t) do self:add(x) end
   return self
 end
+
+
 
 function Log:add(x)
   if x ~= nil then
@@ -49,7 +75,19 @@ function Sym:add1(x)
   self.counts[x] = new
   if new > self.most then
     self.mode, self.most = x,new
-end end
+  end end
+
+function Sym:copy()
+  tmp = sym0(self)
+  tmp.some = self.some:copy()
+  return tmp
+end
+
+function Num:copy()
+  tmp = num0(self)
+  tmp.some = self.some:copy()
+  return tmp
+end
 
 function Num:add1(x)
   if x > self.up then self.up = x end
@@ -71,12 +109,12 @@ function Num:sub(x)
 end end
 
 -- Logs --------------------------------
-function Logs:header(t)
-  c = nsv:new()
-  for _,one in ipairs(t) do
-    what = c:has(x,"nump") and Num or Sym
-    add(self.has, what{name=what})
-end end
+-- function Logs:header(t)
+--   c = Nsv:new()
+--   for _,one in ipairs(t) do
+--     what = c:has(x,"nump") and Num or Sym
+--     add(self.has, what{name=what})
+-- end end
 
 function Logs:add(t)
   self.some:keep(t)
