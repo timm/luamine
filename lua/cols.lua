@@ -9,6 +9,30 @@ function some0(t) return fresh(Some,t,
      _kept = {},
      n = 0}) end
 
+--[[
+function Object:has(t)
+  for k,v in pairs(t)
+    self[k] = v
+  end
+  return self
+end
+
+function object0(x)
+  return return x:new()
+end
+
+Log=Object:new()
+function log0(o)
+   o = object0(o or Log)
+   o.name=""
+   o.pass="[\\?]"
+   o.n = 0
+   o.some = some0()
+   return o
+end
+
+
+--]]
 Log = Object:new()
 function log0(t) return fresh(Log,t,
      {name = "",
