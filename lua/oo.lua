@@ -31,15 +31,13 @@ end
 
 rogue()
 
-
-
-log0 = def({Log=Object, with= {
+log0 = def{Log=Object, with= {
 	     counts = {},
 	     mode = nil,
-	     most = 0}})
+	     most = 0}}
 
-same0 = def( {Some=Log, with= {
+same0 = def{Some=Log, with= {
 	      max = 256,
 	      _kept = {},
-	      n = 0}})
+	      n = 0}}
 
