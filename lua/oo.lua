@@ -24,7 +24,9 @@ function def(spec,   g,inits,id,parent,name,f,out)
   end
   print("G",g)
   _G[kid] = parent:new()
-  return function (t) return fresh(_G[kid], _G[g](t),inits)  end
+  out = function (t)
+    return fresh(_G[kid], _G[g](t),inits)  end
+  return out
 end
 
 rogue()
