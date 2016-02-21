@@ -50,7 +50,7 @@ function _string(t)
   t= explode("aa,bb,cc,dd",",")
   assert(t[1]=="aa","! aa")
   assert(t[4]=="dd","! dd")
-  assert(implode(t)=="{aa,bb,cc,dd}")
+  assert(str(t)=="{aa bb cc dd}")
 end
 
 function _lines(t)
@@ -62,31 +62,33 @@ function _lines(t)
   assert(last(t) == 19, "! 19")
   t={}
   for i = 1,25 do add(t,i) end
-  assert(implode(t) == implode(reverse(reverse(t))))
+  assert(str(t) == str(reverse(reverse(t))))
+end
+
+
+Person=Object:new()
+ function person0(o)
+   o = object0(o or Person)
+   o.name="adam"
+   o.dob={1,1,{1901, "ad"}}
+   o.addr={ }
+   return o
+ end
+
+function Person:copy(t) return self:copy0(t) end
+
+function _oo(  p1,p2,p3)
+  p1=person0()
+  p2=person0()
+  p1.dob[1] = 20
+  assert(p1      ~= p2)
+  assert(p1.addr ~= p2.addr)
+  p3=p1:copy{name="tim"}
+  assert(p3.dob == p1.dob)
+  assert(p3.name ~= p1.name)
+  assert(p3.name == "tim")
 end
 
 ok{_test1,_test2, _maths,
-  _lists,_string,_lines}
+   _lists,_string,_lines,_oo}
 
-
-Emp=Object:new()
-function emp0(t) return new(Emp,t,
-    {name='tim',
-     age= 23,
-     jobs={}}) end
-
-print(emp0{name='jane',
-	   jobs={'manager',
-		 'accountant',
-	         'engineer',
-	         'plumber',
-	         'banker'}})
-
-
-do
-  local one = emp0()
-  local two = emp0()
-   assert(one.jobs ~= two.jobs)
-end
-
-rogue()

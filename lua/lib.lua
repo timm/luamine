@@ -40,6 +40,13 @@ function min(t, out, better)
   return out
 end
 
+function near(one,two,n)
+  n = n or 0.01
+  diff = two - one
+  if diff < 0 then diff=-1*diff end
+  return diff < n
+end
+
 -- Table stuff ------------------------
 add = table.insert
 
@@ -54,7 +61,7 @@ function sort(t,f)
   return t
 end
 
-function o(t,s)
+function oo(t,s)
   s = s or ">"
   for i,x in ipairs(t) do print(s,i,"["..tostring(x).."]") end
 end
@@ -75,7 +82,7 @@ end
 
 function map(f, t)
   local out = {}
-  for i,v in ipairs(t) do
+  for i,v in pairs(t) do
     out[i] = f(v)
   end
   return out
@@ -90,41 +97,56 @@ function sub(t, first, last)
   return out
 end
 
-_tostring = tostring
-function tostring(t)
-  if type(t) ~= 'table' then
-    return _tostring(t)
-  end
-  local out,sep,lines="{",":",1
-  for x,y in pairs(t) do
-    if string.sub(x,1,1) ~= "_" then
-      out = out..sep..x.." "..tostring(y) 
-      sep = " :"
-      if #out > lines*1000 then
+do
+  _tostring = tostring  
+  local lineWidth = 8000
+  
+  local function toStringSimple(t)
+    -- for when the indexes are all numeric
+    local out,sep,lines="","{",1
+    for _,y in ipairs(t) do
+      out = out..sep..tostring(y) 
+      sep = " "
+      if #out > lines*lineWidth then
 	lines = lines+1
-	sep = "\n  :"
-      end
-  end end 
-  return out..'}'
-end  
-
+	sep = "\n "
+    end end
+    return out..'}'
+  end
+  
+  function tostring(t)
+    -- for arbitary stuff
+    if type(t) ~= 'table' then
+      return _tostring(t) 
+    else
+      local out,sep,lines="{",":",1
+      local allNums,empty=true,true
+      for x,y in pairs(t) do
+	empty   = False
+	allNums = allNums and type(x) == 'number'
+	if string.sub(x,1,1) ~= "_" -- skip 'private' stuff
+	then
+	  out = out..sep..x.." "..tostring(y) 
+	  sep = " :"
+	  if #out > lines*lineWidth then 
+	    lines = lines+1
+	    sep = "\n  :"
+      end end end
+      if empty then
+        return "{}" 
+      elseif allNums then
+        return toStringSimple(t)
+      else
+        return out..'}'
+  end end end
+  str = tostring
+end
+  
 function reverse(t)
   for i=1, math.floor(#t / 2) do
     t[i], t[#t - i + 1] = t[#t - i + 1], t[i]
   end
   return t
-end
-
-function tand(t1,t2) -- table and
-  if t2 then
-    for k,v in pairs(t2) do
-      t1[k] = v
-  end end
-  return t1
-end
-
-function fresh(k,t1,t2)
-  return tand( tand( k:new(), t2), t1)
 end
 
 
@@ -135,8 +157,8 @@ function len(x)
 function found(x,pat)
   return string.find(x,pat) ~= nil end
 
-function lastchar(str)
-  return string.sub(str, -1, -1) end
+function lastchar(s)
+  return string.sub(s, -1, -1) end
 
 function explode(inputstr, sep)
   if sep == nil then
@@ -150,18 +172,9 @@ function explode(inputstr, sep)
   return t
 end
 
-function implode(t, sep)
-  sep = sep and sep or "{"
-  local str = ""
-  for i,x in ipairs(t) do
-     str = str..sep..x
-     sep= ","
-  end
-  return str..'}'
-end
-
 -- OO stuff --------------------
 Object={}
+
 
 function Object:new(o)
    o = o or {} 
@@ -170,13 +183,26 @@ function Object:new(o)
    return o
 end
 
-function Object:copy()
-   local o = {}
-   setmetatable(o,self)
-   self.__index = self
-   for x,y in pairs(self) do o[x] = y end
-   return o
+function Object:has(t)
+  if t then
+    for k,v in pairs(t) do
+      self[k] = v
+    end end
+  return self
 end
+
+function Object:copy0(t)
+  return self:new():has(self):has(t)
+end
+
+function Object:copy(t)
+  error("Should be implemented by subclass")
+end
+
+function object0(t)
+  return t:new()
+end
+
 
 function deepcopy(orig)
     local orig_type = type(orig)
@@ -200,19 +226,21 @@ function same(x) return x end
 function rogue(x) 
   local builtin = { "true","math","package","table","coroutine",
        "os","io","bit32","string","arg","debug","_VERSION","_G"}
-  print("-- Any rogues?")
+  io.write "-- Globals: "
   for k,v in pairs( _G ) do
     if type(v) ~= 'function' then  
        if not member(k, builtin) then 
-         print(":globals",k) end end end end
-
+         io.write(" ",k) end end end
+  print  ""
+end
+ 
 -- Test engine stuff -----------------------
 do
   local y,n = 0,0
   local function report() 
     print(string.format(
               ":pass %s :fail %s :percentPass %s%%",
-              y,n,math.floor(y/(0.001+y+n))))
+              y,n,round(100*y/(0.001+y+n))))
     rogue() end
   local function test(s,x) 
     print("# test:", s) 
@@ -224,7 +252,7 @@ do
   local function tests(t)
     for s,x in pairs(t) do test(s,x) end end 
   function ok(t) 
-    if empty(t) then report() else tests(t) end end
+    if empty(t) then report() else tests(t);report() end end
 end
 
 -- File stuff ------------------------

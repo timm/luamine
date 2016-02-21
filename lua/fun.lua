@@ -1,23 +1,34 @@
 require "nsv"
 require "cols"
 
-function fun0() return {
-  name="",     rows   = {},
-  x      = {}, y      = {},  
-  spec   = {}, more   = {}, less   = {},
-  klass  = {},  
-  xnums  = {}, ynums  = {},
-  xsyms  = {}, ysyms  = {}} end
 
-Fun=Object:new(fun0())
+Fun=Object:new()
+function fun0(o)
+  o               = object0(o or Fun)
+  o.name          = ""
+  o.rows          = {}
+  o.klass         = {}
+  o.spec          = {}
+  o.x,o.y         = {}, {}
+  o.xnums,o.ynums = {}, {}
+  o.xsyns,o.ysyms = {}, {}
+  o.more, o.less  = {}, {}
+  return o
+end
 
-Row=Object:new{x={},y={}}
+Row=Object:new()
+function row0(o)
+  o        = object0(o or Row)
+  o.x, o.y = {},{}
+  return o
+end
 
 function Row:copy()
-  local xs,ys = {}, {}
-  for _,x in ipairs(self.x) do add(xs,x) end
-  for _,y in ipairs(self.y) do add(ys,y) end
-  return Row:new{x=x,y=y}
+  tmp=self:copy0()
+  local xs,ys = {},{}
+  for _,x in ipairs(self.x) do add(xs, x) end
+  for _,y in ipairs(self.y) do add(ys, y) end
+  return tmp:has{x=xs,y=ys}
 end
 
 function Fun:add(xy)
@@ -35,13 +46,15 @@ end end
 function Fun:header(nsv,xy)
   self.spec = xy
   self:header1(nsv, xy.x, self.x,true)  
-  self:header1(nsv, xy.y, self.y,false)  
+  self:header1(nsv, xy.y, self.y,false)
+  return self
 end
 
 function Fun:header1(nsv,t,out,indep)
   for pos,x in ipairs(t) do
     nump = nsv:has(x,"nump")
-    h    = nump and Num:new{name=x} or Sym:new{name=x}
+    h    = nump and num0() or sym0()
+    h:has{name=x}
     add(out,h)
     h.pos = pos
     if indep then
@@ -53,16 +66,15 @@ function Fun:header1(nsv,t,out,indep)
       if nsv:has(x, "klass") then add(self.klass, h) end 
 end end end
 
-function Fun:clone()
-  local fun= Fun:new(fun0())
-  fun:header( Nsv:new(),
-	      self.spec:copy())
-  return fun
+function Fun:copy()
+  return self:copy0():header(
+    nsv0(),
+    deepcopy(self.spec))
 end
 
 function Fun:import(file) 
-  local nsv = Nsv:new{file=file} 
-  for datap,xy in nsv:rows() do   
+  local data = nsv0():has{file=file} 
+  for datap,xy in data:rows() do   
     if datap  then
       self:add(xy)
     else
