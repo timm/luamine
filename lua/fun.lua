@@ -9,7 +9,8 @@ function fun0(o)
   o.rows          = {}
   o.klass         = {}
   o.spec          = {}
-  o.x,o.y         = {}, {}
+  o.x             = {}
+  o.y             = {}
   o.xnums,o.ynums = {}, {}
   o.xsyns,o.ysyms = {}, {}
   o.more, o.less  = {}, {}
@@ -31,6 +32,7 @@ function Row:copy()
   return tmp:has{x=xs,y=ys}
 end
 
+
 function Fun:add(xy)
    add(self.rows, xy)
    self:add1(xy.x, self.x)
@@ -45,15 +47,19 @@ end end
 
 function Fun:header(nsv,xy)
   self.spec = xy
-  self:header1(nsv, xy.x, self.x,true)  
-  self:header1(nsv, xy.y, self.y,false)
+  print("xy",xy)
+  print("self",self)
+  self:header1(nsv, xy.x, self.x, true)  
+  self:header1(nsv, xy.y, self.y, false)
   return self
 end
 
 function Fun:header1(nsv,t,out,indep)
   for pos,x in ipairs(t) do
-    nump = nsv:has(x,"nump")
+    nump = nsv:char(x,"nump")
     h    = nump and num0() or sym0()
+    print("h", h)
+    print("out",out)
     h:has{name=x}
     add(out,h)
     h.pos = pos
@@ -61,9 +67,9 @@ function Fun:header1(nsv,t,out,indep)
       if nump then add(self.xnums,h) else add(self.xsyms,h) end
     else  
       if nump then add(self.ynums,h) else add(self.ysyms,h) end
-      if nsv:has(x, "more")  then add(self.more,  h) end
-      if nsv:has(x, "less")  then add(self.less,  h) end
-      if nsv:has(x, "klass") then add(self.klass, h) end 
+      if nsv:char(x, "more")  then add(self.more,  h) end
+      if nsv:char(x, "less")  then add(self.less,  h) end
+      if nsv:char(x, "klass") then add(self.klass, h) end 
 end end end
 
 function Fun:copy()
@@ -75,10 +81,11 @@ end
 function Fun:import(file) 
   local data = nsv0():has{file=file} 
   for datap,xy in data:rows() do   
+    print(datap)
     if datap  then
       self:add(xy)
     else
-      self:header(nsv, xy)
+      self:header(data, xy)
   end end
   return self
 end

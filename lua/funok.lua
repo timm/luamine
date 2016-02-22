@@ -2,9 +2,9 @@ require "fun"
 
 function _fun(f, d0,d1,h2)
   f= f or '../data/maxwell.csv'
-  d0= Fun:new{f=f}
+  d0= fun0():has{f=f}
   d0:import(f)
-  local d1= d0:clone()
+  local d1= d0:copy()
   print(d1.spec.y[1])
   assert(#d0.rows[1].x == 26)
   for _,xy in pairs(d0.rows) do
