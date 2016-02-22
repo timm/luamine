@@ -16,6 +16,9 @@ Share and enjoy!
 
 require "lib/rand"
 require "lib/tostring"
+require "lib/oo"
+require "lib/unittest"
+require "lib/lines"
 
 -- Number stuff -----------------------
 
@@ -139,106 +142,8 @@ function explode(inputstr, sep)
   return t
 end
 
--- OO stuff --------------------
-Object={}
-
-function Object:new(o)
-   o = o or {} 
-   setmetatable(o,self)  
-   self.__index = self
-   return o
-end
-
-function Object:has(t)
-  if t then
-    for k,v in pairs(t) do
-      self[k] = v
-    end end
-  return self
-end
-
-function Object:copy0(t)
-  return self:new():has(self):has(t)
-end
-
-function Object:copy(t)
-  error("Should be implemented by subclass")
-end
-
-function object0(t)
-  return t:new()
-end
-
-function deepcopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
-        end
-        setmetatable(copy, deepcopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
-
 
 -- Meta stuff -------------------------
 function same(x) return x end
 
-function rogue(x) 
-  local builtin = { "true","math","package","table","coroutine",
-       "os","io","bit32","string","arg","debug","_VERSION","_G"}
-  io.write "-- Globals: "
-  for k,v in pairs( _G ) do
-    if type(v) ~= 'function' then  
-       if not member(k, builtin) then 
-         io.write(" ",k) end end end
-  print  ""
-end
  
--- Test engine stuff -----------------------
-do
-  local y,n = 0,0
-  local function report() 
-    print(string.format(
-              ":pass %s :fail %s :percentPass %s%%",
-              y,n,round(100*y/(0.001+y+n))))
-    rogue() end
-  local function test(s,x) 
-    print("# test:", s) 
-    y = y + 1
-    local passed,err = pcall(x) 
-    if not passed then   
-       n = n + 1
-       print("Failure: ".. err) end end 
-  local function tests(t)
-    for s,x in pairs(t) do test(s,x) end end 
-  function ok(t) 
-    if empty(t) then report() else tests(t);report() end end
-end
-
--- File stuff ------------------------
-
-function lines(white,comment)
-  -- kill white space, join comma-ending files
-  -- to next line, skip empty lines
-  -- has to precluded with io.input(file)
-  return function()  
-    local pre, line = "", io.read()
-    while line ~= nil do
-      line = line:gsub(white,""):gsub(comment,"")
-      if line ~= "" then
-	    if lastchar(line) == "," then
-	      pre  = pre .. line
-      else
-	      line =  pre .. line
-	      pre  = ""
-	      return line
-    end end
-    line = io.read()
-    end
-    if len(pre) > 0 then return pre end
-end end

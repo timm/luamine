@@ -34,7 +34,7 @@ function Split:div1(t, n, all, ranges)
   local range = {id=self.id, lo=start, up=stop, n=#ranges,
                  has=t, score = all:copy()}
   if stop - start >= self.small then 
-    local l, score = new0(), all:sd()
+    local l, score = num0(), all:sd()
     local new, old 
     for i,x in ipairs(t) do
       new = self.get(x)
@@ -45,7 +45,7 @@ function Split:div1(t, n, all, ranges)
           if  all.n < self.enough then goto rest end
           if new - start >= self.small then
             local maybe = l.n/n*l:sd() + all.n/n*all:sd()
-            if maybe*self.trivia < score then
+            if maybe*self.trivial < score then
               cut, score = i, maybe
               lo, hi     = l:copy(), all:copy()
       end end end end
