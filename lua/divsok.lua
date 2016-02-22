@@ -2,13 +2,13 @@ require "divs"
 require "cols"
 require "fun"
 
-function _divs(n,s,d)
-  n = {}
+function _divs()
+  local n = {}
   for i = 1,1000 do add(n,r()^2) end
-  s = split0():has{get=same,maxBins=16}
+  local s = split0():has{get=same,maxBins=16}
   for i,range in pairs(s:div(n)) do
     print(i,r3(range.lo),r3(range.up),range.n) end
-  f= fun0()
+  local f= fun0()
   f:import('../data/maxwell.csv')
   for _,num in ipairs(f.xnums) do
       local get=function (row) return row.x[num.pos] end
@@ -21,6 +21,6 @@ function _divs(n,s,d)
   end end end
 end
 
-_divs()
+ok{_divs}
 
 

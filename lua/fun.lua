@@ -24,10 +24,8 @@ function row0(o)
 end
 
 function Row:copy()
-  local xs,ys = {},{}
-  for _,x in ipairs(self.x) do add(xs, x) end
-  for _,y in ipairs(self.y) do add(ys, y) end
-  return row0():has{x=xs,y=ys}
+  return row0():has{x=deepcopy(self.x),
+		    y=deepcopy(self.y)}
 end
 
 function Fun:add(xy)
