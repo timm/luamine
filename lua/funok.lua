@@ -1,27 +1,22 @@
 require "fun"
 
-function _fun(f, d0,d1,h2)
-  f= f or '../data/maxwell.csv'
-  d0= fun0():has{f=f}
+function _fun(f)
+  local f= f or '../data/maxwell.csv'
+  local d0= fun0():has{f=f}
   d0:import(f)
-  local d1= d0:copy()
-  print(d1.spec.y[1])
-  assert(#d0.rows[1].x == 26)
-  for _,xy in pairs(d0.rows) do
-    -- print(xy.x[1])
+  local d1= d0:clone()
+  for _,xy in pairs(d0._rows) do
     d1:add(xy)
   end
-  
-  print("d1 rows",#d1.rows)
-  -- for i,xy in pairs(d.rows) do  print(last(xy.x)) end
-  for i,h1 in pairs(d0.xnums) do
-    print(d1.xnums[i])
-    h2 = d1.xnums[i]
-    assert(h1.name   == h2.name)
-    assert(h1 == h2)
-    assert(r3(h1.sd) == r3(h2.sd))
+  assert(d1.x[1]:sd() == d0.x[1]:sd())
+  assert(d1.x[1]    ~= d0.x[1])
+  assert(#d1._rows == #d0._rows)
+  for i,h0 in pairs(d0.xnums) do
+    local h1 = d1.xnums[i]
+    assert(h1.name   == h0.name)
+    assert(h1 ~= h0)
+    assert(r3(h1:sd()) == r3(h0:sd()))
   end
 end
 
-print(20000)
-_fun() 
+ok{_fun} 

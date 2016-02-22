@@ -1,5 +1,4 @@
 require "lib"
-require "rand"
 
 function _rand(repeats)
   repeats = repeats or 10^5

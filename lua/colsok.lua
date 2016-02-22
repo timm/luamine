@@ -1,5 +1,4 @@
 require "cols"
-require "rand"
 
 
 function _some()
@@ -29,15 +28,15 @@ function _syms()
    for _,n in pairs{1,2,3,4,5,6} do
     num:add(n)
   end
-  assert(r3(num.sd)==1.871)
+   assert(r3(num:sd())==1.871)
   local num1=num:copy()
   for i=1,1000 do num1:add(r()^3) end
-  assert(r3(num1.sd)==0.4)
-  local tmp = num0():adds{1,2,3,4,5,6}.sd*0.1
+  assert(r3(num1:sd())==0.4)
+  local tmp = num0():adds{1,2,3,4,5,6}:sd()*0.1
   assert(r3(tmp)==0.187)
   local t,r0,r1={},{},{}
   local num = num0()
-  local m = 5
+  local m = 1000
   for i = 1,m do add(t,r()) end
   local ups,downs={},{}
   for i,n in ipairs(t) do
@@ -52,12 +51,17 @@ function _syms()
   end end
   
   for i = 1,#ups-1 do
-    if i > 1 then
-      assert(r3(downs[i].mu) == r3(ups[i].mu))
-      assert(r3(downs[i].sd) == r3(ups[i].sd))
-      assert(r3(downs[i].n)  == r3(ups[i].n))
-    end
-end end
+    spit(i,50)
+      --print("\n",i)
+      --print{downs[i].n,    ups[i].n }
+      --print(map(r5, {downs[i].mu,    ups[i].mu }))
+      -- print(map(r5, {downs[i]:sd(), ups[i]:sd()}))
+      assert(r3(downs[i].mu) == r3(ups[i].mu),tostring(i))
+      assert(r3(downs[i]:sd()) == r3(ups[i]:sd()),tostring(i))
+      assert(r3(downs[i].n)  == r3(ups[i].n),tostring(i))
+  end
+  print("")
+end 
 
 
 ok{_some,_syms}

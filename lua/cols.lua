@@ -9,7 +9,6 @@ function some0(o)
   return o
 end
 
-
 Log = Object:new()
 function log0(o)
   o      = object0(o or Log)
@@ -30,14 +29,13 @@ function sym0(o)
 end
 
 Num = Log:new()
-function num0(t)
+function num0(o)
   o = log0(o or Num)
   o.up = -1*10^32
   o.lo = 10^32
   o.mu = 0
   o.m2 = 0
-  o.sd = 0
-   return o
+  return o
 end
 
 Logs = Object:new()
@@ -105,9 +103,21 @@ function Num:add1(x)
   local delta = x - self.mu
   self.mu     = self.mu + delta / self.n
   self.m2     = self.m2 + delta * (x - self.mu)
-  if self.n > 1 then
-    self.sd = (self.m2/(self.n - 1))^0.5  
-end end 
+end
+
+function Num:sd()
+  return self.n <= 1 and 0 or (self.m2/(self.n - 1))^0.5
+end
+
+--[[
+Warning, this sub function fails when approach n=1
+for very, very small numbers.
+e.g. after adding 1000 values of s where s= r^300 and 
+r is a random 0 < r < 1, then on substraction
+from 1000 back to 1, sd becomes Nan at n=1. that said,
+for numbers even slightly bigger, that problem goes away
+(e.g. for s=r^250 there is no such problem).
+--]]
 
 function Num:sub(x)
   self._kept      = some0()
@@ -116,9 +126,7 @@ function Num:sub(x)
   local delta = x - self.mu
   self.mu     = self.mu - delta/self.n
   self.m2     = self.m2 - delta*(x - self.mu)
-  if self.n > 1 then
-    self.sd = (self.m2/(self.n - 1))^0.5  
-end end
+end 
 
 -- Logs --------------------------------
 -- function Logs:header(t)

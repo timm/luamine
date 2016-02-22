@@ -65,7 +65,7 @@ end
 function Nsv:rows()
   io.input(self.file)
   local data=false
-  return function()
+  return function() 
     for line in lines(self.chars["whitespace"],
 		       self.chars["comment"]
                      ) do
@@ -75,4 +75,5 @@ function Nsv:rows()
       else
 	data = true
 	return false,self:header(cells)
-end end end end
+      end
+    end end end

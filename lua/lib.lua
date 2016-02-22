@@ -14,6 +14,9 @@ tricks that contains all their common tricks for the
 Share and enjoy!
 --]]
 
+require "lib/rand"
+require "lib/tostring"
+
 -- Number stuff -----------------------
 
 function round(x)
@@ -21,6 +24,7 @@ function round(x)
 end
 
 function r3(x) return rn(x,3) end
+function r5(x) return rn(x,5) end
 
 function rn(what, precision)
    return math.floor(what*math.pow(10,precision)+0.5) 
@@ -45,6 +49,12 @@ function near(one,two,n)
   diff = two - one
   if diff < 0 then diff=-1*diff end
   return diff < n
+end
+
+function spit(i,n,a,b)
+  a = a or "."
+  b = b or "\n"
+  io.write(i % n == 0 and b or a)
 end
 
 -- Table stuff ------------------------
@@ -97,50 +107,7 @@ function sub(t, first, last)
   return out
 end
 
-do
-  _tostring = tostring  
-  local lineWidth = 8000
-  
-  local function toStringSimple(t)
-    -- for when the indexes are all numeric
-    local out,sep,lines="","{",1
-    for _,y in ipairs(t) do
-      out = out..sep..tostring(y) 
-      sep = " "
-      if #out > lines*lineWidth then
-	lines = lines+1
-	sep = "\n "
-    end end
-    return out..'}'
-  end
-  
-  function tostring(t)
-    -- for arbitary stuff
-    if type(t) ~= 'table' then
-      return _tostring(t) 
-    else
-      local out,sep,lines="{",":",1
-      local allNums,empty=true,true
-      for x,y in pairs(t) do
-	empty   = False
-	allNums = allNums and type(x) == 'number'
-	if string.sub(x,1,1) ~= "_" -- skip 'private' stuff
-	then
-	  out = out..sep..x.." "..tostring(y) 
-	  sep = " :"
-	  if #out > lines*lineWidth then 
-	    lines = lines+1
-	    sep = "\n  :"
-      end end end
-      if empty then
-        return "{}" 
-      elseif allNums then
-        return toStringSimple(t)
-      else
-        return out..'}'
-  end end end
-  str = tostring
-end
+
   
 function reverse(t)
   for i=1, math.floor(#t / 2) do
@@ -175,7 +142,6 @@ end
 -- OO stuff --------------------
 Object={}
 
-
 function Object:new(o)
    o = o or {} 
    setmetatable(o,self)  
@@ -202,7 +168,6 @@ end
 function object0(t)
   return t:new()
 end
-
 
 function deepcopy(orig)
     local orig_type = type(orig)

@@ -7,8 +7,7 @@ function _nsv(f,tmp,i,n,tmp)
   for datap,row in  n:rows() do
     tmp=row
     i = i + 1
-    str(row.x)
-    
+    print(i, {isData=datap,x=row.x,y=row.y})
   end 
   local n = tmp.x[2]
   print(tmp)
