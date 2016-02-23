@@ -11,7 +11,15 @@ Every Lua progarmmer has their own little library of
 tricks that contains all their common tricks for the
 "batteries not included" in standard Lua. 
 
+
 Share and enjoy!
+
+╔═══════════════════════╗
+║██████████████████████ ╚╗
+║████ Full Battery █████ ║
+║██████████████████████ ╔╝
+╚═══════════════════════╝
+
 --]]
 
 require "lib/rand"
