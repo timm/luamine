@@ -11,12 +11,13 @@ function _lines()
 end
 
 function _xys()
-  local i = 0
-  io.input("../data/weather.csv")
-  for n,xy in xys() do
-    i = i + 1 --print(n,xy)
+  local maker = {}
+  io.input("../data/maxwell.csv")
+  for n,xy in lines(true) do
+    print(n,xy)
   end
 end
   
-ok{_lines}
+_xys()
+rogue()
 	
