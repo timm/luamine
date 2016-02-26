@@ -26,7 +26,6 @@ require "lib/rand"
 require "lib/tostring"
 require "lib/oo"
 require "lib/unittest"
-require "lib/lines"
 
 -- Number stuff -----------------------
 
