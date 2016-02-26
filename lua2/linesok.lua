@@ -5,19 +5,26 @@ function _lines()
   local tmp
   for n,cells in lines() do
     tmp = cells
-    --print(n,cells)
   end
-  assert(type(tmp[2]) == 'number')
+  print(tmp)
+  assert(type(tmp.x[2]) == 'number')
 end
 
 function _xys()
-  local maker = {}
-  io.input("../data/maxwell.csv")
-  for n,xy in lines(true) do
+  io.input("../data/maxwell.csv") -- 100 records
+  for n,xy in lines() do
     print(n,xy)
   end
 end
+
+function _xys2()
+  local n=1
+  io.input("../data/maxwellBig.csv") -- 10MB
+  for _,xy in lines() do
+    n = n + 1
+  end
+  print(n)
+end
   
-_xys()
-rogue()
+ok{_xys2}
 	

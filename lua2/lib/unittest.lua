@@ -1,7 +1,7 @@
 -- Test engine stuff -----------------------
 function rogue(x)
   -- find rogue globals
-  local builtin = { "true","math","package","table","coroutine",
+  local builtin = { "jit", "bit", "true","math","package","table","coroutine",
        "os","io","bit32","string","arg","debug","_VERSION","_G"}
   io.write "-- Globals: "
   for k,v in pairs( _G ) do

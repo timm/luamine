@@ -3,7 +3,7 @@ Chars =  {
   comment = "#.*",        -- kill all comments
   sep     = ",",          -- field seperators
   ignorep = "[\\?]",
-  missing = '[\\?]',
+  missing = '_',
   klass   = "=",
   less    = "<",
   more    = ">",
