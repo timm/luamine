@@ -26,5 +26,5 @@ function _xys2()
   print(n)
 end
   
-ok{_xys2}
+ok{_xys}
 	

@@ -58,8 +58,7 @@ do
       local meta = maker[i]
       local cell = cols[ meta.col ]
       local xy   = out[ meta.xy ]
-      xy[ meta.at ] = n==1 and cell
-	              or meta.prep(cell)
+      xy[ meta.at ] = n==1 and cell or meta.prep(cell)
     end
     return {x=out[1],y=out[2]}
   end
