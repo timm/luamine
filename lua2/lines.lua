@@ -47,7 +47,7 @@ do
                          at=ny,prep=prep})
         else nx = nx + 1
              add(maker, {col=col,xy=1,
-                        at=nx,prep=prep})
+                         at=nx,prep=prep})
      end end end
      return maker
   end
