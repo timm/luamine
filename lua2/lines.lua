@@ -1,13 +1,7 @@
 require "lib"
 require "chars"
 
--- File stuff ------------------------
-
 function lines()
-  -- kill white space, join comma-ending files
-  -- to next line, skip empty lines,
-  -- seperate on comma, compile numbers
-  -- has to precluded with io.input(file)
   local sep, comment, white = "," , "#.*", "[ \\t\\n]*"
   local ignorep, nump       = "[\\?]", "[:\\$><]"
   local n, header           = 0, {}
@@ -20,8 +14,7 @@ function lines()
 	  add(out, label)
 	  add(header, {from= i,
 		       prep= found(label,nump) and tonumber
-			     or same })
-      end end	     
+			     or same }) end end	     
     else   
       for i,x in pairs(header) do
 	out[i] = x.prep( tmp[x.from] ) end end
