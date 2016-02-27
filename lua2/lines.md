@@ -1,4 +1,4 @@
-<img align=right src="img/csv.png">
+<img align=right width=300 src="img/csv.png">
 
 # Lines.lua
 
