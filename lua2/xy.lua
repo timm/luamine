@@ -1,9 +1,8 @@
-require "nsv"
 require "cols"
 
-Fun=Object:new()
-function fun0(o)
-  o               = object0(o or Fun)
+XY=Object:new()
+function xy0(o)
+  o               = object0(o or XY)
   o.name          = ""
   o._rows          = {}
   o.klass         = {}
