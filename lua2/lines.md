@@ -16,7 +16,7 @@ numbers)
      io.input("data.csv") 
      for n,row in lines() do
        -- handle row n
-       end
+     end
 
 Note this code runs as an iterator that reads one
 line at a time into RAM (lets learners decide how
