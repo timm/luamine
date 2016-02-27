@@ -2,7 +2,6 @@
 
 # Lines.lua
 
-[TOC]
 
 ## Input
 
