@@ -83,7 +83,8 @@ end
 
 function oo(t,s)
   s = s or ">"
-  for i,x in ipairs(t) do print(s,i,"["..tostring(x).."]") end
+  for i,x in ipairs(t) do
+    print(s,i,"["..tostring(x).."]") end
 end
 
 function items(t)
@@ -116,8 +117,6 @@ function sub(t, first, last)
   end
   return out
 end
-
-
   
 function reverse(t)
   for i=1, math.floor(#t / 2) do
@@ -148,7 +147,6 @@ function explode(inputstr, sep)
   end
   return t
 end
-
 
 -- Meta stuff -------------------------
 function same(x) return x end

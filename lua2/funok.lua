@@ -19,4 +19,12 @@ function _fun(f)
   end
 end
 
-ok{_fun} 
+function _fun1()
+  local f = fun0()
+  f:import('../data/weather.csv')
+  for n,x in pairs(f.x.all) do
+    print(n,x)
+  end
+end
+
+ok{_fun1} 

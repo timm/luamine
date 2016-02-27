@@ -17,12 +17,12 @@ function Object:has(t)
   return self
 end
 
-function Object:copy0(t)
+function Object:shallowCopy(t)
   return self:new():has(self):has(t)
 end
 
 function Object:copy(t)
-  error("Should be implemented by subclass")
+  return self:shallowCopy(t)
 end
 
 function object0(t)

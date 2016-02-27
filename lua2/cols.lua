@@ -57,7 +57,7 @@ function Some:keep(x)
 end
 
 function Some:copy(x)
-  local o=self:copy0(x)
+  local o=self:shallowCopy(x)
   o._kept = deepcopy(self._kept)
   return o
 end
@@ -87,13 +87,13 @@ function Sym:add1(x)
   end end
 
 function Sym:copy()
-  return self:copy0():has{
+  return self:shallowCopy():has{
     some   = self.some:copy(),
     counts = deepcopy(self.counts)}
 end
 
 function Num:copy()
-  return self:copy0(): has{
+  return self:shallowCopy(): has{
     some = self.some:copy()}
 end
 
@@ -143,7 +143,7 @@ function Logs:add(t)
 end end
 
 function Logs:copy()
-  return self:copy0():has{
+  return self:shallowCopy():has{
     some = some0(),
     has  = map(function (x) return x:copy() end,
 	       self.has)

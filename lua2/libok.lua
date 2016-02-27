@@ -1,4 +1,5 @@
 require "lib"
+require "lines"
 
 function _test1()
   assert(1==1,"or else")
@@ -56,10 +57,10 @@ end
 function _lines(t)
   io.input("../data/weather.csv")
   t={}
-  for line in lines(" *","#.*") do
-    add(t,len(line))
+  for _,line in lines(" *","#.*") do
+    add(t,len(line.x))
   end
-  assert(last(t) == 19, "! 19")
+  assert(last(t) == 1, "! 19")
   t={}
   for i = 1,25 do add(t,i) end
   assert(str(t) == str(reverse(reverse(t))))
@@ -74,8 +75,6 @@ Person=Object:new()
    o.addr={ }
    return o
  end
-
-function Person:copy(t) return self:copy0(t) end
 
 function _oo(  p1,p2,p3)
   p1=person0()

@@ -6,6 +6,7 @@ do
     return x==Chars.missing and x or tonumber(x) end
   
   local function xyMaker(cells)
+    -- how to split into {x=... , y= ...}
      local nx,ny,maker = 0,0,{}
      for col,cell in ipairs(cells) do
       if not found(cell,Chars.ignorep) then
@@ -18,19 +19,22 @@ do
   end
 
   local function t2xy(cols,maker,n)
+    -- actually split into {x=... , y= ...}
     local out = {{},{}}
     for i=1,#maker do -- saves 20% over using 'pairs'
-      local meta = maker[i]
-      local cell = cols[ meta.col ]
-      local xy   = out[ meta.xy ]
-      xy[meta.at]= n==1 and cell or meta.prep(cell)
+      local meta  = maker[i]
+      local cell  = cols[ meta.col ]
+      local xy    = out[ meta.xy ]
+      xy[meta.at] = n==1 and cell or meta.prep(cell)
     end
     return {x=out[1],y=out[2]}
   end
   
   function lines()
+    -- iterator to read csv files
     local n, header, make = 0, {},  nil
     local function newLine(str)
+      -- this is inside lines so we can share "make" and "n"
       n = n + 1
       local tmp = explode(str,Chars.sep)
       if n == 1 then make=xyMaker(tmp) end
