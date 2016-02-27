@@ -1,7 +1,7 @@
-require "lib"
-require "magic"
-
 do
+   require "lib"
+   require "magic"
+
   local function asNumber(x)
     return x==Chars.missing and x or tonumber(x) end
   
