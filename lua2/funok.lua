@@ -1,30 +1,18 @@
 require "fun"
 
-function _fun(f)
-  local f= f or '../data/maxwell.csv'
-  local d0= fun0():has{f=f}
-  d0:import(f)
-  local d1= d0:clone()
-  for _,xy in pairs(d0._rows) do
-    d1:add(xy)
-  end
-  assert(d1.x[1]:sd() == d0.x[1]:sd())
-  assert(d1.x[1]    ~= d0.x[1])
-  assert(#d1._rows == #d0._rows)
-  for i,h0 in pairs(d0.xnums) do
-    local h1 = d1.xnums[i]
-    assert(h1.name   == h0.name)
-    assert(h1 ~= h0)
-    assert(r3(h1:sd()) == r3(h0:sd()))
-  end
-end
 
 function _fun1()
-  local f = fun0()
-  f:import('../data/weather.csv')
-  for n,x in pairs(f.x.all) do
-    print(n,x)
+  local f1 = fun0()
+  f1:import('../data/weather.csv')
+  assert(f1.x.all[1].mode == "sunny")
+  assert(f1.y.all[1].n == 14)
+  f2 = f1:clone()
+  for _,row in pairs(f1._rows) do
+    f2:add(row)
   end
+  assert(f1.x.all[1] ~= f2.x.all[1])
+  assert(r3(f1.x.nums[1]:sd()) == r3(f2.x.nums[1]:sd()))
+  assert(f1.x.syms[1].name == f2.x.syms[1].name)
 end
 
 ok{_fun1} 

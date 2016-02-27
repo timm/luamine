@@ -1,18 +1,18 @@
 -- Test engine stuff -----------------------
-function rogue(x)
-  -- find rogue globals
-  local builtin = { "jit", "bit", "true","math","package","table","coroutine",
-       "os","io","bit32","string","arg","debug","_VERSION","_G"}
-  io.write "-- Globals: "
-  for k,v in pairs( _G ) do
-    if type(v) ~= 'function' then  
-       if not member(k, builtin) then 
-         io.write(" ",k) end end end
-  print  ""
-end
-
-
 do
+  local builtin = { "jit", "bit", "true","math",
+		    "package","table","coroutine",
+		    "os","io","bit32","string","arg",
+		    "debug","_VERSION","_G"}
+  function rogue(x)
+    local tmp={}
+    for k,v in pairs( _G ) do
+      if type(v) ~= 'function' then  
+        if not member(k, builtin) then
+	  table.insert(tmp,k) end end end
+    print("-- Globals: ",sort(tmp))
+  end
+  
   local y,n = 0,0
   local function report() 
     print(string.format(
