@@ -40,5 +40,7 @@ much information, if any, they want to keep around).
 ## Performance
 
 This code eats 10MB of a CSV file with 18 rows in
-2.2 secs, using luajit. And that is after near zero
+2.2 secs, using luajit (on a Mac running OS X El Capitan.
+
+And that is after near zero
 work on optimizations.
