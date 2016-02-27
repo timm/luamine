@@ -3,8 +3,7 @@ require "magic"
 
 do
   local function asNumber(x)
-    return x==Chars.missing and x or tonumber(x)
-  end
+    return x==Chars.missing and x or tonumber(x) end
   
   local function xyMaker(cells)
      local nx,ny,maker = 0,0,{}
@@ -12,8 +11,8 @@ do
       if not found(cell,Chars.ignorep) then
         local prep = found(cell,Chars.nump) and asNumber or same
         if   found(cell, Chars.dep)
-        then ny = ny + 1;  add(maker, {col=col, xy=2, at=ny, prep=prep})
-        else nx = nx + 1;  add(maker, {col=col, xy=1, at=nx, prep=prep})
+        then ny=ny + 1;  add(maker, {col=col, xy=2, at=ny, prep=prep})
+        else nx=nx + 1;  add(maker, {col=col, xy=1, at=nx, prep=prep})
      end end end
      return maker
   end
@@ -51,5 +50,4 @@ do
        line = io.read()
       end
       if len(pre) > 0 then return newLine(pre) end
-  end end 
-end
+end end end 
