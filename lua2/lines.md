@@ -29,13 +29,13 @@ much information, if any, they want to keep around).
 - Lines ending with the seperator are continued to the next.
 - Lines are split on the seperator.
 - First line is a list of names for the columns.
-- Other lines are data.
+      - Other lines are data.
 - Names have magic symbols as defined in magic.lua
 - Columns with names with the ignore character are ignored.
 - Columns with names with the numeric character are treated special.
-- Specifically, cells in numerc columns are coerced
-  to numbers (unless they are just the missing
-  character)
+      - Specifically, cells in numerc columns are coerced
+        to numbers (unless they are just the missing
+         character)
 
 ## Performance
 
