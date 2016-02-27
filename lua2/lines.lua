@@ -10,15 +10,10 @@ do
      local nx,ny,maker = 0,0,{}
      for col,cell in ipairs(cells) do
       if not found(cell,Chars.ignorep) then
-        local prep = found(cell,Chars.nump) and asNumber
-	             or same
+        local prep = found(cell,Chars.nump) and asNumber or same
         if   found(cell, Chars.dep)
-        then ny = ny + 1
-             add(maker, {col=col, xy= 2,
-                         at=ny,prep=prep})
-        else nx = nx + 1
-             add(maker, {col=col,xy=1,
-                         at=nx,prep=prep})
+        then ny = ny + 1;  add(maker, {col=col, xy=2, at=ny, prep=prep})
+        else nx = nx + 1;  add(maker, {col=col, xy=1, at=nx, prep=prep})
      end end end
      return maker
   end
