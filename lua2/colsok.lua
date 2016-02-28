@@ -13,6 +13,13 @@ function _some()
 	 "{0.013 0.033 0.079 0.111 0.375 0.397 0.817 0.995}")
 end
 
+function _ent()
+  assert( r3(sym0():adds{"a","a","a","b","b","b"}:entropy())==1 )
+  assert( r3(sym0():adds{"a","a","b"}:entropy())==0.918 )
+end
+
+_ent()
+os.exit()
 
 function _syms()
   rseed()
@@ -23,6 +30,7 @@ function _syms()
     some:keep(c)
     sym:add(c)
   end
+  
   assert(sym.counts["be"] == 2,"! 2")
   local num = num0():has{name="aaa"}
    for _,n in pairs{1,2,3,4,5,6} do

@@ -7,6 +7,7 @@ function _fun1()
   assert(f1.x.all[1].mode == "sunny")
   assert(f1.y.all[1].n == 14)
   f2 = f1:clone()
+  
   for _,row in pairs(f1._rows) do
     f2:add(row)
   end
@@ -15,4 +16,13 @@ function _fun1()
   assert(f1.x.syms[1].name == f2.x.syms[1].name)
 end
 
-ok{_fun1} 
+function _fun2()
+  local f1 = fun0()
+  f1:import('../data/maxwell.csv')
+  print(f1.y.all)
+  f1:discretize()
+end
+
+-- ok{_fun1}
+
+_fun2()

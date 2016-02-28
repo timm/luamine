@@ -56,8 +56,8 @@ function Split:div1(t, n, all, ranges)
   local cut,lo,hi
   local start, stop = self.get(t[1]), self.get(t[#t])
   local range = range0():has{id=self.id, lo=start,
-	         up=stop, n=#ranges,
-                 has=t, score = all:copy()}
+	                    up=stop, n=#ranges,
+                            has=t, score = all:copy()}
   if stop - start >= self.small then 
     local l, score = num0(), all:sd()
     local new, old 
@@ -67,7 +67,8 @@ function Split:div1(t, n, all, ranges)
       all:sub(new)
       if new ~= old then
         if l.n >= self.enough then
-          if  all.n < self.enough then goto rest end
+          if  all.n < self.enough then
+	    goto rest end -- using gotos to escape deep loop
           if new - start >= self.small then
             local maybe = l.n/n*l:sd() + all.n/n*all:sd()
             if maybe*self.trivial < score then
@@ -76,7 +77,7 @@ function Split:div1(t, n, all, ranges)
       end end end end
       old = new
   end end 
-  ::rest::
+  ::rest:: 
   if cut then -- divide the ranage
     self:div1(sub(t,1,cut), n, lo, ranges)
     self:div1(sub(t,cut+1), n, hi, ranges)

@@ -92,6 +92,16 @@ function Sym:copy()
     counts = deepcopy(self.counts)}
 end
 
+function Sym:entropy()
+  local e = 0
+  for _,f in pairs(self.counts) do
+    if f > 0 then
+      local p = f/self.n
+      e = e - p*log2(p)
+    end end
+  return e
+end
+
 function Num:copy()
   return self:shallowCopy(): has{
     some = self.some:copy()}

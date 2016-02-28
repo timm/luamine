@@ -29,9 +29,9 @@ require "lib/unittest"
 
 -- Number stuff -----------------------
 
-function round(x)
-  return math.floor(x + 0.5)
-end
+function log2 (n) return math.log(n,2) end
+
+function round(x) return math.floor(x + 0.5) end
 
 function r3(x) return rn(x,3) end
 function r5(x) return rn(x,5) end
