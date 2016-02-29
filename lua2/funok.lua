@@ -18,9 +18,10 @@ end
 
 function _fun2()
   local f1 = fun0()
-  f1:import('../data/maxwell.csv')
+  f1:import('../data/weather.csv')
   print(f1.y.all)
   f1:discretize()
+  print(f1._rows[1]._ranges.x[1])
 end
 
 -- ok{_fun1}

@@ -12,6 +12,8 @@ function space0(o)
   o.spec         = {}
   o.all          = {}
   o.txt          = ""
+  o._ranges       = {}
+  o._of          = nil
   return o
 end
 
@@ -38,5 +40,4 @@ function Space:header(t)
   end
   return self
 end
-
 

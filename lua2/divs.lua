@@ -35,6 +35,7 @@ function range0(o)
   return o
 end
 
+
 function Range:say()
   return{id = self.id,lo=r3(self.lo),up=r3(self.up),
 	 n=r3(self.score.n)} 
@@ -57,7 +58,7 @@ function Split:div1(t, n, all, ranges)
   local start, stop = self.get(t[1]), self.get(t[#t])
   local range = range0():has{id=self.id, lo=start,
 	                    up=stop, n=#ranges,
-                            has=t, score = all:copy()}
+                            _rows=t, score = all:copy()}
   if stop - start >= self.small then 
     local l, score = num0(), all:sd()
     local new, old 
