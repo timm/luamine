@@ -1,0 +1,9 @@
+outlook,$temperature,?$humidity,windy,=play
+sunny,85,85,FALSE,no
+overcast,83,86,FALSE,yes
+rainy,70,96,FALSE,yes
+overcast,64,65,TRUE,yes
+sunny,75,70,TRUE,no
+overcast,72,90,TRUE,no
+overcast,81,75,FALSE,no
+rainy,71,91, TRUE ,no
