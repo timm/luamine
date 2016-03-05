@@ -5,6 +5,8 @@ Fun=Object:new()
 function fun0(o)
   o        = object0(o or Fun)
   o.x, o.y = space0(), space0()
+  o.x.get  = function (row) return row.x end
+  o.y.get  = function (row) return row.y end 
   o.x._of  = self
   o.y._of  = self
   o._ranges = {}
@@ -48,47 +50,9 @@ function Fun:clone()
 end
 
 function Fun:discretize()
-  self:discretizeNums( "x" )
-  self:discretizeNums( "y" )
-  self:discretizeSyms( "x" )
-  self:discretizeSyms( "y" )
-  return self
+  self.x:discretize(self._rows)
+  self.y:discretize(self._rows)
 end
-
-function Fun:discretizeNums(xy)
-  for _,col in pairs(self[xy].nums) do
-    local get = function (row)
-                  return row[xy][col.pos]
-                end
-    self:record(xy,
-      split0():has{get=get}:div(self._rows,col))
-end end
-
--- this sucks. when do i score?
-function Fun:discretizeSyms(xy)
-  for _,col in pairs(self[xy].syms) do
-    local tmp, nth = {},0
-    for k,_ in pairs(col.counts) do tmp[k] = {} end
-    local get=function (row) return row[xy][col.pos] end
-    for _,row in pairs(self._rows) do
-      add(tmp[get(row)], row)
-    end
-    for val,rows in pairs(tmp) do
-      nth = nth + 1
-      range = range0():has{col=col, o.range=nth,
-			   lo=val, up=val, 
-			   _rows=rows}
-      self:record(xy,{range})
-    end end
-end
-
-function Fun:record(xy,ranges)
-  for _,range in pairs(ranges) do
-    self._ranges[range.id] = range
-    for _,row in pairs(range._rows) do
-      row._ranges[xy][range.col.pos] = range --- backpointers
-    end
-end end
 
 function Fun:import(file)
   self.txt = file

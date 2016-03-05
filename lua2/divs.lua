@@ -41,10 +41,18 @@ do
   end
 end
 
-function Range:say()
-  return{id = self.id,lo=r3(self.lo),up=r3(self.up),
+function Range:say(  txt)
+  if type(self.col) == 'string' then
+    txt = self.col 
+  elseif type(self.col) == 'number' then
+    txt = self.col 
+  else
+    txt = self.txt
+  end
+  return{txt=txt,lo=r3(self.lo),up=r3(self.up),
 	 n=r3(self.score.n)} 
 end
+
 
 function Split:div(t,col)
   t = sort(t, function(a,b) 
