@@ -1,12 +1,13 @@
 require "cols"
 require "space"
-
+  
 Fun=Object:new()
 function fun0(o)
   o        = object0(o or Fun)
   o.x, o.y = space0(), space0()
   o.x._of  = self
   o.y._of  = self
+  o._ranges = {}
   o.txt    = ""
   o._rows  = {} -- a list of Rows
   return o
@@ -47,44 +48,47 @@ function Fun:clone()
 end
 
 function Fun:discretize()
-  self:discretize1(self.x,  "x")
-  self:discretize1(self.y,  "y")
+  self:discretizeNums( "x" )
+  self:discretizeNums( "y" )
+  self:discretizeSyms( "x" )
+  self:discretizeSyms( "y" )
+  return self
 end
 
+function Fun:discretizeNums(xy)
+  for _,col in pairs(self[xy].nums) do
+    local get = function (row)
+                  return row[xy][col.pos]
+                end
+    self:record(xy,
+      split0():has{get=get}:div(self._rows,col))
+end end
 
-function Fun:discretize1(what,xy)
-  local ranges = {}
-  for _,num in pairs(what.nums) do
-    local get=function (row) return row[xy][num.pos] end
-    num.bins =split0():has{get=get}:div(self._rows)
-    for i,range in ipairs(num.bins) do
-      for _,row in pairs(range._rows) do
-	row._ranges[xy][num.pos] = range --- backpointers
-      end
-      add(ranges,range)
-    end
-  end
-  -- add backpointers discretes
-  for _,sym in pairs(what.syms) do
-    local tmp = {}
-    for k,_ in pairs(sym.counts) do tmp[k] = {} end
-    local get=function (row) return row[xy][sym.pos] end
+-- this sucks. when do i score?
+function Fun:discretizeSyms(xy)
+  for _,col in pairs(self[xy].syms) do
+    local tmp, nth = {},0
+    for k,_ in pairs(col.counts) do tmp[k] = {} end
+    local get=function (row) return row[xy][col.pos] end
     for _,row in pairs(self._rows) do
       add(tmp[get(row)], row)
     end
     for val,rows in pairs(tmp) do
-      range = range0():has{id=sym.txt, lo=val, up=val, n=#ranges,
-			   _rows=rows, score=sym:copy()}
-      add(ranges,range)
-    end
-  end
-  self[xy]._ranges = ranges
-  print(#ranges)
-  for _,range in ipairs(ranges) do
-    print(range)
-  end
-  return self
+      nth = nth + 1
+      range = range0():has{col=col, o.range=nth,
+			   lo=val, up=val, 
+			   _rows=rows}
+      self:record(xy,{range})
+    end end
 end
+
+function Fun:record(xy,ranges)
+  for _,range in pairs(ranges) do
+    self._ranges[range.id] = range
+    for _,row in pairs(range._rows) do
+      row._ranges[xy][range.col.pos] = range --- backpointers
+    end
+end end
 
 function Fun:import(file)
   self.txt = file
@@ -95,4 +99,3 @@ function Fun:import(file)
   return self
 end
 
-  

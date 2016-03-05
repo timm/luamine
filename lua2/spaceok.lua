@@ -13,4 +13,4 @@ function _space()
   assert(sp.all[1].counts["zhe"] == 2)
 end
 
-_space()
+ok{_space}

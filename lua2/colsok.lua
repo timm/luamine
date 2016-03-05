@@ -18,9 +18,6 @@ function _ent()
   assert( r3(sym0():adds{"a","a","b"}:entropy())==0.918 )
 end
 
-_ent()
-os.exit()
-
 function _syms()
   rseed()
   local some = some0():has{name="asdas",max=10}
@@ -29,8 +26,7 @@ function _syms()
   for _,c in pairs(explode(words)) do
     some:keep(c)
     sym:add(c)
-  end
-  
+  end  
   assert(sym.counts["be"] == 2,"! 2")
   local num = num0():has{name="aaa"}
    for _,n in pairs{1,2,3,4,5,6} do
@@ -70,6 +66,5 @@ function _syms()
   end
   print("")
 end 
-
 
 ok{_some,_syms}

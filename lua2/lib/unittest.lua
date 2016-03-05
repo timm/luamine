@@ -20,7 +20,7 @@ do
               y,n,round(100*y/(0.001+y+n))))
     rogue() end
   local function test(s,x) 
-    print("# test:", s) 
+    print("# test:", s,eman(x)) 
     y = y + 1
     local passed,err = pcall(x) 
     if not passed then   

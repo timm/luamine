@@ -12,7 +12,6 @@ function space0(o)
   o.spec         = {}
   o.all          = {}
   o.txt          = ""
-  o._ranges       = {}
   o._of          = nil
   return o
 end

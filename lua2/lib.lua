@@ -128,6 +128,7 @@ end
 
 -- String stuff --------------------
 function len(x)
+  if type(x) == 'table' then return #x end
   return string.len(x==nil and "" or x) end
 
 function found(x,pat)
@@ -151,4 +152,9 @@ end
 -- Meta stuff -------------------------
 function same(x) return x end
 
+function eman(x)
+  -- may be slow
+  for name,y in pairs(_G) do
+    if y == x then return name end
+end end
  

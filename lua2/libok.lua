@@ -60,7 +60,7 @@ function _lines(t)
   for _,line in lines(" *","#.*") do
     add(t,len(line.x))
   end
-  assert(last(t) == 1, "! 19")
+  assert(last(t) == 3, "! 3")
   t={}
   for i = 1,25 do add(t,i) end
   assert(str(t) == str(reverse(reverse(t))))
@@ -123,6 +123,5 @@ function _rand(repeats)
   run(101)
 end
 
-ok{_test1,_test2, _maths,
-   _lists,_string,_lines,_oo,_rand}
+ok{_test1,_test2, _maths,_lists,_string,_lines,_oo,_rand}
 

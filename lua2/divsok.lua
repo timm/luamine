@@ -6,7 +6,7 @@ function _divs1()
   local n = {}
   for i = 1,1000 do add(n,r()^2) end
   local s = split0():has{get=same,maxBins=16}
-  for i,range in pairs(s:div(n)) do
+  for i,range in pairs(s:div(n,1)) do
     print(i,r3(range.lo),r3(range.up),range.n) end
 end
 
@@ -15,7 +15,7 @@ function _divs2()
   f:import('../data/maxwell100K.csv')
   for _,num in ipairs(f.x.nums) do
       local get=function (row) return row.x[num.pos] end
-      local s=split0():has{get=get,cohen=0.1}:div(f._rows)
+      local s=split0():has{get=get,cohen=0.1}:div(f._rows,num.txt)
       if  #s>0 then
         print("")
         print{what=num.name, pos=num.pos,
