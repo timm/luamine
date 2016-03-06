@@ -45,7 +45,7 @@ function Fun:add(xy)
 end
 
 function Fun:clone()
-  out = fun0():has{source=source}
+  local out = fun0():has{source=source}
   return out:header{x = self.x.spec, y=self.y.spec}
 end
 

@@ -37,6 +37,7 @@ function Space:header(t)
     if found(txt, c.more ) then add(self.more,  h) end
     if found(txt, c.less ) then add(self.less,  h) end
     if found(txt, c.klass) then add(self.klass, h) end
+    add(self._ranges,{})
   end
   return self
 end
@@ -51,10 +52,10 @@ function Space:discretize(rows)
 end
 
 function Space:discretizeNums(col,rows)
-  ranges = split0():has{get= function (row)
-			       return self.get(row)[col.pos]
-			     end
-		       }:div(rows,col) 
+  local get = function (row)
+                return self.get(row)[col.pos]
+              end
+  local ranges = split0():has{get=get}:div(rows,col)
   self:record(ranges)
 end
 
@@ -63,7 +64,7 @@ function Space:discretizeSyms(col, rows)
   local nth=0
   for val,rows in pairs(col._rows) do
     nth = nth + 1
-    local range = range0:has{col=col, n = nth,
+    local range = range0():has{col=col, n = nth,
 			     lo=val,up=val, _rows = rows}      
     self:record({range})
 end end 

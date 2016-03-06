@@ -62,6 +62,7 @@ function Split:div(t,col)
   self.enough  = self.enough or small0
   self.small   = self.small  or all:sd()*self.cohen
   local ranges = {} 
+  print(100)
   self:div1(t, col,  all, ranges)
   return ranges
 end
@@ -92,8 +93,8 @@ function Split:div1(t, col, all, ranges)
   end end 
   ::rest:: 
   if cut then -- divide the ranage
-    self:div1(sub(t,1,cut), lo, ranges)
-    self:div1(sub(t,cut+1), hi, ranges)
+    self:div1(sub(t,1,cut), col, lo, ranges)
+    self:div1(sub(t,cut+1), col, hi, ranges)
   else -- we've found a leaf range
     local range = range0():has{col=col, lo=start,
 	                       up=stop, range=#ranges,
