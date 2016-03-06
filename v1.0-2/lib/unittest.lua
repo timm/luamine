@@ -16,7 +16,7 @@ do
   local y,n = 0,0
   local function report() 
     print(string.format(
-              ":pass %s :fail %s :percentPass %s%%",
+              ":PASS %s :FAIL %s :percentPASS %s%%",
               y,n,round(100*y/(0.001+y+n))))
     rogue() end
   local function test(s,x) 

@@ -9,10 +9,8 @@ it doesn't.
 
 Every Lua progarmmer has their own little library of
 tricks that contains all their common tricks for the
-"batteries not included" in standard Lua. 
-
-
-Share and enjoy!
+"batteries not included" in standard Lua.  This
+file contains by "battries". Share and enjoy!
 
 ╔═══════════════════════╗
 ║██████████████████████ ╚╗
@@ -61,9 +59,10 @@ function near(one,two,n)
   return diff < n
 end
 
-function spit(i,n,a,b)
+function spit(i,n,    a,b)
   a = a or "."
   b = b or "\n"
+  n = n or 1
   io.write(i % n == 0 and b or a)
 end
 
@@ -124,7 +123,6 @@ function reverse(t)
   end
   return t
 end
-
 
 -- String stuff --------------------
 function len(x)

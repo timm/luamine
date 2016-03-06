@@ -24,6 +24,7 @@ end
 function Space:header(t)
   self.spec= t
   local c=Chars
+  self._ranges={}
   for pos,txt in ipairs(t) do
     -- make num or sym?
     local nump = found(txt, c.nump)
@@ -37,12 +38,11 @@ function Space:header(t)
     if found(txt, c.more ) then add(self.more,  h) end
     if found(txt, c.less ) then add(self.less,  h) end
     if found(txt, c.klass) then add(self.klass, h) end
-    add(self._ranges,{})
+    self._ranges[pos] = {}
   end
   return self
 end
 
--- have to create sapces with an xy getter
 
 function Space:discretize(rows)
   for _,col in pairs(self.nums) do
@@ -81,7 +81,6 @@ end end
 function Space:record(ranges)
   for _,range in pairs(ranges) do
     add(self._ranges[range.col.pos], range)
-    for _,row in pairs(range._rows) do
-      self.get(row)[range.col.pos] = range --- backpointers
+    for n,row in ipairs(range._rows) do
+      self.put(row)[range.col.pos] = range --- backpointers
 end end end
-

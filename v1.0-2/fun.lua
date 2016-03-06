@@ -7,9 +7,10 @@ function fun0(o)
   o.x, o.y = space0(), space0()
   o.x.get  = function (row) return row.x end
   o.y.get  = function (row) return row.y end 
+  o.x.put  = function (row) return row._ranges.x end
+  o.y.put  = function (row) return row._ranges.y end 
   o.x._of  = self
   o.y._of  = self
-  o._ranges = {}
   o.txt    = ""
   o._rows  = {} -- a list of Rows
   return o
@@ -19,7 +20,8 @@ Row=Object:new()
 function row0(o)
   o = object0(o or Row)
   o.x, o.y = {},{}
-  o._of, o._ranges = nil,nil
+  o._of= nil
+  o._ranges = {x={}, y={}}
   return o
 end
 

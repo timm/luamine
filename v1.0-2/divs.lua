@@ -62,7 +62,6 @@ function Split:div(t,col)
   self.enough  = self.enough or small0
   self.small   = self.small  or all:sd()*self.cohen
   local ranges = {} 
-  print(100)
   self:div1(t, col,  all, ranges)
   return ranges
 end
