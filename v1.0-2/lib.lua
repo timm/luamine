@@ -42,6 +42,12 @@ end
 function gt(a,b) return a > b end
 function lt(a,b) return a < b end
 
+function most(a,b)
+  if a==nil then return b end
+  if b==nil then return a end
+  if a> b then return a else return b end
+end
+
 function max(t) return min(t,-10^32, gt) end
   
 function min(t, out, better)
@@ -111,6 +117,7 @@ end
 function sub(t, first, last)
   last = last or #t
   local out = {}
+  if last < first then last = first end
   for i = first,last do
     out[#out + 1] = t[i]
   end
@@ -123,6 +130,7 @@ function reverse(t)
   end
   return t
 end
+
 
 -- String stuff --------------------
 function len(x)
@@ -147,6 +155,25 @@ function explode(inputstr, sep)
   return t
 end
 
+function printm(t,sep)
+  sep = sep or " | "
+  local widths={}
+  local cols, rows = #t[1], #t
+  local w = function (r,c) return #(""..t[r][c]) end
+  for c=1,cols do
+    for r=1,rows do
+      widths[c] = most( w(r,c), widths[c]) end end
+  for r=1,rows do
+    local trow = {}
+    for c=1,cols do
+      add(trow, string.rep(" ",widths[c] - w(r,c)))
+      add(trow, t[r][c])
+      if c < cols then add(trow,sep) end
+    end
+    print(table.concat(trow))
+  end
+end
+	      
 -- Meta stuff -------------------------
 function same(x) return x end
 

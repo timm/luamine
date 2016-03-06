@@ -43,7 +43,6 @@ function Space:header(t)
   return self
 end
 
-
 function Space:discretize(rows)
   for _,col in pairs(self.nums) do
     self:discretizeNums(col, rows) end

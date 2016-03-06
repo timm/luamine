@@ -17,7 +17,7 @@ function split0(o)
   o.enough     = nil
   o.get        = last
   o.cohen      = 0.2
-  o.maxBins    = 8
+  o.maxBins    = 16
   o.minBinSize = 4
   o.small      = nil
   o.id         = 1
@@ -53,7 +53,6 @@ function Range:say(  txt)
 	 n=r3(self.score.n)} 
 end
 
-
 function Split:div(t,col)
   t = sort(t, function(a,b) 
                   return self.get(a) < self.get(b) end)
@@ -66,10 +65,10 @@ function Split:div(t,col)
   return ranges
 end
 
-function Split:div1(t, col, all, ranges) 
+function Split:div1(t, col, all, ranges)
   local cut,lo,hi
   local n = #t
-  local start, stop = self.get(t[1]), self.get(t[#t])
+  local start, stop = self.get(t[1]), self.get(t[n])
   if stop - start >= self.small then
     local left, right = num0(), all:copy()
     local score = right:sd()
@@ -79,25 +78,25 @@ function Split:div1(t, col, all, ranges)
       left:add(new)
       right:sub(new)
       if new ~= old then
-        if left.n >= self.enough then
-          if  right.n < self.enough then
-	    goto rest end -- using gotos to escape deep loop
-          if new - start >= self.small then
-            local maybe = left.n/n*left:sd() + right.n/n*right:sd()
-            if maybe*self.trivial < score then
-              cut, score = i, maybe
-              lo, hi     = left:copy(), right:copy()
-      end end end end
+	if left.n >= self.enough then
+	  if  right.n >= self.enough then
+	    if new - start >= self.small then
+	      local maybe = left.n/n*left:sd() + right.n/n*right:sd()
+	      if maybe*self.trivial < score then
+		cut, score = i, maybe
+		lo, hi     = left:copy(), right:copy()
+	  end end end 
+	end
+      end
       old = new
-  end end 
-  ::rest:: 
+    end
+  end 
   if cut then -- divide the ranage
-    self:div1(sub(t,1,cut), col, lo, ranges)
-    self:div1(sub(t,cut+1), col, hi, ranges)
+    self:div1(sub(t,1,cut-1), col, lo, ranges)
+    self:div1(sub(t,cut),     col, hi, ranges)
   else -- we've found a leaf range
     local range = range0():has{col=col, lo=start,
 	                       up=stop, range=#ranges,
                                _rows=t, score = all:copy()}
     add(ranges, range)
 end end
-

@@ -54,6 +54,16 @@ function _string(t)
   assert(str(t)=="{aa bb cc dd}")
 end
 
+function _printm(      m)
+  m = {{"name","age","shewize"},
+       {"====","===","======="},
+       {1,2,3},
+       {10,20,30},
+       {40,50,60}}
+  printm(m)
+end
+
+
 function _lines(t)
   io.input("../data/weather.csv")
   t={}
@@ -123,5 +133,5 @@ function _rand(repeats)
   run(101)
 end
 
-ok{_test1,_test2, _maths,_lists,_string,_lines,_oo,_rand}
+ok{_test1,_test2, _maths,_lists,_string,_lines,_oo,_printm,_rand}
 
