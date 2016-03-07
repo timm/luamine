@@ -1,3 +1,6 @@
+#!/bin/sh
+_=[[ exec lua "$0" ]]
+
 for _,f in ipairs{
   "libok.lua"  ,
   "linesok.lua",
