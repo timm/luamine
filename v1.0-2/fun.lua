@@ -74,13 +74,12 @@ end
 function Fun:pretty()
   local out={}
   add(out,
-      tadds(deepcopy(self.x.spec),self.y.spec))
+      tadds(deepcopy(self.x.spec),
+	    self.y.spec))
   for n,row in ipairs(self._rows) do
     add(out, row:pretty()) end
   return out
 end
-
-
 
 function Fun:import(file)
   self.txt = file
