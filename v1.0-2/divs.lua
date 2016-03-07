@@ -96,7 +96,7 @@ function Split:div1(t, col, all, ranges)
     self:div1(sub(t,cut),     col, hi, ranges)
   else -- we've found a leaf range
     local range = range0():has{col=col, lo=start,
-	                       up=stop, range=#ranges,
+	                       up=stop, n=#ranges,
                                _rows=t, score = all:copy()}
     add(ranges, range)
 end end

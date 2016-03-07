@@ -29,6 +29,21 @@ function Row:copy()
   return row0():has{_of = self._fun}
 end
 
+function Row:pretty()
+  local show = function (range)
+    if range.lo == range.up then
+      return range.lo 
+    else
+      return range.lo .. ".." .. range.up
+    end end
+  out={}
+  for x=1,#self.x do 
+      add(out, show(self._ranges.x[x])) end
+  for y=1,#self.y do
+    add(out, show(self._ranges.y[y])) end
+  return out
+end
+
 function Fun:header(xy)
   self.x:header(xy.x)
   self.y:header(xy.y)  
@@ -56,18 +71,16 @@ function Fun:discretize()
   self.y:discretize(self._rows)
 end
 
-function Fun:tostring()
-  local show = function (row,x) return row._ranges[x].n end
-  header=self.x.spec 
-  for _,row in ipairs(self._rows) do 
-    t={}
-    for x=1,#row.x do 
-      add(t , row._ranges[x].n) end
-    for y=1,#row.y do
-      add(t, row_ranges[y].n) end
-    print(table.concat(t))
-  end 
+function Fun:pretty()
+  local out={}
+  add(out,
+      tadds(deepcopy(self.x.spec),self.y.spec))
+  for n,row in ipairs(self._rows) do
+    add(out, row:pretty()) end
+  return out
 end
+
+
 
 function Fun:import(file)
   self.txt = file
