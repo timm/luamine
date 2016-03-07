@@ -36,10 +36,16 @@ function _fun2()
     end
 end end 
     
+function _fun3()
+  local f1 = fun0()
+  f1:import('../data/weather.csv')
+  f1:discretize()
+  f1:tostring()
+end
 --  local rang = last(f1._rows)._ranges.x[2]._rows --._ranges.x[1])
 --  local val= last(f1._rows).x[2]
 --  print("rang",val,rang)
 -- end
 
-ok{_fun1,_fun2}
+ok{_fun1,_fun2,_fun3}
 

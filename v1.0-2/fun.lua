@@ -57,7 +57,16 @@ function Fun:discretize()
 end
 
 function Fun:tostring()
+  local show = function (row,x) return row._ranges[x].n end
   header=self.x.spec 
+  for _,row in ipairs(self._rows) do 
+    t={}
+    for x=1,#row.x do 
+      add(t , row._ranges[x].n) end
+    for y=1,#row.y do
+      add(t, row_ranges[y].n) end
+    print(table.concat(t))
+  end 
 end
 
 function Fun:import(file)
