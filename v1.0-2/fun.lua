@@ -56,6 +56,10 @@ function Fun:discretize()
   self.y:discretize(self._rows)
 end
 
+function Fun:tostring()
+  header=self.x.spec 
+end
+
 function Fun:import(file)
   self.txt = file
   io.input(file)
