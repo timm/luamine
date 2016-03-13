@@ -1,5 +1,7 @@
 # -*- sh -*-
 
+alias ls='ls -G'
+
 export ZDot="$(pwd)/etc/dotemacs"
 
 reset() {
