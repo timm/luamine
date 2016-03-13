@@ -1,5 +1,5 @@
 outlook,
-$temperature,
+$temp,
 ?$humidity,
 windy,=play
 sunny,85,85,FALSE,no

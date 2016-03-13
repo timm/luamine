@@ -1,0 +1,62 @@
+# -*- sh -*-
+
+export ZDot="$(pwd)/etc/dotemacs"
+
+reset() {
+  . $Here/z.sh
+}
+e() {
+    /Applications/Emacs.app/Contents/MacOS/Emacs -q -l "$ZDot" $* &
+}
+fake() {
+  root=$(git rev-parse --show-toplevel)
+  if [ -n "$root" ]; then
+    ( cd $root; fake1 $*)
+  else
+    /usr/bin/make $*
+  fi
+}
+fake1() {
+    if [ -f Makefile ]; then
+        /usr/bin/make $*
+        return 0
+    fi
+    if [ -f make.mk ]; then
+        /usr/bin/make -f make.mk $*
+        return 0
+    fi
+    echo "nothing to do"
+}
+ready() {
+  files=$(ls z*.lua | grep -v ok.lua)
+  for f0 in $files; do
+     chmod +x $f0
+  done     
+}
+here() {
+    cd $1; basename $PWD;
+}
+PROMPT_COMMAND='echo  -ne "Z_Lua:\033]0;$(here ../..)/$(here ..)/$(here .)\007";PS1="$(here ../..)/$(here ..)/$(here .) \!> "'
+cat <<'EOF'
+    .                          +     
+                  ___       .       
+           _.--"~~ __"-.            
+        ,-"     .-~  ~"-\           |    A little Lua 
+      .^       /       ( )      .   |    goes a long 
+ +   {_.---._ /         ~           |    way.
+     /    .  Y                      
+    /      \_j                      
+   Y     ( --l__                    
+   |            "-.                  
+   |      (___     \                
+   |        .)~-.__/             .  
+   l        _)                      
+    \      "l                       
+     \       \        +             
+      \       ^.                    
+       ^.       "-.           -Row  
+    .    "-._      ~-.___,          
+  +         "--.._____.^                                
+
+EOF
+reset
