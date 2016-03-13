@@ -55,6 +55,8 @@ function bins1(i, nums, all, ranges,lvl)
 			 n=#nums,       up=stop}
 end end
 
+-----------------------------------------------------------
+
 if arg[1] == "--binWeather" then
   local opts = split0()
   opts.verbose = true
