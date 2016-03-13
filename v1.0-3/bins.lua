@@ -58,7 +58,7 @@ function bins1(i, nums, all, ranges)
     ranges[#ranges] = {id=#ranges+1, lo=start,up=stop}
 end end
 
-if arg[1] == "bins" then
+if arg[1] == "--bins" then
   t = xy()
   print(bins(t.rows))
 end

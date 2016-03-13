@@ -39,7 +39,7 @@ do
   end
 end
 
-if arg[1] == "xy" then
+if arg[1] == "--xy" then
   t = xy()
   for i=1,#t.meta do print(i,t.meta[i]) end
   print("")
