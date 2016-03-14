@@ -1,0 +1,65 @@
+; -*- elisp -*-
+(setq ispell-program-name "/usr/local/bin/ispell")
+
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.org/packages/")))
+
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (add-to-list
+   'package-archives
+   '("melpa" . "http://melpa.org/packages/")
+   t)
+  (package-initialize))
+
+
+    (setq tab-width 2) 
+
+(add-to-list 'load-path "~/gits/timm/timmnix/")
+
+(require 'lua-block)
+ (lua-block-mode t)
+ (defun lua-block-goto-corresponding-point ()
+  "Jump to corresponding point."
+  (interactive)
+  (goto-char (lua-block-get-corresponding-point)))
+
+(add-hook 'lua-mode-hook (lambda ()
+                 (local-set-key (kbd "C-c C-b")
+                        'lua-block-goto-corresponding-point)))
+
+
+(setq lua-indent-level 2)
+
+(setq flyspell-issue-welcome-flag nil) ;
+(setq column-number-mode t)
+
+(progn
+  (setq inhibit-startup-message t)
+  (setq make-backup-files nil) 
+  (global-font-lock-mode t)
+  (xterm-mouse-mode t)
+  (show-paren-mode t)
+  (transient-mark-mode t)
+  (setq scroll-step 1)
+  (global-hl-line-mode 0)
+  (setq-default fill-column 52))
+
+(setq frame-title-format
+  '(:eval
+    (if buffer-file-name
+        (replace-regexp-in-string
+         "\\" "/"
+         (replace-regexp-in-string
+          (regexp-quote (getenv "HOME")) "~"
+          (convert-standard-filename buffer-file-name)))
+      (buffer-name))))
+
+(setq c-toggle-syntactic-indentation nil)
+(setq c-basic-indent 2)
+(setq tab-width 2)
+(setq indent-tabs-mode nil)
+
+(set-fill-column 70)
+
