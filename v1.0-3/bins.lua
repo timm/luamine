@@ -12,9 +12,9 @@ function split0() return {
 end 
 
 do
-  local pretty = {"a","b","c","d","e","f","g","h","i",
-	  "j","k","l","m","n","o","p","qq","r",
-	  "s","t","u","v","w","x","y","z"}
+  local pretty = {"a","b","c","d","e","f","g","h","i","j","k","l","m",
+		  "n","o","p","q","r","s","t","u","v","w","x","y","z"}
+  
   local function bins1(i, nums, all, ranges,lvl)
     if i.verbose then
       print(string.rep('|.. ',lvl),nums)
@@ -24,20 +24,20 @@ do
     local start, stop = nums[1], nums[n]
     if stop - start >= i.small then
       local lhs, rhs = num0(), copy(all)
-      local score = sd(rhs)
-      local new, old 
+      local score, score1 = sd(rhs), nil
+      local new, old
       for j,new in ipairs(nums) do
 	num1( new, lhs)
 	unnum(new, rhs)
-	if new ~= old then
-	  if lhs.n >= i.enough then
-	    if rhs.n >= i.enough then
-	      if new - start >= i.small then
-		local score1 = lhs.n/n*sd(lhs) + rhs.n/n*sd(rhs)
-		if score1*i.trivial < score then
-		  cut, score = j, score1
-		  lo, hi     = copy(lhs), copy(rhs)
-	end end end end end
+	score1 = lhs.n/n*sd(lhs) + rhs.n/n*sd(rhs) 
+	if new  ~= old            and
+	   lhs.n >= i.enough      and
+	   rhs.n >= i.enough      and
+	   new - start >= i.small and
+	   score1*i.trivial < score
+	then
+	  cut, score, lo, hi = j, score1, copy(lhs), copy(rhs)
+	end 
 	old = new
       end
     end
