@@ -22,6 +22,19 @@ if arg[1] == "--binMaxwell" then
   end
 end
 
+if arg[1] == "--binMaxwell0" then
+  local opts = split0()
+  opts.verbose = true
+  opts.trivial = 0
+  opts.cohen   = 0
+  local nums =  map(xy().rows,
+			function (row) return row.x[24] end)
+  local b = bins(nums, opts)
+  for _,b1 in ipairs(b) do
+    print(b1)
+  end
+end
+
 if arg[1] == "--binMaxwell100" then
   rseed(1)
   local opts = split0()

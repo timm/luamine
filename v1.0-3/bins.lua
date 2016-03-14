@@ -48,7 +48,7 @@ do
       ranges[#ranges+1] = {id=pretty[#ranges+1],
 			   lo=start, also=nil,
 			   n=#nums,  up=stop}
-    end end
+  end end
 
   function bins(t,i)
     i          = i or split0()
