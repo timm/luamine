@@ -81,6 +81,8 @@ function rn(what, precision)
           / math.pow(10,precision)
 end
 
+function dot(x) io.write(x); io.flush() end
+
 function max(a,b) return a>b and a or b end
 function min(a,b) return a<b and a or b end
 
