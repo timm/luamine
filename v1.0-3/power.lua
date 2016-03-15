@@ -4,7 +4,21 @@ require "xy"
 
 
 function powerranges0()
-  return {threshold = 0.5 }
+  return { threshold = 0.5 }
+end
+
+function powerrranges(t0,i)
+  i = i or powerranges0()
+  local rows = binned(t0)
+  local syms={}
+  for j,row in pairs(rows) do
+    for k,sym in pairs(row.x) do
+      ent2(syms,k,sym,row.y[1])
+    end
+  end
+  for x1,x2 in pairs(syms) do
+    for y1,sym in pairs(x2) do
+      print(x1,y1, ent(sym)) end end
 end
 
 function getcol(meta)
@@ -13,7 +27,7 @@ function getcol(meta)
 	 end
 end
 
-function colSymbol(meta,x)
+function bin(meta,x)
   b = meta.bins
   if b ~= nil then 
     if x < b[1].lo  then return b[1].id end
@@ -27,24 +41,28 @@ function colSymbol(meta,x)
   return x 
 end
 
-function powerranges(t,i)
-  i = i or powerranges0()
-  for _,meta in pairs(t.meta) do
+function binned(t0)
+  for _,meta in pairs(t0.meta) do
     if meta.num then
-      dot(".")
-      meta.bins = bins(map(t.rows, getcol(meta)))
+      meta.bins = bins(map(t0.rows, getcol(meta)))
     end end
-  for _,row in ipairs(t.rows) do
+  t1={}
+  for _,row in ipairs(t0.rows) do
     local tmp = {x={}, y = {}, row=row}
-    for _,meta in pairs(t.meta) do
+    for _,meta in pairs(t0.meta) do
       xy,p = meta.xy, meta.pos
-      tmp[xy][p] = colSymbol(meta,row[xy][p])
+      tmp[xy][p] = bin(meta,row[xy][p])
     end
-    print(tmp)
-  end 
+    t1[#t1+1] = tmp
+  end
+  return t1
 end
 
 if arg[1] == "--power" then
-  local t = xy()
-  powerranges(t)
+  local t= xy()
+  print(t.also.y)
+  for i,row in ipairs(binned(t)) do
+    print(i,row)
+  end
+  powerrranges(t)
 end

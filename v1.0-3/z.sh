@@ -21,4 +21,5 @@ eg6() { r; maxwell100K | row2csv | ignore  | bins --binMaxwell100 ; }
 eg7() { r; maxwell     | row2csv | ignore  | bins --binMaxwell0    ; }
 
 eg8() { r; weather     | row2csv | ignore  | power --power ; }
+eg9() { r; maxwell     | row2csv | ignore  | power --power ; }
 

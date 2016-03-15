@@ -4,6 +4,8 @@ require "lib/rand"
 function gt(a,b) return a > b end
 function lt(a,b) return a < b end
 
+function log2(n) return math.log(n)/math.log(2) end
+
 function member(x,t)
   for _,y in pairs(t) do
     if x== y then return true end end
@@ -21,6 +23,24 @@ function copy(t)
   return out
 end
 
+function push2(t, x, y, z)
+  local tx = t[x]                      
+  if not tx then tx={}; t[x] = tx end
+  local txy = tx[y]
+  if not txy then txy={}; tx[y] = txy end
+  txy[#txy+1] = z
+  return z
+end
+
+function ent2(t, x, y, z)
+  local tx = t[x]                      
+  if not tx then tx={}; t[x] = tx end
+  local txy = tx[y]
+  if not txy then txy=sym0(); tx[y] = txy end
+  sym1(z,txy)
+  return z
+end
+ 
 function rogue()
   local builtin = { "jit", "bit", "true","math",
 		    "package","table","coroutine",
@@ -98,6 +118,33 @@ function sub(t, first, last)
   return out
 end
 
+function sym0(t)
+  local tmp = {counts={}, most=0, mode=nil, n=0}
+  map(t, function (z) sym1(z,tmp) end)
+  return tmp
+end
+
+function sym1(z,t)
+  t.n  = t.n + 1
+  local old,new
+  old = t.counts[z]
+  new = old and old + 1 or 1
+  t.counts[z] = new
+  if new > t.most then
+    t.most, t.mode = new,z
+  end
+  return t
+end
+
+function ent(t)
+  local e = 0
+  for _,n in pairs(t.counts) do
+    local p = n/t.n
+    e = e - p*log2(p)
+  end
+  return e
+end
+  
 function num0(t)
   local tmp = {mu=0,n=0,m2=0}
   map(t, function (z) num1(z,tmp) end)
@@ -125,6 +172,8 @@ function sd(t)
 end
 
 if arg[1] == "--tools" then
+  print(ent(sym0{"a","a","a","b","b"}))
+  
   local up,n = {},num0()
   local t = map({1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20} ,
 		function (x) return x*10 end )
