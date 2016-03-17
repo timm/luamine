@@ -10,16 +10,17 @@ function powerrranges(t0,i)
   local rows = binned(t0)
   local syms={}
   for _,row in pairs(rows) do
-    for _,meta in pairs(t0.also.x) do
+    for z,meta in pairs(t0.also.x.ALL) do
       local col = meta.pos
       local here, there = row.x[col], row.y[1]
       sym    = ent2(syms,col,here,there)
-      sym.of = meta
+      sym.OF = meta
     end
   end
-  for col,x1 in pairs(syms) do
-    for y1,sym in pairs(x1) do
-      	print(col,x1,y1, sym.counts, ent(sym)) end end
+  for column,seenSymbols in pairs(syms) do
+    print("\n",column, "...")
+    for range,sym in pairs(seenSymbols) do
+      print("\t",range,sym.OF.str,sym.counts, ent(sym)) end end
 end
 
 function getcol(meta)
@@ -61,7 +62,7 @@ end
 
 if arg[1] == "--power" then
   local t= xy()
-  print(t.also.x)
+  --print(t.also.x)
   -- print(t.also.y)
   --for i,row in ipairs(binned(t)) do
      --print(i,row)

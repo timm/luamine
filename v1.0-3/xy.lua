@@ -8,9 +8,9 @@ do
 	    less  = has("<"),
 	    more  = has(">"),
 	    klass = has("="),
-	    num   = has("[\\$]"),
-            y     = has("[=<>]")}
-     if   tmp.y
+	    num   = has("[\\$]")
+            }
+     if    has("[=<>]")
      then ny = ny+1; tmp.pos = ny; tmp.xy = "y"
      else nx = nx+1; tmp.pos = nx; tmp.xy = "x"
      end
@@ -19,14 +19,14 @@ do
 
    local function complete(t)
      for n,meta in ipairs(t.meta) do
-       for _,want in pairs{"less","more","klass","num","y"} do
+       for _,want in pairs{"less","more","klass","num"} do
 	 if meta[want] then
 	   push2(t.also,meta.xy,want,meta)
 	 end end
        if not meta.num then
-	 push2(t.also,meta.xy,"sym",meta) end
-       if not meta.y then
-	 push2(t.also,meta.xy,"x",meta) end
+	 push2(t.also,meta.xy,"sym",meta)
+       end
+       push2(t.also,meta.xy,"ALL",meta)
      end
      return t
    end
