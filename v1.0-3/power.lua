@@ -1,8 +1,6 @@
 require "bins"
 require "xy"
 
-
-
 function powerranges0()
   return { threshold = 0.5 }
 end
@@ -11,14 +9,17 @@ function powerrranges(t0,i)
   i = i or powerranges0()
   local rows = binned(t0)
   local syms={}
-  for j,row in pairs(rows) do
-    for k,sym in pairs(row.x) do
-      ent2(syms,k,sym,row.y[1])
+  for _,row in pairs(rows) do
+    for _,meta in pairs(t0.also.x) do
+      local col = meta.pos
+      local here, there = row.x[col], row.y[1]
+      sym    = ent2(syms,col,here,there)
+      sym.of = meta
     end
   end
-  for x1,x2 in pairs(syms) do
-    for y1,sym in pairs(x2) do
-      print(x1,y1, ent(sym)) end end
+  for col,x1 in pairs(syms) do
+    for y1,sym in pairs(x1) do
+      	print(col,x1,y1, sym.counts, ent(sym)) end end
 end
 
 function getcol(meta)
@@ -60,9 +61,10 @@ end
 
 if arg[1] == "--power" then
   local t= xy()
-  print(t.also.y)
-  for i,row in ipairs(binned(t)) do
-    print(i,row)
-  end
+  print(t.also.x)
+  -- print(t.also.y)
+  --for i,row in ipairs(binned(t)) do
+     --print(i,row)
+  --end
   powerrranges(t)
 end

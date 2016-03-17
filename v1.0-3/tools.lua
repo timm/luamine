@@ -39,7 +39,7 @@ function ent2(t, x, y, z)
   local txy = tx[y]
   if not txy then txy=sym0(); tx[y] = txy end
   sym1(z,txy)
-  return z
+  return txy
 end
  
 function rogue()
