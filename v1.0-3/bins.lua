@@ -1,7 +1,7 @@
 require "tools"
 
 
-function split0() return {
+function bins0() return {
     enough     = nil,
     cohen      = 0.2,
     maxBins    = 16,
@@ -51,7 +51,7 @@ do
   end end
 
   function bins(t,i)
-    i          = i or split0()
+    i          = i or bins0()
     local nums = sort(t)
     local all  = num0(t)
     i.enough   = i.enough or max(i.minBin, all.n/i.maxBins)

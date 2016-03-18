@@ -26,7 +26,7 @@ do
        if not meta.num then
 	 push2(t.also,meta.xy,"sym",meta)
        end
-       push2(t.also,meta.xy,"ALL",meta)
+       push2(t.also,meta.xy,"all",meta)
      end
      return t
    end

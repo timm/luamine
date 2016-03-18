@@ -12,6 +12,11 @@ function member(x,t)
   return false
 end
 
+function first(t)  return t[1] end
+function firsts(t) return map(t,first) end
+
+function second(t) return t[2] end
+
 function sort(t,f)
   table.sort(t,f or lt)
   return t
@@ -23,6 +28,11 @@ function copy(t)
   return out
 end
 
+function also(t1,t2)
+  for k,v in pairs(t2) do
+    t1[k] = v
+  end
+end
 --- return thing 2
 function push2(t, x, y, z)
   local tx = t[x]                      
@@ -93,6 +103,8 @@ function map(t,f)
     end end
   return out
 end
+
+
 
 
 function r3(x) return rn(x,3) end
