@@ -64,5 +64,4 @@ function run(t)
 	break
 end end end end
 
-
 run(fsm0({}))
