@@ -5,7 +5,7 @@ alias ls='ls -G'
 export ZDot="$(pwd)/etc/dotemacs"
 
 reset() {
-  . $Here/z.sh
+  . $Here/demos.sh
 }
 e() {
     /Applications/Emacs.app/Contents/MacOS/Emacs -q -l "$ZDot" $* &

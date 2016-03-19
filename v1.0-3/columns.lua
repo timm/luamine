@@ -1,11 +1,10 @@
 require "bins"
 require "xy"
 
-
 function columns0()
-  return { enough=0.5,cohen=0.3,
-	   verbose = true}
-end
+  return { enough  = 0.5,
+	   cohen   = 0.3,
+	   verbose = true} end
 
 function columns(t,i)
   i = i or columns0()
@@ -92,17 +91,21 @@ function binned(t0)
       xy,p = meta.xy, meta.pos
       tmp[xy][p] = bin(meta,row[xy][p])
     end
+    row._cooked = tmp
+    tmp._raw = row
     t1[#t1+1] = tmp
   end
   return t1
 end
 
-if arg[1] == "--power" then
+if arg[1] == "--cols" then
   local t= xy()
+  binned(t)
+  print(t.rows[1]._cooked)
   --print(t.also.x)
   -- print(t.also.y)
   --for i,row in ipairs(binned(t)) do
      --print(i,row)
   --end
-  print(columns(t))
+  -- print(columns(t))
 end
