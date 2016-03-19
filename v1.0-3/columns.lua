@@ -2,64 +2,51 @@ require "bins"
 require "xy"
 
 function columns0()
-  return { enough  = 0.5,
+  return { enough  = 0.25,
 	   cohen   = 0.3,
 	   verbose = true} end
 
 function columns(t,i)
   i = i or columns0()
   ----------------------------------------
-  local function countSymbols(rows)
-    local syms={}
-    for _,row in pairs(rows) do
-      for z,meta in pairs(t.also.x.all) do
-	local col = meta.pos
-	local here, there = row.x[col], row.y[1]
-	sym    = ent2(syms,col,here,there)
-	sym.of = meta
-    end end
-    return syms -- e.g. syms[3]["a"] = y[1] valyes seen when column3=="a"
+  local function increment(xsyms,ysym, x,y)
+    local xsym = xsyms[x] or sym0() -- init if not known
+    xsyms[x] = xsym                -- ensure it in syms
+    sym1(y,xsym)
+    sym1(y,ysym)
   end
-  ---------------------------------------
-  local function show(syms)
-    for column,seenSymbols in pairs(syms) do
-      print("")
-      for range,sym in pairs(seenSymbols) do
-	print(sym.of.str,range,sym.counts, ent(sym))
-    end end end
-  ---------------------------------------    
-  local function xpectedValues(syms,  n,out)
-    for column,seenSymbols in pairs(syms) do
-      local e = 0
-      for range,sym in pairs(seenSymbols) do
-	e = e + sym.n/n*ent(sym)
+  ----------------------------------------
+  local function rank(rows, cols, ranks, es)
+    for col = 1, cols do
+      local ysym, xsyms = sym0(), {}
+      for _,row in pairs(rows) do
+	increment(xsyms, ysym, row.x[col], row.y[1])
       end
-      out[#out+1 ] = {e,column}
-    end
-    return out
+      local e, ye = 0, ent(ysym)
+      for _,xsym in pairs(xsyms) do
+	e = e + xsym.n / #rows * ent(xsym)
+      end
+      local infogain = ye - e
+      ranks[ #ranks+1 ] = {e= infogain, col=col}
+      es[ #es+1] = infogain
+    end 
+    return ranks,es
   end
   ---------------------------------------
-  local function good(n, ents)
-    print(ents)
-    local config = also(bins0(),
-			{enough = n^i.enough,
-			 cohen  = i.cohen})
-    local ranges = bins(firsts(ents),config)
-    return first(ranges).up
+  local function threshold(es, config)
+    local config = also(bins0(), {cohen = i.cohen,
+				  small = #rows*i.enought})
+    local ranges = bins(es, config)
+    return last(ranges).lo
   end
-  ---------------------------------------  
-  local rows = binned(t)
-  local n    = #rows
-  local syms = countSymbols(rows)
-  if i.verbose then show(syms,rows) end
-  local xs = xpectedValues(syms,n, {})
-  local threshold = good(n,  xs)
-  local out = {}
-  for _,pair in pairs(xs) do
-    if first(pair) <= threshold then
-      out[#out+1] = second(pair) end
-  end
-  return out
+  ---------------------------------------
+  local rows  = binned(t)
+  local ranks, es = rank(rows, #t.meta.x, {},{})
+  if i.verbose then print(ranks) end
+  local n = threshold(es)
+  return select(ranks, function (rank)
+		         return rank.e >= n, rank.col
+                       end)
 end
 
 function bin(meta,x)
@@ -70,9 +57,7 @@ function bin(meta,x)
     for _,bin in ipairs(b) do
       if x >= bin.lo and x <= bin.up then
 	return bin.id
-      end
-    end
-  end
+  end end end
   return x 
 end
 

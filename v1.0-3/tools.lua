@@ -1,7 +1,7 @@
 require "lib/maths"
-require "lib/tables"
 require "lib/sym"
 require "lib/num"
+require "lib/tables"
 require "lib/rand"
 require "lib/unittests"
 require "lib/tostring"
