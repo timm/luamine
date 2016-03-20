@@ -17,19 +17,19 @@ do
      return tmp, nx, ny
    end  
 
-   local function complete(t)
-     for n,meta in ipairs(t.meta) do
-       for _,want in pairs{"less","more","klass","num"} do
-	 if meta[want] then
-	   push2(t.also,meta.xy,want,meta)
-	 end end
-       if not meta.num then
-	 push2(t.also,meta.xy,"sym",meta)
-       end
-       push2(t.also,meta.xy,"all",meta)
-     end
-     return t
-   end
+   -- local function complete(t)
+   --   for n,meta in ipairs(t.meta) do
+   --     for _,want in pairs{"less","more","klass","num"} do
+   -- 	 if meta[want] then
+   -- 	   local tmp = push2(t.also,meta.xy,want,meta,)
+   -- 	 end end
+   --     if not meta.num then
+   -- 	 push2(t.also,meta.xy,"sym",meta)
+   --     end
+   --     push2(t.also,meta.xy,"all",meta)
+   --   end
+   --   return t
+   -- end
 
    function xy()
      local t = {meta={}, rows={}, also={}} 
@@ -46,9 +46,9 @@ do
 	   if meta.num then z = tonumber(z) end
 	   tmp[meta.xy][meta.pos] = z
 	 end end
-       if row == 0 then
-	 complete(t) 
-       else
+       if row ~= 0 then
+	 --complete(t) 
+         --else
 	 t.rows[row] = tmp
        end
        row, line = row + 1, io.read()

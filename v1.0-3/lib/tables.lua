@@ -31,23 +31,6 @@ function also(t1,t2)
       t1[k] = v
 end end end
 
---- return thing 2
-function thing1(t, x)
-  local tx = t[x]                      
-  if not tx then tx={}; t[x] = tx end
-  return tx
-end
-
-function thing2(t, x, y)
-  local tx = t[x]                      
-  if not tx then tx={}; t[x] = tx end
-  local txy = tx[y]
-  if not txy then txy={}; tx[y] = txy end
-  return txy
-end
-
- 
-
 function reverse(t)
   for i=1, math.floor(#t / 2) do
     t[i], t[#t - i + 1] = t[#t - i + 1], t[i]
@@ -68,10 +51,9 @@ function select(t,f)
   local out = {}
   if t ~= nil then
     for _,v in pairs(t) do
-      local status,new = f(v)
-      if new == nil then new = status end
-      if status then out[#out+1] = new
-    end end
+      local new = f(v)
+      if new ~= nil then out[#out+1] = new end
+  end end
   return out
 end
 
@@ -85,4 +67,12 @@ function sub(t, first, last)
     out[#out + 1] = t[i]
   end
   return out
+end
+
+function thing2(t, x, y)
+  local tx = t[x]                      
+  if not tx then tx={}; t[x] = tx end
+  local txy = tx[y]
+  if not txy then txy={}; tx[y] = txy end
+  return txy
 end

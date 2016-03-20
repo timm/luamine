@@ -16,7 +16,7 @@ function columns(t,i)
     sym1(y,ysym)
   end
   ----------------------------------------
-  local function rank(rows, cols, ranks, es)
+  local function rank(rows, cols, ranks)
     for col = 1, cols do
       local ysym, xsyms = sym0(), {}
       for _,row in pairs(rows) do
@@ -28,9 +28,8 @@ function columns(t,i)
       end
       local infogain = ye - e
       ranks[ #ranks+1 ] = {e= infogain, col=col}
-      es[ #es+1] = infogain
     end 
-    return ranks,es
+    return ranks
   end
   ---------------------------------------
   local function threshold(es, config)
@@ -41,11 +40,14 @@ function columns(t,i)
   end
   ---------------------------------------
   local rows  = binned(t)
-  local ranks, es = rank(rows, #t.meta.x, {},{})
+  local ranks = rank(rows, #t.meta.x, {})
   if i.verbose then print(ranks) end
-  local n = threshold(es)
+  local n = threshold( map(ranks,
+			   function (rank)
+			     return rank.col
+                           end ))
   return select(ranks, function (rank)
-		         return rank.e >= n, rank.col
+		         return rank.e >= n and rank.col
                        end)
 end
 
