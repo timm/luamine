@@ -28,15 +28,18 @@ do
       local new, old
       for j,new in ipairs(nums) do
 	num1( new, lhs)
-	unnum(new, rhs)
-	score1 = lhs.n/n*sd(lhs) + rhs.n/n*sd(rhs) 
+	unnum(new, rhs)	
 	if new  ~= old            and
 	   lhs.n >= i.enough      and
 	   rhs.n >= i.enough      and
-	   new - start >= i.small and
-	   score1*i.trivial < score
+	   new - start >= i.small
 	then
-	  cut, score, lo, hi = j, score1, copy(lhs), copy(rhs)
+	  -- dont trust unnum for small "n". only if n > i.enough
+	   score1 = lhs.n/n*sd(lhs) + rhs.n/n*sd(rhs) 
+	   if score1*i.trivial < score
+	   then
+	     cut, score, lo, hi = j, score1, copy(lhs), copy(rhs)
+	   end
 	end 
 	old = new
       end
