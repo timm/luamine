@@ -1,0 +1,143 @@
+
+[1] from assessingManualSimilarityFunctionViaActiveLearning.pdf
+[2] intricateActiveLearningPaper.pdf
+
+[1] [1] [1]  [1] [1] [1]  [1] [1] [1]  [1] [1] [1]  [1] [1] [1]  [1] [1] [1]  [1] [1] [1]  [1] [1] [1]  
+
+3.1.1 Methods of creating committees
+We next present three different ways of creating committees.
+Randomizing model parameters A common method
+of creating committees is by making small perturbations
+on the parameters of the model trained through the given
+training data [28, 1]. The perturbations are made by
+sampling from a distribution that the particular training
+parameter is expected to follow. Some of the previous
+approaches show how to perturb the parameters of a Naive
+Bayes classifier[20] and Hidden Markov Model [1].
+We propose a mechanism for randomizing decision tree
+classifiers. During tree construction, when selecting an
+attribute for splitting on next, instead of deterministically
+choosing the attribute with the highest information gain,
+we randomly pick one with information gain within close
+range of the best. Secondly, when picking the threshold on
+which to split a continuous attribute, instead of picking the
+midpoint of the range within which the information gain
+remains unchanged, we pick a point uniformly randomly
+from anywhere in the range.
+Partitioning training data A second modelindependent
+method of creating committees is by
+partitioning the training dataset in various ways, including
+disjoint and overlapping partitioning. Disjoint partitioning
+did not work well in our experiments due to the limitation
+of training data in the early phase of active learning. We
+therefore did N-fold overlapping partitioning where (for a
+committee of size N) we first partition a training dataset
+D into N disjoint sets D1, D2 . . . DN . Then, train the i-th
+committee with the dataset D − Di. This way each member
+gets trained on (1 −
+1
+N
+)th fraction of the data.
+Attribute Partition When the training data is sparse,
+but the number of attributes is surplus, another method of
+constructing a committee is by partitioning the attribute
+set in various ways. Like for data partitioning, one
+approach is disjoint partitioning where all attributes used
+in constructing a model are removed from the attribute set
+before constructing the next model. We stop constructing
+models once all attributes exhaust or the accuracy on the
+training data reduces drastically. Not surprisingly, this
+method did not work well. We therefore used a second
+approach that removed only the topmost attribute from each
+earlier model. This is applicable only for decision trees.
+
+
+experimentally, they find random params best
+
+
+[2]  [2] [2] [2]  [2] [2] [2]  [2] [2] [2]  [2] [2] [2]  [2] [2] [2]  [2] [2] [2]  [2] [2] [2]  [2] [2] 
+
+Based on the criterion used to select the next query, selective sampling algorithms fall
+under three main categories:
+
+- uncertainty reduction: the system queries the example on which the current hypothesis
+makes the least confident prediction;
+- expected-error minimization: the system queries the example that maximizes the expected
+reduction in classification error;
+- version space reduction: the system queries the example that, once labeled, removes as
+much as possible of the version space.
+
+The uncertainty reduction approach to selective sampling works as follows: first, one uses
+the labeled examples to learn a classifier; then the system queries the unlabeled example
+on which this classifier makes the least confident prediction. This straightforward idea can
+be applied to any base learner for which one can reliably estimate the confidence of its
+predictions. Confidence-estimation heuristics were proposed for a variety of base learners
+such as logistic regression (Lewis & Gale, 1994; Lewis & Catlett, 1994), partially hidden
+Markov Models (Scheffer & Wrobel, 2001), support vector machines (Schohn & Cohn, 2000;
+Campbell, Cristianini, & Smola, 2000), and inductive logic programming (Thompson, Califf,
+& Mooney, 1999).
+
+The second, more sophisticated approach to selective sampling, expected-error minimization,
+is based on the statistically optimal solution to the active learning problem. In
+this scenario, the intuition is to query the unlabeled example that minimizes the error rate
+of the (future) classifier on the test set. Even though for some (extremely simple) base
+learners one can find such optimal queries (Cohn, Ghahramani, & Jordan, 1996), this is not
+true for most inductive learners. Consequently, researchers proposed methods to estimate
+the error reduction for various types of base learners. For example, Roy and McCallum
+(2001) use a sample estimation method for the Naive Bayes classifier; similar approaches
+were also described for parameter learning in Bayesian nets (Tong & Koller, 2000) and for
+nearest neighbor classifiers (Lindenbaum, Markovitch, & Rusakov, 2004).
+The heuristic approach to expected-error minimization can be summarized as follows.
+First, one chooses a loss function (Roy & McCallum, 2001) that is used to estimate the
+future error rate. Then each unlabeled example x in the working set is considered as the
+possible next query, and the system estimates the expected reduction of the error rate for
+each possible label that x may take. Finally, the system queries the unlabeled example that
+leads to the largest estimated reduction in the error rate.
+Finally, a typical version space reduction active learner works as follows: it generates
+a committee of several hypotheses, and it queries the unlabeled examples on which the
+disagreement within the committee is the greatest. In a two-class learning problem, this
+strategy translates into making queries that remove approximately half of the version space.
+Depending on the method used to generate the committee, one can distinguish several types
+of active learners:
+
+- Query-by-Committee selects a committee by randomly sampling hypotheses from the
+version space. Query-by-Committee was applied to a variety of base learners such as
+perceptrons (Freund et al., 1997), Naive Bayes (McCallum & Nigam, 1998), and Winnow
+(Liere & Tadepalli, 1997). Furthermore, Argamon-Engelson and Dagan (1999,
+1995) introduce an extension to Query-by-Committee for Bayesian learning. In the
+Bayesian framework, one can create the committee by sampling classifiers according
+to their posterior distributions; that is, the better a hypothesis explains the training
+data, the more likely it is to be sampled. The main limitation of Query-by-Committee
+is that it can be applied only to base learners for which it is feasible to randomly sample
+hypotheses from the version space.
+
+- sg-net (Cohn et al., 1994) creates a 2-hypothesis committee that consists of a “mostgeneral”
+and a “most-specific” classifier. These two hypotheses are generated by modifying
+the base learner so that it learns a classifier that labels as many as possible of
+the unlabeled examples in the working set as positive or negative, respectively. This
+approach has an obvious drawback: it requires the user to modify the base learner so
+that it can generate “most-general” and “most-specific” classifiers.
+
+- Active-Decorate (Melville & Mooney, 2004) can be seen as both a generalization and an
+improvement of sg-net. It generates a large and diverse committee by successively
+augmenting the original training set with additional sets of artificially-generated examples.
+More precisely, it generates artificial examples in keeping with the distribution
+of the instance space; then it applies the current committee to each such example, and
+it labels the artificial example with the label that contradicts most of the committee’s
+predictions. A new classifier is learned from this augmented dataset, and then the
+entire process is repeated until the desired committee size is reached. Active-Decorate
+was successfully used for domains with nominal and numeric features, but it is unclear
+how it could be applied to domains such as text classification or extraction, where
+generating the artificial examples may be problematic.
+
+- Query-by-Bagging and Query-by-Boosting (Abe & Mamitsuka, 1998) create the committee
+by using the well-known bagging (Breiman, 1996) and boosting (Schapire, 1990)
+algorithms, respectively. These algorithms were introduced for the c4.5 base learner,
+for which both bagging and boosting are known to work extremely well.
+In general, committee-based sampling tends to be associated with the version space
+reduction approach. However, for base learners such as support vector machines, one can
+use a single hypothesis to make queries that remove (approximately) half of the version
+space (Tong & Koller, 2001). Conversely, committee-based sampling can also be seen as
+relying on the uncertainty reduction principle: after all, the unlabeled example on which
+the disagreement within the committee is the greatest can be also seen as the example that
+has the least certain classification.
