@@ -1,5 +1,5 @@
 function sym0(t)
-  local tmp = {counts={}, most=0, mode=nil, n=0}
+  local tmp = {counts={}, most=0, mode=nil, n=0, put=sym1}
   map(t, function (z) sym1(z,tmp) end)
   return tmp
 end

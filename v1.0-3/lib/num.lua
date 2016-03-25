@@ -1,5 +1,5 @@
 function num0(t)
-  local tmp = {mu= 0, n= 0, m2= 0,
+  local tmp = {mu= 0, n= 0, m2= 0, put=num1,
 	       up= -1e32,   lo= 1e32}
   map(t, function (z) num1(z,tmp) end)
   return tmp
