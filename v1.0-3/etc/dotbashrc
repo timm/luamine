@@ -38,7 +38,7 @@ ready() {
 here() {
     cd $1; basename $PWD;
 }
-PROMPT_COMMAND='echo  -ne "Z_Lua:\033]0;$(here ../..)/$(here ..)/$(here .)\007";PS1="$(here ../..)/$(here ..)/$(here .) \!> "'
+PROMPT_COMMAND='echo  -ne "Miner:\033]0;$(here ../..)/$(here ..)/$(here .)\007";PS1="$(here ../..)/$(here ..)/$(here .) \!> "'
 cat <<'EOF'
     .                          +     
                   ___       .       

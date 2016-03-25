@@ -1,1 +1,0 @@
-Here=$(pwd) bash --init-file etc/dotbashrc -i
