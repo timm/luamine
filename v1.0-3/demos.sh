@@ -10,8 +10,25 @@ row2csv() { cat - | $lua rows2csv.lua; }
 ignore()  { cat - | $lua ignore.lua ;  }
 xy()      { cat - | $lua xy.lua $*   ;  }
 bins()    { cat - | $lua binsok.lua $*   ;  }
-columns() { cat - | $lua columns.lua  $*   ;  }
+sample()  { cat - | $lua sample.lua  $*   ;  } 
 
+egs() {
+  reset
+  for e in `cat demos.sh |
+             gawk '/^eg[0-9]+[(]/ {
+                gsub(/[(].*/,""); 
+                print $0} '`
+  do
+      b="--------"
+      echo ""; echo "$b| $e |$b$b$b$b$b$b"
+      $e
+  done
+}
+oks() {
+    for f in *ok.lua; do
+	$lua $f
+    done
+  
 eg1() { r; weather     | row2csv             ; }
 eg2() { r; weather     | row2csv | ignore    ; }
 eg3() { r; weather     | row2csv | ignore  | xy   --xy            ; }
@@ -22,6 +39,7 @@ eg5() { r; maxwell     | row2csv | ignore  | bins --binMaxwell    ; }
 eg6() { r; maxwell100K | row2csv | ignore  | bins --binMaxwell100 ; }
 eg7() { r; maxwell     | row2csv | ignore  | bins --binMaxwell0    ; }
 
-eg8() { r; weather     | row2csv | ignore  | columns --cols ; }
-eg9() { r; maxwell     | row2csv | ignore  | columns --cols ; }
+eg8(){ r;weather|row2csv|ignore|sample --sample; }
+eg9(){ r;maxwell|row2csv|ignore|sample --sample; }
+eg10(){ r;maxwell100K|row2csv|ignore|sample --sample; }
 

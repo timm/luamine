@@ -50,6 +50,11 @@ From an engineering perspective, the above means that I do not
 learn once, then stop. Rather, I float down a data stream constantly
 checking if old ideas still hold.
 
+=======
+not sure a stats-oriented view of data mining notices all the minimality and locality effects in real-wrld data sets
+
+i'm am rational if i watch for the last changes,
+made least often, to imrpove my world
 
 deep learning, spark, hadoop tell us soemthing about
 big data, scalabiltiy, about handling vast amoungt
