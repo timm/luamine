@@ -14,8 +14,42 @@ have to wait for first none "_" in samles
 
 # magic
 
-i'm am rational if i watch for the last changes,
-made least often, to imrpove my world
+rationality:
+
++ Watching the most data I can
++ While change my mind the least, and do it least often.
+
+So ignoring new data is irrational. And watching too much
+is overwhelming (so we'll need some tricks to sanely
+sample subsets of new information).
+
+And changing your mind with every new whim or fad is
+irrational-- new ideas required a solid foundation.
+
+And making big changes to your current ideas is less
+desirable than finding the smallest tweaks that most
+accomodate new information.
+
+Still, sometimes, when the data demands in, the
+_least_ required change might still be massive. But
+mass disruption should be your last resort, not your
+first.
+
+To me, rationality is like living on an ice flow.
+Sometimes you can find large and solid chunks of ice
+that last a long time where you can raise fine
+igloos and fine families and spend happy days
+watching the world float by while everyone feast on the fish
+you catch near your lovely mobile home.  But don't
+get complancent- you always need to watch what's
+going on under your feet and all around you.
+Sometimes, you're going have to do some jumping
+around-- that's life, get used to it.
+
+From an engineering perspective, the above means that I do not
+learn once, then stop. Rather, I float down a data stream constantly
+checking if old ideas still hold.
+
 
 deep learning, spark, hadoop tell us soemthing about
 big data, scalabiltiy, about handling vast amoungt

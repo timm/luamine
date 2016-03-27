@@ -29,9 +29,8 @@ do
 	end
 	log = col.log
 	put = col.put
-	put(x, log)
-    end end
-  end
+	put(x, log)  
+  end end end
   --------------------------------------------  
   function sample1(row, t,         -- required
 		   names,subs,lvl) -- optional
