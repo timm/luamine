@@ -10,20 +10,16 @@ do
 	     columns = {x={}, y={}} }
   end
   --------------------------------------------------  
-  local function row0(columns, names, k, -- required
-		      col)               -- local
-    for j,x in ipairs(columns) do
-      col = {}
-      col.txt = names and names[j+k] or ''..j
-      columns[j] = col
+  local function row0(data,columns,names) -- required
+    for j,x in ipairs(data) do
+      columns[j] = names and {txt=names[j]} or j
   end end
   ----------------------------------------------  
   local function row1(data, columns, -- required
 		      col,put)       -- local
-    print(columns)
     for j,x in ipairs(data) do
-      if x ~="_" then
-	col = columns[j]
+      if x ~= "_" then
+	col = columns[j] 
 	if not col.log then
 	  col.log= type(x)=='number' and num0() or sym0()
 	  col.put= type(x)=='number' and num1   or sym1
@@ -34,28 +30,18 @@ do
     end end
   end
   --------------------------------------------  
-  function sample1(row, t,         -- required
-		   names,subs,lvl) -- optional
-    -- fill in defaults ----------------------
-    lvl  = lvl  and lvl  or 1
-    subs = subs and subs or {}
+  function sample1(row, t,  -- required
+		   names)   -- optional
     t    = t or sample0(subs)
-    print("t",t)
     -- initialize if this is first call ------
     if #t.rows == 0 then
-      row0(t.columns.x, names, 0)
-      row0(t.columns.y, names, #row.x)
+      row0(row.x, t.columns.x, names.x)
+      row0(row.y, t.columns.y, names.y)
     end
     -- process and keep the row ---------------
     row1(row.x, t.columns.x)
     row1(row.y, t.columns.y)
     t.rows[#t.rows + 1] = row
-    -- maybe, sub-divide the data -------------
-    if subs[lvl] then
-      local k = row.y[1]
-      t.klasses[k] = sample1(row, t.klasses[k],
-			     names, false, lvl+1)
-    end
     return t
   end
 end
@@ -63,6 +49,7 @@ end
 if arg[1] == "--sample" then
   local t 
   for _,names,row in xys() do
-    sample1(row,t,names)
-  end  
+    t= sample1(row,t,names)
+  end
+  print(t.columns.y)
 end
