@@ -1,6 +1,6 @@
 outlook,
-$temp,
-?$humidity,
+temp,
+?humidity,
 windy,=play
 sunny,85,85,FALSE,no
 sunny,80,90,TRUE,

@@ -15,6 +15,8 @@ columns() { cat - | $lua columns.lua  $*   ;  }
 eg1() { r; weather     | row2csv             ; }
 eg2() { r; weather     | row2csv | ignore    ; }
 eg3() { r; weather     | row2csv | ignore  | xy   --xy            ; }
+eg3a() { r; maxwell100K     | row2csv | ignore  | xy   --xy            ; }
+
 eg4() { r; weather     | row2csv | ignore  | bins --binWeather    ; }
 eg5() { r; maxwell     | row2csv | ignore  | bins --binMaxwell    ; }
 eg6() { r; maxwell100K | row2csv | ignore  | bins --binMaxwell100 ; }

@@ -1,10 +1,12 @@
+SEP        = ","
+WHITESPACE = "[ \t\n]*"
+COMMENTS   = "#.*"
+
 pre, line = "", io.read()
 while line ~= nil do
-  line = line:gsub("[ \t\n]*",""):gsub("#.*","")
+  line = line:gsub(WHITESPACE,""):gsub(COMMENTS,"")
   if line ~= "" then
-    if
-      string.sub(line, -1) == ","
-    then
+    if string.sub(line, -1) == SEP then
       pre  = pre .. line
     else
       print(pre .. line)
