@@ -3,6 +3,8 @@
 alias ls='ls -G'
 
 export ZDot="$(pwd)/etc/dotemacs"
+export LESS='-R'
+export LESSOPEN='|$Here/etc/lessfilter %s'
 
 reset() {
   . $Here/demos.sh

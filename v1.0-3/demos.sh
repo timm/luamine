@@ -11,6 +11,7 @@ ignore()  { cat - | $lua ignore.lua ;  }
 xy()      { cat - | $lua xy.lua $*   ;  }
 bins()    { cat - | $lua binsok.lua $*   ;  }
 sample()  { cat - | $lua sample.lua  $*   ;  } 
+tests()   { $lua oks.lua ; }
 
 egs() {
   reset
@@ -24,11 +25,6 @@ egs() {
       $e
   done
 }
-oks() {
-    for f in *ok.lua; do
-	$lua $f
-    done
-  
 eg1() { r; weather     | row2csv             ; }
 eg2() { r; weather     | row2csv | ignore    ; }
 eg3() { r; weather     | row2csv | ignore  | xy   --xy            ; }
