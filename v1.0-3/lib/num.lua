@@ -19,8 +19,7 @@ function unnum(z,t)
   t.n  = t.n - 1
   local delta = z - t.mu
   t.mu = t.mu - delta/t.n
-  t.m2 = t.m2 - delta*(z - t.mu) -- not trust worthy for n < 5 and lost of small "z"
-                                 
+  t.m2 = t.m2 - delta*(z - t.mu) -- untrustworthy for very small n and z
   return t
 end
 
