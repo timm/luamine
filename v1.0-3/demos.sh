@@ -10,7 +10,7 @@ row2csv() { cat - | $lua rows2csv.lua; }
 ignore()  { cat - | $lua ignore.lua ;  }
 xy()      { cat - | $lua xy.lua $*   ;  }
 bins()    { cat - | $lua binsok.lua $*   ;  }
-columns() { cat - | $lua columns.lua  $*   ;  }
+sample() { cat - | $lua sample.lua  $*   ;  }
 
 eg1() { r; weather     | row2csv             ; }
 eg2() { r; weather     | row2csv | ignore    ; }
@@ -22,6 +22,6 @@ eg5() { r; maxwell     | row2csv | ignore  | bins --binMaxwell    ; }
 eg6() { r; maxwell100K | row2csv | ignore  | bins --binMaxwell100 ; }
 eg7() { r; maxwell     | row2csv | ignore  | bins --binMaxwell0    ; }
 
-eg8() { r; weather     | row2csv | ignore  | columns --cols ; }
-eg9() { r; maxwell     | row2csv | ignore  | columns --cols ; }
+eg8() { r; weather     | row2csv | ignore  | sample --sample ; }
+eg9() { r; maxwell     | row2csv | ignore  | sample --sample ; }
 

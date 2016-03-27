@@ -20,6 +20,7 @@ do
   ----------------------------------------------  
   local function row1(data, columns, -- required
 		      col,put)       -- local
+    print(columns)
     for j,x in ipairs(data) do
       if x ~="_" then
 	col = columns[j]
@@ -39,6 +40,7 @@ do
     lvl  = lvl  and lvl  or 1
     subs = subs and subs or {}
     t    = t or sample0(subs)
+    print("t",t)
     -- initialize if this is first call ------
     if #t.rows == 0 then
       row0(t.columns.x, names, 0)
@@ -56,4 +58,11 @@ do
     end
     return t
   end
+end
+
+if arg[1] == "--sample" then
+  local t 
+  for _,names,row in xys() do
+    sample1(row,t,names)
+  end  
 end
