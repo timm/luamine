@@ -31,36 +31,33 @@ fake1() {
     fi
     echo "nothing to do"
 }
-ready() {
-  files=$(ls z*.lua | grep -v ok.lua)
-  for f0 in $files; do
-     chmod +x $f0
-  done     
-}
 here() {
     cd $1; basename $PWD;
 }
 PROMPT_COMMAND='echo  -ne "Miner:\033]0;$(here ../..)/$(here ..)/$(here .)\007";PS1="$(here ../..)/$(here ..)/$(here .) \!> "'
 cat <<'EOF'
-    .                          +     
-                  ___       .       
-           _.--"~~ __"-.            
-        ,-"     .-~  ~"-\           |    A little Lua 
-      .^       /       ( )      .   |    goes a long 
- +   {_.---._ /         ~           |    way.
-     /    .  Y                      
-    /      \_j                      
-   Y     ( --l__                    
-   |            "-.                  
-   |      (___     \                
-   |        .)~-.__/             .  
-   l        _)                      
-    \      "l                       
-     \       \        +             
-      \       ^.                    
-       ^.       "-.           -Row  
-    .    "-._      ~-.___,          
-  +         "--.._____.^                                
 
+Lua Miner v1.03                     | A little Lua goes a long way.
+github.com/timm/luamine
+    .                          +    | The pull of the moon can disturb oceans.
+                  ___       .       
+           _.--"~~ __"-.            |  "I tread paths by moonlight that others  
+        ,-"     .-~  ~"-\           |   others fear to speak of during day." 
+      .^       /       ( )      .   |   -- Rothfuss
+     /    .  Y                      
+    /      \_j                      |  “Moonlight drowns out all  
+   Y     ( --l__                    |   but the brightest stars." 
+   |            "-.                 |   -- Tolkien 
+   |      (___     \                
+   |        .)~-.__/             .  |  “That's one small step for a man, 
+   l        _)                      |   one giant leap for mankind."
+    \      "l                       |   -- Armstrong
+     \       \        +             
+      \       ^.                    | "To buy a cake... to howl at the moon... 
+       ^.       "-.           -Row  |  to know true happiness."
+    .    "-._      ~-.___,          |  -- JoyBell C.
+  +         "--.._____.^                                
+                                    | "Head for the moon. If you miss, you will 
+                                    |  still be among the stars" -- Gandy
 EOF
 reset
