@@ -1,5 +1,5 @@
 SEP        = ","
-WHITESPACE = "[ \t\n]*"
+WHITESPACE = "[ \t\n\r]*"
 COMMENTS   = "#.*"
 
 pre, line = "", io.read()

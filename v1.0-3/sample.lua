@@ -2,11 +2,11 @@ require "xy"
 
 do
   local id=0
-  local function sample0(subs) -- subs may be nil
+  local function sample0() -- subs may be nil
     id = id + 1
     return { id      = id,
 	     rows    = {},
-	     subs    = subs and {}, 
+	     subs    = {}, 
 	     columns = {x={}, y={}} }
   end
   --------------------------------------------------  
@@ -30,8 +30,9 @@ do
   end end end
   --------------------------------------------  
   function sample1(row, t,  -- required
-		   names)   -- optional
-    t    = t or sample0(subs)
+		   names,lvl)   -- optional
+    lvl = lvl and lvl or 0
+    t   = t or sample0()
     -- initialize if this is first call ------
     if #t.rows == 0 then
       row0(row.x, t.columns.x, names.x)
@@ -41,6 +42,10 @@ do
     row1(row.x, t.columns.x)
     row1(row.y, t.columns.y)
     t.rows[#t.rows + 1] = row
+    if lvl == 0 then
+      local k = row.y[1]
+      t.subs[k] = sample1(row, t.subs[k], names, lvl+1)
+    end
     return t
   end
 end
