@@ -60,8 +60,6 @@ do
   end
 end
 
-
-
 if arg[1] == '--abcd' then
   local function _abcd(s)
     local ws = {}
@@ -102,11 +100,3 @@ if arg[1] == '--abcd' then
 end
 
 
---[[
-
-a b c 
-2      a
-  1    b
-    2  c
-     
-]]--
