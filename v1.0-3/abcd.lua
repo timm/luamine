@@ -60,6 +60,8 @@ do
   end
 end
 
+-- http://www.text-analytics101.com/2014/10/computing-precision-and-recall-for.html
+
 if arg[1] == '--abcd' then
   local function _abcd(s)
     local ws = {}
