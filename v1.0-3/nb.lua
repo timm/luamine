@@ -15,17 +15,14 @@ do
       local prior = (size + opt.k) / (n + k*nh)
       local tmp   = math.log(prior)
       for j,col in pairs(columns.x) do
-	local x = row.x[j]
+	local inc,x = 0,row.x[j]
 	if x ~= opt.ignore then
-	  local inc = 0
 	  if col.put == num1 then
-	    inc = normpdf(x,col)
+	    tmp = tmp + log( normpdf(x,col) )
 	  else
 	    local f = (col.counts[x] or 0) + (opt.m * prior)
-	    inc = f/(size + opt.m)
-	  end
-	  tmp = tmp + log(inc)
-      end end
+	    tmp  = tmp + log( f/(size + opt.m) )
+      end end end
       if tmp > most then most,out = tmp,h end
     end
     return out
