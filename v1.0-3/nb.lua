@@ -3,49 +3,48 @@ require "sample"
 do
   -----------------------------------------------------
   function nb0() return {
-      m = 2,
-      k = 1,
-      ignore = "_",
+      m=2,
+      n=1,
       enough = 10}
   end
-  -----------------------------------------------------    
-  local function predict(row,opt,t,sizes,nh,most,out)
-    for h,columns in pairs(t.subs) do
-      -- likelihood should move to table.
-      local size  = columns.y[1].n
-      local prior = (size + opt.k) / (n + k*nh)
-      local tmp   = math.log(prior)
-      for j,col in pairs(columns.x) do
-	local inc,x = 0,row.x[j]
-	if x ~= opt.ignore then
-	  if col.put == num1 then
-	    tmp = tmp + log( normpdf(x,col) )
-	  else
-	    local f = (col.counts[x] or 0) + (opt.m * prior)
-	    tmp  = tmp + log( f/(size + opt.m) )
-      end end end
-      if tmp > most then most,out = tmp,h end
-    end
-    return out
+  ----------------------------------------------------- 
+  function likelihood(row, t, m, k, funnyFudgeFactor)
+    local prior = (#t.rows  + k) / funnyFudgeFactor
+    local like  = math.log(prior)
+    for i,col in pairs(t.columns.x) do
+      local x, inc = row.x[i]
+      if x ~= t.ignore then
+	if col.put == num1 then
+	  like = like + math.log(normpdf(x,col))
+	else
+	  local f =col.counts[x] or 0
+	  like = like + math.log((f + m*prior) / (#t.rows + m)) 
+    end end end
+    return like
   end
   -----------------------------------------------------    
-  function nb(n)
-    opt = opt or nb0()
-    local log = abcd0()
+  local function predict(row,t,m,k,h)
+    local max = 10 ^ -32, 
+    for h1,t1 in pairs(t.subs) do
+      local l = likelihood(row, t1, m, k, #t.rows + k * #t.subs)		   
+      if l > max then
+	max, h = l, h1
+    end end
+    return h
+  end 
+  -----------------------------------------------------    
+  function nb(opts)
+    local opts, abcd = opts or nb0(), abcd0()
     local t 
     for i,names,row in xys() do
-      if i > opt.enough then
-	local actual    = row.y[1]
-	local predicted = predict(row,opt,t,i,#t.subs,-1)
-	abcd1(actual, predicted,log)
+      if i > opts.enough then
+	local mode = t.columns.y[1].mode
+	local want = row.y[1]
+	local got = predict(row,t, opts.m,opts.k, mode)
+	abcd1(want, got, abcd)
       end
       t = sample1(row,t,names)
     end
-    t = sample1(row,t)
-    return t
+    return abcdz(abcd)
   end
-end
-
-if arg[1] == "--nb" thne
-
 end

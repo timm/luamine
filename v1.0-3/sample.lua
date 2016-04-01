@@ -6,7 +6,8 @@ do
     id = id + 1
     return { id      = id,
 	     rows    = {},
-	     subs    = {}, 
+	     subs    = {},
+	     ignore  = "_",
 	     columns = {x={}, y={}} }
   end
   --------------------------------------------------  
@@ -15,10 +16,10 @@ do
       columns[j] = names and {txt=names[j]} or j
   end end
   ----------------------------------------------  
-  local function row1(data, columns, -- required
+  local function row1(data, columns,ignore, -- required
 		      col,put)       -- local
     for j,x in ipairs(data) do
-      if x ~= "_" then
+      if x ~= ignore then
 	col = columns[j] 
 	if not col.log then
 	  col.log= type(x)=='number' and num0() or ssym0()
@@ -27,11 +28,10 @@ do
 	log = col.log
 	put = col.put
 	put(x, log)  
-  end end end
+      end end end
   --------------------------------------------  
   function sample1(row, t,  -- required
 		   names,lvl)   -- optional
-    lvl = lvl and lvl or 1
     t   = t or sample0()
     -- initialize if this is first call ------
     if #t.rows == 0 then
@@ -39,12 +39,12 @@ do
       row0(row.y, t.columns.y, names.y)
     end
     -- process and keep the row ---------------
-    row1(row.x, t.columns.x)
-    row1(row.y, t.columns.y)
+    row1(row.x, t.columns.x, t.ignore)
+    row1(row.y, t.columns.y, t.ignore)
     t.rows[#t.rows + 1] = row
     if lvl == 0 then
       local k = row.y[1]
-      t.subs[k] = sample1(row, t.subs[k], names, lvl-1)
+      t.subs[k] = sample1(row, t.subs[k], names, lvl+1)
     end
     return t
   end

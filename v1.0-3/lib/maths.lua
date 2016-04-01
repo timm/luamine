@@ -6,7 +6,6 @@ function lt(a,b) return a < b end
 
 function log2(n) return math.log(n)/math.log(2) end
 
-
 function r1(x) return rn(x,1) end
 function r3(x) return rn(x,3) end
 function r5(x) return rn(x,5) end

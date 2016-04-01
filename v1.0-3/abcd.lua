@@ -19,19 +19,19 @@ do
       t.a[x] = t.yes + t.no
   end end
   ----------------------------------------------	
-  function abcd1(actual, predicted, t)
-    known(actual,    t)
-    known(predicted, t)
-    if   actual == predicted then
+  function abcd1(want, got, t)
+    known(want,    t)
+    known(got, t)
+    if   want == got then
          t.yes = t.yes + 1
     else t.no  = t.no  + 1 end 
     for x,_ in pairs(t.known) do
-      if actual == x then
-	if   actual == predicted then
+      if want == x then
+	if   want == got then
 	     t.d[x] = t.d[x] + 1
 	else t.b[x] = t.b[x] + 1 end 
       else
-	if   predicted == x then
+	if   got == x then
 	     t.c[x] = t.c[x] + 1
 	else t.a[x] = t.a[x] + 1 end 
       end
