@@ -11,6 +11,7 @@ do
   -----------------------------------------------------    
   local function predict(row,opt,t,sizes,nh,most,out)
     for h,columns in pairs(t.subs) do
+      -- likelihood should move to table.
       local size  = columns.y[1].n
       local prior = (size + opt.k) / (n + k*nh)
       local tmp   = math.log(prior)
