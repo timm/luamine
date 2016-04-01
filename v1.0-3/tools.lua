@@ -1,10 +1,10 @@
 require "lib/maths"
-require "lib/sym"
-require "lib/num"
 require "lib/tables"
 require "lib/rand"
 require "lib/unittests"
 require "lib/tostring"
+require "lib/sym"
+require "lib/num"
 
 function same(x)  return x end
 

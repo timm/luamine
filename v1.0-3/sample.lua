@@ -21,7 +21,7 @@ do
       if x ~= "_" then
 	col = columns[j] 
 	if not col.log then
-	  col.log= type(x)=='number' and num0() or sym0()
+	  col.log= type(x)=='number' and num0() or ssym0()
 	  col.put= type(x)=='number' and num1   or sym1
 	end
 	log = col.log
@@ -31,7 +31,7 @@ do
   --------------------------------------------  
   function sample1(row, t,  -- required
 		   names,lvl)   -- optional
-    lvl = lvl and lvl or 0
+    lvl = lvl and lvl or 1
     t   = t or sample0()
     -- initialize if this is first call ------
     if #t.rows == 0 then
@@ -44,7 +44,7 @@ do
     t.rows[#t.rows + 1] = row
     if lvl == 0 then
       local k = row.y[1]
-      t.subs[k] = sample1(row, t.subs[k], names, lvl+1)
+      t.subs[k] = sample1(row, t.subs[k], names, lvl-1)
     end
     return t
   end

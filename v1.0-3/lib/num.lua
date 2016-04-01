@@ -24,9 +24,24 @@ function unnum(z,t)
 end
 
 function sd(t)
-  return t.n <= 1 and 0 or (t.m2/(t.n - 1))^0.5
+  return t.n <= 1 and 0 or (t.m2 / (t.n - 1))^0.5
 end
 
 function norm(z, t)
   return (z - t.lo) / (t.up - t.lo + 1e-32)
+end
+
+function normpdf(x,t)
+  local s = sd(t)
+  return math.exp(-1*(x - t.mu)^2/(2*s*s))
+         * 1 / (s * ((2*math.pi)^0.5))
+end
+
+if arg[1] == "--num" then
+  local t = {1,2,2.5,3,3.5,4,4,4,4.5,5,5.5,6,7}
+  local n = num0(t)
+  print{mu = n.mu, sd = sd(n)}
+  for _,i in pairs(t) do
+    print(i, normpdf(i,n))
+  end
 end
