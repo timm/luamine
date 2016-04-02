@@ -1,3 +1,26 @@
+--[[
+Lua is a "batteries not included" language that does 
+arrive, off the shelf, with numerous large and
+intricate libraries.
+
+Some people prefer Ruby or Python since it arrives
+with those large libraries. Other people prefer Lua
+since it doesn't.
+
+Every Lua progarmmer has their own collection of
+utilities that contains all their common tricks for
+the "batteries not included" in standard Lua.  For
+example, This file contains my "battries". Share and
+enjoy!
+
+╔═══════════════════════╗
+║██████████████████████ ╚╗
+║████ Full Battery █████ ║
+║██████████████████████ ╔╝
+╚═══════════════════════╝
+
+--]]
+
 require "lib/maths"
 require "lib/tables"
 require "lib/rand"
@@ -24,5 +47,8 @@ if arg[1] == "--tools" then
     if j < #t then
       assert(sd(unnum(x,n)) == up[#t-j])
   end end
+  for k,v in ordered{a=1,za=2,c=4} do
+    print(k,v)
+  end
   rogue()
 end

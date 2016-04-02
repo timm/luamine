@@ -76,3 +76,48 @@ function thing2(t, x, y)
   if not txy then txy={}; tx[y] = txy end
   return txy
 end
+
+function printm(t,sep)
+  sep = sep or " | "
+  local widths={}
+  local cols, rows = #t[1], #t
+  local w = function (r,c) return #(""..t[r][c]) end
+  for c=1,cols do
+    for r=1,rows do
+      print("rc", r,c, w(r,c), widths[c])
+      widths[c] = max( w(r,c), widths[c]) end end
+  for r=1,rows do
+    local trow = {}
+    for c=1,cols do
+      add(trow, string.rep(" ",widths[c] - w(r,c)))
+      add(trow, t[r][c])
+      if c < cols then add(trow,sep) end
+    end
+    print(table.concat(trow))
+  end
+end
+
+function report(t,sep)
+  local function dash (s) return string.rep("-",#s) end
+  local r = {t[1]}
+  r[2] = map(t[1],dash)
+  print(2222, r[2])
+  for i = 2,#t do
+    r[#r+1] = t[i]
+  end
+  printm(r,sep)
+end
+
+function ordered(t)
+  local i = 1
+  local order = {}
+  for key in pairs(t) do order[#order+1] = key end
+  order = sort(order)
+  return function()
+     local key = order[i]
+     if key == nil then return nil end
+     i = i + 1
+     return key,t[key]
+  end
+end
+

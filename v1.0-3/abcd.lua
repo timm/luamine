@@ -20,8 +20,8 @@ do
   end end
   ----------------------------------------------	
   function abcd1(want, got, t)
-    known(want,    t)
-    known(got, t)
+    known(want, t)
+    known(got,  t)
     if   want == got then
          t.yes = t.yes + 1
     else t.no  = t.no  + 1 end 
@@ -36,10 +36,26 @@ do
 	else t.a[x] = t.a[x] + 1 end 
       end
   end end
-  local function p(x) return sprintf("%5.1f",100*x) end
-  local function n(x) return sprintf("%5s"  ,x)     end
   ------------------------------------------------
-  function abcdz(t)
+  local order = {"db","rx","pn","a","b","c","d",
+		 "acc", "prec","pd","pf","class"}
+  ------------------------------------------------
+  function printabcd(t)
+    local tmp = {order}
+    for klass,result in ordered(abcdz(t)) do
+      result["klass"] = klass
+      local line = {}
+      for i = 1,#order do
+	line[ #line + 1 ] = result[order[i]]
+      end
+      tmp[#tmp+1] = line
+    end
+    report(tmp)
+  end
+  ------------------------------------------------
+  function  abcdz(t)
+    local function p(x) return sprintf("%5.1f",100*x) end
+    local function n(x) return sprintf("%5s"  ,x)     end
     local pd,pf,pn,prec,g,f,acc = 0,0,0,0,0,0,0
     local out = {}
     for x,_ in pairs(t.known) do
@@ -53,12 +69,9 @@ do
       if t.yes+t.no > 0 then acc  = t.yes   / (t.yes + t.no)    end
       out[x] = {db=t.db,  rx = t.rx, yes = n(b+d),    all = n(a+b+c+d),
 		a=n(a),   b=n(b),    c=n(c), d= n(d), acc = p(acc),
-		pd=p(pd), pf=p(pf),  prec=p(prec),
+		pd=p(pd), pf=p(pf),  prec=p(prec), pn = n(pn),
 		f=p(f),   g=p(g),    x=x}
     end
     return out
   end
 end
-
-
-

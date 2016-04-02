@@ -44,3 +44,4 @@ eg10(){ r;maxwell100K  |row2csv|ignore|sample --sample; }
 eg11(){ r;diabetes     |row2csv|ignore|sample --sample; }
 
 eg20(){ r;weather|row2csv|ignore|nb --nb; }
+eg21(){ r;diabetes|row2csv|ignore|nb --nb; }

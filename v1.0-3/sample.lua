@@ -9,7 +9,16 @@ do
 	     subs    = {},
 	     ignore  = "_",
 	     columns = {x={}, y={}} }
-  end
+  end --[[
+        columns[i].x and columns[i].y both have the same format
+           {log = some num0 or sym0 cache of data seen see far	
+            pos	= the column's place in columns.x or columns.y
+            txt	= the column name (if supplied, else == pos)
+            put	= some function that lets us add new items to log
+                  (and if put==num1, this is a number)
+  ]]--
+  function numcol(col) return col.pos == num1 end
+  function symcol(col) return not numcol(col) end
   --------------------------------------------------  
   local function row0(data,columns,names) -- required
     for j,x in ipairs(data) do
@@ -24,6 +33,7 @@ do
 	if not col.log then
 	  col.log= type(x)=='number' and num0() or sym0()
 	  col.put= type(x)=='number' and num1   or sym1
+	  col.pos= j
 	end
 	log = col.log
 	put = col.put
