@@ -22,7 +22,7 @@ do
       if x ~= ignore then
 	col = columns[j] 
 	if not col.log then
-	  col.log= type(x)=='number' and num0() or ssym0()
+	  col.log= type(x)=='number' and num0() or sym0()
 	  col.put= type(x)=='number' and num1   or sym1
 	end
 	log = col.log

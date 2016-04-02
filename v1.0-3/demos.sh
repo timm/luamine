@@ -11,7 +11,8 @@ row2csv() { cat - | $lua rows2csv.lua   ; }
 ignore()  { cat - | $lua ignore.lua     ; }
 xy()      { cat - | $lua xy.lua $*      ; }
 bins()    { cat - | $lua binsok.lua $*  ; }
-sample()  { cat - | $lua sample.lua $*  ; } 
+sample()  { cat - | $lua sample.lua $*  ; }
+nb()      { cat - | $lua nb.lua $*      ; } 
 tests()   { $lua oks.lua                ; }
 
 egs() {
@@ -37,8 +38,9 @@ eg5() { r; maxwell     | row2csv | ignore  | bins --binMaxwell    ; }
 eg6() { r; maxwell100K | row2csv | ignore  | bins --binMaxwell100 ; }
 eg7() { r; maxwell     | row2csv | ignore  | bins --binMaxwell0   ; }
 
-eg8(){ r;weather|row2csv|ignore|sample --sample; }
-eg9(){ r;maxwell|row2csv|ignore|sample --sample; }
-eg10(){ r;maxwell100K|row2csv|ignore|sample --sample; }
-eg11(){ r;diabetes|row2csv|ignore|sample --sample; }
+eg8(){  r;weather      |row2csv|ignore|sample --sample; }
+eg9(){  r;maxwell      |row2csv|ignore|sample --sample; }
+eg10(){ r;maxwell100K  |row2csv|ignore|sample --sample; }
+eg11(){ r;diabetes     |row2csv|ignore|sample --sample; }
 
+eg20(){ r;weather|row2csv|ignore|nb --nb; }
