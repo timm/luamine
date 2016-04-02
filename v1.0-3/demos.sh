@@ -6,6 +6,7 @@ weather()     { cat ../data/weather.csv     ; }
 maxwell()     { cat ../data/maxwell.csv     ; }
 maxwell100K() { cat ../data/maxwell100K.csv ; }
 diabetes()    { cat ../data/diabetes.csv    ; }
+audiology()   { cat ../data/audiology.csv   ; }
 
 row2csv() { cat - | $lua rows2csv.lua   ; }
 ignore()  { cat - | $lua ignore.lua     ; }
@@ -14,6 +15,7 @@ bins()    { cat - | $lua binsok.lua $*  ; }
 sample()  { cat - | $lua sample.lua $*  ; }
 nb()      { cat - | $lua nb.lua $*      ; } 
 tests()   { $lua oks.lua                ; }
+eras()    { cat - | $lua eras.lua $*    ; }
 
 egs() {
   reset
@@ -45,3 +47,21 @@ eg11(){ r;diabetes     |row2csv|ignore|sample --sample; }
 
 eg20(){ r;weather|row2csv|ignore|nb --nb; }
 eg21(){ r;diabetes|row2csv|ignore|nb --nb; }
+
+eg22n(){
+    Seed=$RANDOM
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 0 -k 0 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 0 -k 1 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 1 -k 0 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 1 -k 1 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 1 -k 2 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 1 -k 3 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 2 -k 1 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 2 -k 2 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 2 -k 3 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 3 -k 1 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 3 -k 2 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 3 -k 3 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+}
+eg23(){ r;audiology|row2csv|ignore|nb --nb | sort -n -k 17 ;}
+eg24(){ eg22n audiology;  }

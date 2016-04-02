@@ -5,8 +5,8 @@ do
   -----------------------------------------------------
   function nb0() return {
       m=2,
-      n=1,
-      enough = 5}
+      k=1,
+      enough = 20}
   end
   ----------------------------------------------------- 
   function likes(row, t, m, k, funnyFudgeFactor)
@@ -26,10 +26,10 @@ do
   end
   -----------------------------------------------------    
   local function predict(row,t,m,k,h)
-    local max = 10 ^ -32
+    local max = -10 ^ 32
     for h1,t1 in pairs(t.subs) do
       local l = likes(row, t1, m, k,
-		       #t.rows + k * #t.subs)		   
+		      #t.rows + k * t.h)
       if l > max then
 	max, h = l, h1
     end end
@@ -38,7 +38,8 @@ do
   -----------------------------------------------------    
   function nb(opts)
     local opts, abcd = opts or nb0(), abcd0()
-    local t 
+    local t
+    print("#", opts)
     for i,names,row in xys() do
       if i > opts.enough then
 	local mode = t.columns.y[1].log.mode
@@ -47,11 +48,12 @@ do
 	abcd1(want, got, abcd)
       end
       t = sample1(row,t,names)
+      
     end
     return abcd
   end
 end
 
 if arg[1] == "--nb" then
-  printabcd(nb())
+  printabcd(nb( args(nb0(),{"nb"})))
 end

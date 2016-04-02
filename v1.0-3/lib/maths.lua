@@ -1,3 +1,13 @@
+function most(a,b)
+  if a == nil then return b end
+  if b == nil then return a end
+  return a>b and a or b end
+
+function least(a,b)
+  if a == nil then return b end
+  if b == nil then return a end
+  return a<b and a or b end
+
 function max(a,b) return a>b and a or b end
 function min(a,b) return a<b and a or b end
 

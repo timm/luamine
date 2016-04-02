@@ -57,8 +57,6 @@ function select(t,f)
   return out
 end
 
-
-
 function sub(t, first, last)
   last = last or #t
   local out = {}
@@ -84,14 +82,14 @@ function printm(t,sep)
   local w = function (r,c) return #(""..t[r][c]) end
   for c=1,cols do
     for r=1,rows do
-      print("rc", r,c, w(r,c), widths[c])
-      widths[c] = max( w(r,c), widths[c]) end end
+      local old = widths[c] or 0
+      widths[c] = max( w(r,c), old) end end
   for r=1,rows do
     local trow = {}
     for c=1,cols do
-      add(trow, string.rep(" ",widths[c] - w(r,c)))
-      add(trow, t[r][c])
-      if c < cols then add(trow,sep) end
+      trow[#trow+1] = string.rep(" ",widths[c] - w(r,c))
+      trow[#trow+1] = t[r][c]
+      if c < cols then trow[#trow+1] = sep end
     end
     print(table.concat(trow))
   end
@@ -101,10 +99,7 @@ function report(t,sep)
   local function dash (s) return string.rep("-",#s) end
   local r = {t[1]}
   r[2] = map(t[1],dash)
-  print(2222, r[2])
-  for i = 2,#t do
-    r[#r+1] = t[i]
-  end
+  for i = 2,#t do r[#r+1] = t[i] end
   printm(r,sep)
 end
 
@@ -121,3 +116,10 @@ function ordered(t)
   end
 end
 
+function places(t)
+  local i=0
+  return function ()
+    i = i + 1
+    if i <= #t then return t[i] end
+  end
+end
