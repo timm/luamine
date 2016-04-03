@@ -1,3 +1,13 @@
+
+April 2
+
+- remove spurious do-ends in my files
+- write a discretizerir
+- make row ids constraint across sub tables
+- make distance caching an option you can disable
+
+==============
+
 make xy just spit back xy pairs
 
 let sample place them into tables
