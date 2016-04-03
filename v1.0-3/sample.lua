@@ -55,6 +55,8 @@ do
     -- process and keep the row ---------------
     row1(row.x, t.columns.x, t.ignore)
     row1(row.y, t.columns.y, t.ignore)
+    id     = id + 1
+    row.id = id
     t.rows[#t.rows + 1] = row
     if lvl == 0 then
       local k = row.y[1]
