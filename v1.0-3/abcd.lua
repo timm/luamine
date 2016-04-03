@@ -38,10 +38,15 @@ do
   end end
   ------------------------------------------------
   local order = {"db","rx","num","a","b","c","d",
-		 "acc", "prec","pd","pf","class"}
+		 "acc", "prec","pd","pf","f","class"}
   ------------------------------------------------
   function printabcd(t)
-    local tmp = {order}
+    local tmp = {}
+    for i,txt in ipairs(order) do
+      if i==1 then txt = "#"..txt end
+      tmp[#tmp+1] = txt
+    end
+    tmp = {tmp}
     for klass,result in ordered(abcdz(t)) do
       result["class"] = klass
       local line = {}
@@ -65,7 +70,7 @@ do
       if a+c > 0        then pn   = (b+d) / (a+c) end
       if c+d > 0        then prec = d     / (c+d) end
       if 1-pf+pd    > 0 then g    = 2 * (1-pf) * pd / (1-pf+pd) end
-      if prec+pd    > 0 then f    = 2*prec*pd / (prec + d)      end
+      if prec+pd    > 0 then f    = 2*prec*pd / (prec + pd)      end
       if t.yes+t.no > 0 then acc  = t.yes   / (t.yes + t.no)    end
       --print("prec",x,prec,{a=a,b=b,c=c,d=d})
       if true then

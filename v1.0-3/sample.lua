@@ -9,6 +9,7 @@ do
 	     subs    = {},
 	     ignore  = "_",
 	     h       = 0,
+	     dists   = {x={},y={}}
 	     columns = {x={}, y={}} }
   end --[[
         columns[i].x and columns[i].y both have the same format
@@ -18,6 +19,7 @@ do
             put	= some function that lets us add new items to log
                   (and if put==num1, this is a number)
   ]]--
+  --------------------------------------------------
   function numcol(col) return col.put == num1 end
   function symcol(col) return not numcol(col) end
   --------------------------------------------------  

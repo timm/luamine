@@ -48,20 +48,22 @@ eg11(){ r;diabetes     |row2csv|ignore|sample --sample; }
 eg20(){ r;weather|row2csv|ignore|nb --nb; }
 eg21(){ r;diabetes|row2csv|ignore|nb --nb; }
 
-eg22n(){
+eg22a() {
     Seed=$RANDOM
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 0 -k 0 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 0 -k 1 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 1 -k 0 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 1 -k 1 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 1 -k 2 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 1 -k 3 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 2 -k 1 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 2 -k 2 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 2 -k 3 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 3 -k 1 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 3 -k 2 | sort -n -k 17 | gawk '$17 > 0 || /#/';
-    r;$1|row2csv|ignore|eras -n 40 -seed $Seed |nb --nb -m 3 -k 3 | sort -n -k 17 | gawk '$17 > 0 || /#/';
+    echo -n "# m $2 k $3 "
+    r;$1|row2csv|ignore|
+	eras -era 10000 -seed $Seed |
+	nb --nb -m $2 -k $3 | sort -n -k 23 |
+	gawk '$23 > 0 || /#/ ' 
+    }
+
+eg22n(){
+    for((k=0;k<=3;k=k+1)); do
+	for((m=0;m<=3;m=m+1)); do
+	    eg22a $1 $m $k
+	done
+    done  
 }
+ 
 eg23(){ r;audiology|row2csv|ignore|nb --nb | sort -n -k 17 ;}
 eg24(){ eg22n audiology;  }
