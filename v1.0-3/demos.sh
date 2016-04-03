@@ -16,6 +16,7 @@ sample()  { cat - | $lua sample.lua $*  ; }
 nb()      { cat - | $lua nb.lua $*      ; } 
 tests()   { $lua oks.lua                ; }
 eras()    { cat - | $lua eras.lua $*    ; }
+dists()   { cat - | $lua dists.lua $*    ; }
 
 egs() {
   reset
@@ -67,3 +68,4 @@ eg22n(){
  
 eg23(){ r;audiology|row2csv|ignore|nb --nb | sort -n -k 17 ;}
 eg24(){ eg22n audiology;  }
+eg25(){ r;weather|row2csv|ignore|dists --dists; }

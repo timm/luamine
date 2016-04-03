@@ -9,16 +9,17 @@ do
 	     subs    = {},
 	     ignore  = "_",
 	     h       = 0,
-	     dists   = {x={},y={}}
+	     dists   = {x={},y={}},
 	     columns = {x={}, y={}} }
-  end --[[
+  end
+  --[[
         columns[i].x and columns[i].y both have the same format
            {log = some num0 or sym0 cache of data seen see far	
             pos	= the column's place in columns.x or columns.y
             txt	= the column name (if supplied, else == pos)
             put	= some function that lets us add new items to log
                   (and if put==num1, this is a number)
-  ]]--
+  --]]
   --------------------------------------------------
   function numcol(col) return col.put == num1 end
   function symcol(col) return not numcol(col) end
