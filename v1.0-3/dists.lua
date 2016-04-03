@@ -2,12 +2,10 @@ require "sample"
 
 do
   local function x(row) return row.x end
-  local function distxy(x,y,col,t)
-    if x == y then return 0 end
-    if x == t.ignore and y == t.ignore then return 0 end
-    if not numcol(col) then
-      return x == y and 0 or 1
-    end
+  local function distxy(x,y,col,t,w)
+    if x == t.ignore and y == t.ignore then return 0,0 end
+    if x == y                          then return 0,w end
+    if not numcol(col)                 then return 1,w end
     if     y == t.ignore then
            x = norm(x, col)
            y = x > 0.5 and 0 or 1
@@ -17,16 +15,18 @@ do
     else   x = norm(x, col)
            y = norm(y, col)
     end
-    return (x - y)^2
+    return (x - y)^2,w
   end 
   --------------------------------------------------
   local function dist1(x,y,cols)
-    local w,n = 0,0
+    local w,n  = 0,0
     print(cols)
     for i,col in ipairs(cols) do
-      if col.w > 0 then
-	n= n + col.w * distxy(x[i],y[i],col,t)
-	w= w + col.w
+      local w = col.w
+      if w > 0 then
+	local n1,w1 = distxy(x[i],y[i],col,t,col,w)
+	n  = n + w1 * n1
+	w  = w + w1
     end end
     return n^0.5 / (w+0.00001)^0.5
   end
