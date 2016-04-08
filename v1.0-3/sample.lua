@@ -9,6 +9,7 @@ local function sample0() -- subs may be nil
 	   subs    = {},
 	   ignore  = "_",
 	   h       = 0,
+	   has     = {ignores=false, syms=false},
 	   dists   = {x={},y={}},
 	   columns = {x={}, y={}} }
 end
@@ -30,13 +31,16 @@ local function row0(data,columns,names) -- required
     columns[j] = names and {txt=names[j]} or j
 end end
 ----------------------------------------------  
-local function row1(data, columns,ignore)
+local function row1(data, columns,t)
   for j,x in ipairs(data) do
-    if x ~= ignore then
+    if x == t.ignore then
+      t.has.ignores == true
+    else
       local col = columns[j] 
       if not col.log then
-	col.log= type(x)=='number' and num0() or sym0()
 	col.put= type(x)=='number' and num1   or sym1
+	if col.put == sym1 then t.has.syms = true end
+	col.log= col.put==num1 and num0() else sym0()	
 	col.pos= j
       end
       local log = col.log
@@ -54,8 +58,8 @@ function sample1(row, t,  -- required
     row0(row.y, t.columns.y, names.y)
   end
   -- process and keep the row ---------------
-  row1(row.x, t.columns.x, t.ignore)
-  row1(row.y, t.columns.y, t.ignore)
+  row1(row.x, t.columns.x, t)
+  row1(row.y, t.columns.y, t)
   id     = id + 1
   row.id = id
   t.rows[#t.rows + 1] = row

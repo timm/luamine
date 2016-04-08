@@ -1,6 +1,12 @@
 require "sample"
-
-local function dists1(x,y,col,t,w)
+--------------------------------------
+local function normalEuclid(x,y,col,t,w)
+   x = norm(x, col.log)
+   y = norm(y, col.log)
+  return (x - y)^2, w
+end
+--------------------------------------
+local function aha91(x,y,col,t,w)
   if x == t.ignore and y == t.ignore then return 0,0 end
   if x == y then return 0,w end
   if not numcol(col) then return 1,w end
@@ -15,21 +21,24 @@ local function dists1(x,y,col,t,w)
   end
   return (x - y)^2,w
 end 
-
+--------------------------------------
 local function dists(x,y,cols,t)
-  local ws,ns = 0,0
+  local ws,ns,d = 0,0,normalEuclid
+  if t.has.ignores or t.has.syms then
+    d=aha91
+  end
   for i,col in ipairs(cols) do
     local w = col.log.w
     if w > 0 then
-      local n1,w1 = dists1(x[i],y[i],col,t,w)
+      local n1,w1 = d(x[i],y[i],col,t,w)
       ns  = ns + w1 * n1
       ws  = ws + w1
   end end
   return ns ^ 0.5 / (ws + 0.00001) ^ 0.5
 end
-
+--------------------------------------
 local function rowx(row) return row.x end
-
+--------------------------------------
 function dist(row1,row2,t,xy)
   xy = xy and xy or rowx
   if t.dists == nil then
