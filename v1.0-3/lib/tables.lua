@@ -95,6 +95,40 @@ function printm(t,sep)
   end
 end
 
+function shuffled( t )
+  local i = #t + 1
+  return function()
+    if i >= 2 then
+      i = i - 1
+      local j = math.random(i)
+      t[i], t[j] = t[j], t[i]
+      return t[i]
+  end end
+end
+
+function shuffle( t )
+  local i = #t + 1
+  if i >= 2 then
+    i = i - 1
+    local j = math.random(i)
+    t[i], t[j] = t[j], t[i]
+  end
+  return t
+end
+
+function era0(n) return {
+    n = n and n or 100,
+    cache = {} }
+end
+
+function era(x, e)
+  e = era0()
+  e.cache[ #e.cache + 1 ] = x
+  if #e.cache > e.n then
+    e.cache = shuffle(e.cache)
+  end
+end
+
 function report(t,sep)
   local function dash (s) return string.rep("-",#s) end
   local r = {t[1]}

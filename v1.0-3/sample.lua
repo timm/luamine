@@ -36,12 +36,12 @@ local function row1(data, columns,t)
     if x == t.ignore then
       t.has.ignores = true
     else
-      local col = columns[j] 
+      local col = columns[j]      
       if not col.log then
-	col.put= type(x)=='number' and num1   or sym1
+	col.put = type(x)=='number' and num1   or sym1
 	if col.put == sym1 then t.has.syms = true end
-	col.log= col.put==num1 and num0() else sym0()	
-	col.pos= j
+	col.log = col.put == num1 and num0() or sym0()
+	col.pos = j
       end
       local log = col.log
       local put = col.put
@@ -52,6 +52,7 @@ function sample1(row, t,  -- required
 		 names,lvl)   -- optional
   lvl = lvl or 0
   t   = t or sample0()
+  
   -- initialize if this is first call ------
   if #t.rows == 0 then
     row0(row.x, t.columns.x, names.x)
@@ -75,6 +76,7 @@ end
 if arg[1] == "--sample" then
   local t 
   for _,names,row in xys() do
+    print("row",row)
     t= sample1(row,t,names)
   end
   print(t.columns.y)

@@ -1,10 +1,11 @@
 require "tools"
 require "sample"
+require "dists"
 
-function grid0(t) return {
+function grid0() return {
     bins    = 16,
     tooMuch = 1.05,
-    t       = t,
+    t       = nil,
     xy      = rowx,
     first =nil,second=nil,east=nil,west=nil,c=nil,
     cells = {}, values={}, pos={} 
@@ -39,7 +40,8 @@ function grid1(row, g)
     g.first = row
   elseif g.second == nil then
     g.second = row
-    gridNew(g.first, g.second, {}, g)
+    gridNew(g.first, g.second,
+	    {g.first, g.second}, g)
   else
     local a = dist(g.east, row, g.t, g.xy)
     local b = dist(g.west, row, g.t, g.xy)
@@ -59,10 +61,31 @@ function grid1(row, g)
     x = x^2 > a^2 and a or x
     local y = (a^2 - x^2)^0.5
     local binx,biny = bin(x,g), bin(y,g)
-    local tmp = i.cells[ binx ][ biny ]
+    print{ binx = binx, biny = biny }
+    local tmp = g.cells[ binx ][ biny ]
     tmp[#tmp+1] = row
-    i.pos[ row.id ] = {x=x, y=y,  binx=binx,
+    g.pos[ row.id ] = {x=x, y=y,  binx=binx,
 		       biny=biny, a=a, b=b} 
   end
   return g
 end
+
+if arg[1] == "--grid" then
+  local n = 100
+  local cache,grid,t = {},grid0()
+  for _,names,row in xys() do
+    t = sample1(row,t,names)
+    grid.t = t
+    cache[ #cache + 1 ] = row
+    if #cache == n then
+      for row in shuffled(cache) do
+	grid = grid1(row,grid)
+      end
+      cache = {}
+    end
+  end
+  for row in shuffled(cache) do
+    grid = grid1(row,grid)
+  end
+end
+
