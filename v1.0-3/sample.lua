@@ -34,7 +34,7 @@ end end
 local function row1(data, columns,t)
   for j,x in ipairs(data) do
     if x == t.ignore then
-      t.has.ignores == true
+      t.has.ignores = true
     else
       local col = columns[j] 
       if not col.log then

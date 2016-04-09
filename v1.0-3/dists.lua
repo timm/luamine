@@ -37,7 +37,8 @@ local function dists(x,y,cols,t)
   return ns ^ 0.5 / (ws + 0.00001) ^ 0.5
 end
 --------------------------------------
-local function rowx(row) return row.x end
+function rowx(row) return row.x end
+function rowy(row) return row.y end
 --------------------------------------
 function dist(row1,row2,t,xy)
   xy = xy and xy or rowx

@@ -20,7 +20,7 @@ function sort(t,f)
 end
 
 function copy(t)
-  out={}
+  local out={}
   for k,v in pairs(t) do out[k] = v end
   return out
 end
