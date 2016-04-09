@@ -7,8 +7,9 @@ function grid0() return {
     tooMuch = 1.05,
     t       = nil,
     xy      = rowx,
-    first =nil,second=nil,east=nil,west=nil,c=nil,
-    cells = {}, values={}, pos={} 
+    enough  = 100,
+    east=nil,west=nil,c=nil,
+    firsts= {}, cells = {}, values={}, pos={} 
     }
 end
 ----------------------------------------------

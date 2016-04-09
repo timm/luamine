@@ -76,6 +76,15 @@ end
 function furthest(x, rows, t, xy)
   return closest(x, rows, t, xy, -10^32, gt)
 end
+function furthests(rows, t, xy)
+  local max,out,d,row1,row2 = 10^32
+  for _,row3 in ipairs(rows) do
+    row4,d = furthest(row3,rows)
+    if d > max then
+      row1,row2,max = row3,row4,d
+  end end
+  return row1,row2
+end
 
 if arg[1] == "--dists" then
   local t
