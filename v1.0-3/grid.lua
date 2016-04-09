@@ -19,7 +19,7 @@ local function gridNew(east, west, inits, g)
   g.east, g.west = east, west
   g.c            = dist(east, west, g.t, g.xy)
   g.values       = {}
-  g._pos         = {}
+  g.po s         = {}
   g.cells        = {}
   for i=1,g.bins do
     g.cells[i] = {}
@@ -68,7 +68,7 @@ function grid1(row, g)
     print{ binx = binx, biny = biny }
     local tmp = g.cells[ binx ][ biny ]
     tmp[ #tmp+1 ] = row
-    g._pos[ row.id ] = {x=x, y=y,  binx=binx,
+    g.pos[ row.id ] = {x=x, y=y,  binx=binx,
 		       biny=biny, a=a, b=b} 
   end
   return g
@@ -76,20 +76,11 @@ end
 
 if arg[1] == "--grid" then
   local n = 100
-  local cache,grid,t = {},grid0()
+  local cache,grid,t = {}
   for _,names,row in xys() do
-    t = sample1(row,t,names)
-    grid.t = t
-    cache[ #cache + 1 ] = row
-    if #cache == n then
-      for row in shuffled(cache) do
-	grid = grid1(row,grid)
-      end
-      cache = {}
-    end
-  end
-  for row in shuffled(cache) do
-    grid = grid1(row,grid)
+    t    = sample1(row,t,names)
+    grid = grid and grid or grid0(t)
+    grid1(row,grid)
   end
 end
 
