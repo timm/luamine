@@ -12,6 +12,7 @@ function grid0(t) return {
 end
 ----------------------------------------------
 local function gridNew(east, west, inits, g)
+  dot('.')
   local b4  = copy(inits)
   g.east, g.west = east, west
   g.c            = dist(east, west, g.t, g.xy)
@@ -44,10 +45,12 @@ function grid1(row, g)
     local b = dist(g.west, row, g.t, g.xy)
     local c = g.c
     local tooMuch = c*g.tooMuch
-    if 0 < tooMuch and tooMuch < a then
+    if 0 < tooMuch and tooMuch < a
+    then
       gridNew(g.east, row, g.values, g)
       return grid1(row, g)
-    elseif 0 < tooMuch and tooMuch < b then
+    elseif 0 < tooMuch and tooMuch < b
+    then
       gridNew(row, g.west, g.values, g)
       return grid1(row,g)
     end
