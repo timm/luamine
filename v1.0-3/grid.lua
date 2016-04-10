@@ -36,7 +36,7 @@ local function bin(x,g)
   return max(0, min( g.bins - 1, x )) + 1
 end
 ----------------------------------------------
-local function gridUpdate(row,f)
+local function gridUpdate(row, g)
   local a = dist(g.east, row, g.t, g.xy)
   local b = dist(g.west, row, g.t, g.xy)
   local c = g.c
@@ -55,31 +55,35 @@ local function gridUpdate(row,f)
   local binx,biny = bin(x,g), bin(y,g)
   print{ binx = binx, biny = biny }
   local tmp = g.cells[ binx ][ biny ]
-  tmp[  #tmp+1  ] = row
-  g.pos[ row.id ] = {x=x, y=y,  binx=binx,
-		     biny=biny, a=a, b=b}
+  tmp[ #tmp+1 ] = row
+  g.pos[row.id] = {x=x, y=y,  binx=binx,
+		   biny=biny, a=a, b=b}
 end
 ----------------------------------------------
 -- needs to set t inside g
 function grid1(row, g)
-  if     #g.values < g.enough
-  then    g.firsts[ #g.firsts + 1 ] = row
+  if     #g.firsts < g.enough
+  then   g.firsts[ #g.firsts + 1 ] = row
   elseif #g.firsts == g.enough
-  then    g.firsts[ #g.firsts + 1 ] = row
-          g.firsts = shuffle(g.firsts)
-          local a,b = furthests(g.firsts, g.t, g.xy)
-          gridNew(a,b, g.firsts, g)
-  else    gridUpdate(row,g)  
+  then   g.firsts[ #g.firsts + 1 ] = row
+         local a,b = furthests(g.firsts, g.t, g.xy)
+         gridNew(a,b, g.firsts, g)
+	 for row1 in shuffled(g.firsts) do
+	   grid1(row1,g)
+	 end
+  else   print(#g.firsts)
+         gridUpdate(row,g)  
   end
   return g
 end
 
 if arg[1] == "--grid" then
-  local t, grid = {}
+  local t, grid 
   for _,names,row in xys() do
     t    = sample1(row,t,names)
     grid = grid and grid or grid0(t)
-    g    = grid1(row,grid)
+    grid.enough = 5
+    grid = grid1(row,grid)
   end
 end
 
