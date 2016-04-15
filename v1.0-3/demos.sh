@@ -71,3 +71,6 @@ eg23(){ r;audiology|row2csv|ignore|nb --nb | sort -n -k 17 ;}
 eg24(){ eg22n audiology;  }
 eg25(){ r;weather|row2csv|ignore|dists --dists; }
 eg26(){ r;weather|row2csv|ignore|grid  --grid ; }
+eg27(){ r;maxwell|row2csv|ignore|grid  --grid ; }
+
+eg28(){ r;maxwell100K|row2csv|ignore|grid  --grid ; }

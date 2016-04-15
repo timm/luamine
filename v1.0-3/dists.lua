@@ -74,15 +74,15 @@ function closest(x, rows, t, xy, init, bt)
 end
 
 function furthest(x, rows, t, xy)
-  return closest(x, rows, t, xy, -10^32, gt)
+  return closest(x, rows, t, xy,  -1, gt)
 end
 
 function furthests(rows, t, xy)
-  local max,d,row1,row2 = 10^32
+  local max,row1,row2 = -1,rows[1],rows[2]
   for _,row3 in ipairs(rows) do
-    local row4,d = furthest(row3,rows,xy)
+    local d,row4 = furthest(row3,rows,t,xy)
     if d > max then
-      row1,row2,max = row3,row4,d
+      row1, row2, max = row3,row4,d
   end end
   return row1,row2
 end

@@ -5,7 +5,7 @@ require "dists"
 function grid0(t) return {
     bins    = 16,
     tooMuch = 1.05,
-    t       = nil,
+    t       = t or nil,
     xy      = rowx,
     enough  = 64,
     east=nil, west=nil, c=nil,
@@ -53,7 +53,6 @@ local function gridUpdate(row, g)
         x = x^2 > a^2 and a or x
   local y = (a^2 - x^2)^0.5
   local binx,biny = bin(x,g), bin(y,g)
-  print{ binx = binx, biny = biny }
   local tmp = g.cells[ binx ][ biny ]
   tmp[ #tmp+1 ] = row
   g.pos[row.id] = {x=x, y=y,  binx=binx,
@@ -66,24 +65,33 @@ function grid1(row, g)
   then   g.firsts[ #g.firsts + 1 ] = row
   elseif #g.firsts == g.enough
   then   g.firsts[ #g.firsts + 1 ] = row
-         local a,b = furthests(g.firsts, g.t, g.xy)
-         gridNew(a,b, g.firsts, g)
-	 for row1 in shuffled(g.firsts) do
-	   grid1(row1,g)
-	 end
-  else   print(#g.firsts)
-         gridUpdate(row,g)  
+         local east,west = furthests(g.firsts, g.t, g.xy)
+         gridNew(east, west, g.firsts, g)
+  else   gridUpdate(row,g)  
   end
   return g
 end
 
+function gridPrint(g)
+  local rows={}
+  for i=1,g.bins do
+    local row={}
+    for j=1,g.bins do
+      local n = #g.cells[i][j]
+      row[ #row+1 ] = n > 0 and n or ""
+    end
+    rows[#rows+1] = row
+  end
+  printm(rows)
+end
 if arg[1] == "--grid" then
   local t, grid 
   for _,names,row in xys() do
     t    = sample1(row,t,names)
     grid = grid and grid or grid0(t)
-    grid.enough = 5
     grid = grid1(row,grid)
   end
+  print("")
+  gridPrint(grid)
 end
 
