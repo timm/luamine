@@ -12,6 +12,48 @@ end
 function xs(xy) return xy.x end
 function ys(xy) return xy.y end
 
+------------------------------
+function num0(t)
+  local tmp = {mu= 0, n= 0, m2= 0, w=1, 
+	       up= -1e32,   lo= 1e32}
+  map(t, function (z) num1(z,tmp) end)
+  return tmp
+end
+
+function num1(z,t)
+  if z < t.lo then t.lo = z end
+  if z > t.up then t.up = z end
+  t.n  = t.n + 1
+  local delta = z - t.mu
+  t.mu = t.mu + delta / t.n
+  t.m2 = t.m2 + delta * (z - t.mu)
+  return t
+end
+
+function norm(z, t)
+  return (z - t.lo) / (t.up - t.lo + 1e-32)
+end
+
+function sym0(t)
+  local tmp = {counts={}, most=0, mode=nil, n=0, w=1}
+  map(t, function (z) sym1(z,tmp) end)
+  return tmp
+end
+
+function sym1(z,t)
+  t.n  = t.n + 1
+  local old,new
+  old = t.counts[z]
+  new = old and old + 1 or 1
+  t.counts[z] = new
+  if new > t.most then
+    t.most, t.mode = new,z
+  end
+  return t
+end
+
+------------------------------
+
 function space0(f)
   return {lo  = {},
 	  hi  = {},
@@ -28,6 +70,7 @@ end end
 function dist(a,b,clus)
   local tmp,a,b = 0,clus.get(a), clus.get(b)
   for i=1,#a do
+    --- XXX norm
     local a1,b1 = norm(a,1,clus.sp), norm(b,1,clus.sp)
     tmp = tmp + (a1-b1)^2
   end
@@ -45,10 +88,6 @@ function furthest(row1, items, clus)
   return out
 end
 
-function norm(a,i,sp)
-  return (a[i] - sp.lo[i]) / (sp.hi[i] - sp.lo[i])
-end
-
 function bindom(a,b, clus)
   local a, b = a.y, b.y
   local betters = 0
@@ -60,26 +99,51 @@ function bindom(a,b, clus)
   return betters > 0
 end
 
-function cluster1(sp)
-  return {enough=0.5,min=20,sp=nil}
+function neighbors(row,t,clus,up,lr)
+  t.items[#t.items+1] = row
+  if not t.easts and not t.wests then
+    return t
+  end
+  local x,_ = project(row, t.c, t.west, t.east, clus.sp)
+  local tiny = c*t.small
+  if x > (c+tiny) or x < (-1*tiny) then
+    x.strange = x.strange + 1
+    spaces1(row,clus)
+  end
+  if x.strange > clus.sp.tooStrange then
+    t = cluster(items,clus,t.lvl)
+    up[lt] = t
+    return neighbors(row,t,clus,up,lr)
+  end
+  if t.wests and x <= t.cut then
+    return neighbors(row,t.wests,sp,t,"wests")
+  end
+  if t.easts and x > t.cut then
+    return neighbors(row,t.easts,sp,t,"easts")
+  end
+  return t
 end
 
-function cluster(pop, better, clus)
-  local better = better and better and bindom
+
+function cluster1(sp)
+  return {enough=0.5,min=20,sp=nil,tooStrange=20,tiny=0.05}
+end
+
+function cluster(pop, clus,lvl)
+  local lvl    = lvl and lvl or 1
   local tiny   = #pop ^ clus.enough
   local tiny  >= clus.min and tiny or clus.min
   ---------------------------------
-  function recurse(items)
-    local t= {items=items}
+  function recurse(items, lvl)
+    local t= {items=items, lvl=lvl, strange=0}
     if #items >= tiny
     then
-      west,east,c,wests, easts = split(items,t)
-      t.east=east, t.west=west, t.c=c
-      if not better(west,east,clus) then
-	t.easts = recurse(easts)
+      east, west, wests, easts = split(items,t)
+      if not clus.better(west,east,clus) then
+	t.l = recurse(easts, lvl+1)
       end
-      if not better(east,west,clus) then
-	t.wests = recurse(wests)
+      if not clus.better(east,west,clus) then
+	t.r = recurse(wests, lvl+1)
       end
     end
     return t
@@ -87,13 +151,24 @@ function cluster(pop, better, clus)
   ---------------------------------
   function splits1(d)
     local mid = math.floor(#d/2)
-    local wests,easts
-    for j,item in ipairs(lst) do
-      if   j <= min
-      then wests[ #wests + 1 ] = item[2]
-      else easts[ #easts + 1 ] = item[2]
-    end end
-    return wests,east
+    local cut,wests,easts
+    for j,item in ipairs(d) do
+      if j == mid then cut = d[1] end
+      if   j <= mid
+      then wests[ #wests + 1 ] = d[2]
+      else easts[ #easts + 1 ] = d[2]
+      end
+    end
+    return cut,wests,east
+  end
+  -------------------------------
+  function project(one,c,west,east,sp)
+    local a = dist(one,west,sp)
+    local b = dist(one,east,sp)
+    local x = (a*a + c*c - b*b) / (2*c + 0.000001)
+    x = x^2 <= a^2 and x or a
+    local y = (a^2 - x^2)^0.5
+    return x,y
   end
   -------------------------------
   function split(items,t)
@@ -103,22 +178,16 @@ function cluster(pop, better, clus)
     local c    = dist(west, east, sp)
     local d    = {}
     for _,one in ipairs(items) do
-      a = dist(one,west,sp)
-      b = dist(one,east,sp)
-      x = (a*a + c*c - b*b) / (2*c + 0.000001)
-      x = x^2 <= a^2 and x or a
-      y = (a^2 - x^2)^0.5
-      if not one.xx then
-	one.xx = x
-	one.yy = y
-      end
+      x,y = project(one,c,west,east,sp)
+      if not one.pos then one.pos = {x=x,y=y} end
       d[#d+1] = {x,one}
     end
     table.sort(d)
-    local wests, easts = splits1(d,mid)
-    return west,east,c,wests,easts
+    local cut, wests, easts = splits1(d,mid)
+    t.east=east, t.west=west, t.c=c, t.cut= cut
+    return west,east,wests,easts
   end
-  return recurse(items)
+  return recurse(items, lvl)
 end
 
 function ok(...) return true end
