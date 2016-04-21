@@ -42,21 +42,20 @@ cat <<'EOF'
  .   ,-"     .-~  ~"-\     
    .^       /       ( )  |  A little Lua goes a long way.
   /    .  Y                    
- /      \_j       .      | “Moonlight drowns out all but  
-Y     ( --l__            |  but the brightest stars." 
-|            "-.         |  -- Tolkien 
+ /      \_j       .      | "I tread paths by moonlight that 
+Y     ( --l__            |  others fear to speak of during day." 
+|            "-.         | -- Rothfuss                   
 |      (___     \             
-|        .)~-.__/    .   | "Head for the moon. If you miss, you will 
-l        _)              |  still be among the stars" -- Gandy
+|        .)~-.__/    .    
+l        _)                
  \      "l                
-  \       \        +     |  The pull of the moon can disturb oceans.
+  \       \        +       
    \       ^.             
-+   ^.       "-.         | "I tread paths by moonlight that 
- .    "-.__     ~-.___,  |  others fear to speak of during day." 
-           "--.._____.^  |  -- Rothfuss                   
-                         |
-                -Row     | "A line may take us hours, yet if it does not
-                         | seem a moment’s thought, all our stitching 
-                         | and unstitching has been as nought." -- Yeats
++   ^.       "-.          
+ .    "-.__     ~-.___,    
+           "--.._____.^    
+                         
+                -Row     
+
 EOF
 reset
