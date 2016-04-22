@@ -69,34 +69,36 @@ function cluster(pop, better, clus)
   local tiny   = #pop ^ clus.enough
   local tiny  >= clus.min and tiny or clus.min
   ---------------------------------
-  function recurse(items)
-    local t= {items=items}
-    if #items >= tiny
-    then
-      west,east,c,wests, easts = split(items,t)
-      t.east=east, t.west=west, t.c=c
+  function recurse(items, out, up)
+    local t= {items=items,up=up}
+    if #items < tiny then
+      out[#out+1] = t
+    else
+      west,east,c,cut,wests, easts = split(items)
+      t.east=east; t.west=west; t.c=c; t.cut=cut
       if not better(west,east,clus) then
-	t.easts = recurse(easts)
+	t.easts = recurse(easts, out, t)
       end
       if not better(east,west,clus) then
-	t.wests = recurse(wests)
+	t.wests = recurse(wests, out, t)
       end
     end
-    return t
+    return t,out
   end
   ---------------------------------
   function splits1(d)
     local mid = math.floor(#d/2)
-    local wests,easts
+    local cut,wests,easts
     for j,item in ipairs(lst) do
-      if   j <= min
+      if j == mid then cut=item[1] end
+      if   j <= mid
       then wests[ #wests + 1 ] = item[2]
       else easts[ #easts + 1 ] = item[2]
     end end
-    return wests,east
+    return cut,wests,east
   end
   -------------------------------
-  function split(items,t)
+  function split(items)
     local z    = any(items)
     local east = furthest(z,   items)
     local west = furthest(east,items)
@@ -115,10 +117,10 @@ function cluster(pop, better, clus)
       d[#d+1] = {x,one}
     end
     table.sort(d)
-    local wests, easts = splits1(d,mid)
-    return west,east,c,wests,easts
+    local cut,wests, easts = splits1(d,mid)
+    return west,east,c,cut,wests,easts
   end
-  return recurse(items)
+  return recurse(items,{})
 end
 
 function ok(...) return true end
