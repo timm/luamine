@@ -14,6 +14,13 @@ end
 
 function gt(a,b) return a > b end
 function lt(a,b) return a < b end
+function show(t,seen)
+  if type(t) ~= 'table' then return tostring(t) end
+  seen = seen and seen or {}
+  if seen[t] then return ".." end
+  seen[t] = t
+  for k,v in pairs(t) 
+end
 -------------------------------------------------------
 function num0(some)
   local i= {mu= 0, n= 0, m2= 0, up= -1e32, lo= 1e32, put=num1}
@@ -130,8 +137,8 @@ function twin0()
   return {x=sp0(), y=sp0()}
 end
 
-function twinx1(i,row) sp1(i.x,row) end
-function twiny1(i,row) sp1(i.y,row) end
+function twinx1(i,row) sp1(i.x,row.x) end
+function twiny1(i,row) sp1(i.y,row.x) end
 ---------------------------------------------------
 function def( txt, get, better)
   return {txt=txt, get=get, better=better}
@@ -139,31 +146,33 @@ end
 
 function from(lo,hi)
   return function () return lo + (hi - lo)*r() end
-				  
+end
+
 function model1()
   local function ok(x) return true end
-  local function f1(x) return x[1]**2 end
-  local function f2(x) return (x[2] + x[3])**2 end
+  local function f1(x) return x[1]^2 end
+  local function f2(x) return (x[2] + x[3])^2 end
   return {
     ok = ok,
     x  = { def("age",            from(0,120)),
 	   def("showSize",       from(1,12)),
-	   def("height",         from(0,120)) }
+	   def("height",         from(0,120)) },
     y  = { def("lifeExpectancy", f1, gt),
 	   def("weight",         f2, lt) }
   }
 end
 
-function decs(model)
-  local it = {x={},y={}}
-  for i,f in ipairs(fs) do it.x[i] = f.get() end
-  return xy
+function decs(model,twin)
+  local i = {x={},y={}}
+  for i,f in ipairs(fs) do i.x[i] = f.get() end
+  if twin then twinx1(twin,i) end
+  return i
 end
 
-function objs(it,mpdel)....////////////////////wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-  if #xy.y == 0 then
-    for i,f in ipairs(m.y) do xy.y[j] = f(xy.x) end
-    space1(xy.y, spaces.y)
+function objs(i,model,twin)
+  if #i.y == 0 then
+    for i,f in ipairs(model.y) do xy.y[j] = f(i.x) end
   end
-  return xy
+  if twin then twiny1(twin,i) end
+  return i
 end
