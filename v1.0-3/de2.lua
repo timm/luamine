@@ -223,6 +223,7 @@ function dist(i,a,b)
          a = b > 0.5 and 0 or 1
   elseif MISSING(b) then
          a = norm(i, a)
+    
          b = b > 0.5 and 0 or 1
   else   a = norm(i, a)
          b = norm(i, b)
@@ -231,13 +232,15 @@ function dist(i,a,b)
 end 
   
 ----------------------------------------------------
-function row0()
+function row0(x,y)
+  x = x and x or {}
+  y = y and y or {}
   id = id + 1
-  return {id=id, x={}, y={}}
+  return {id=id, x=x, y=y}
 end
 ----------------------------------------------------
 function sp0()
-  return {abouts={}, _row={}, n=0, dists={}}
+  return {abouts={}, _rows={}, n=0, dists={}}
 end
 
 function sp1(i,row)
@@ -248,14 +251,15 @@ function sp1(i,row)
       if not i.abouts[pos] then
 	local tmp = tonumber(item)
 	i.abouts[pos] = tmp and num0() or sym0()
+	i.abouts[pos].pos = pos
       end
-      about = i.abouts[pos]
-      put   = about.put
+      local about = i.abouts[pos]
+      local put   = about.put
       put(about, item)
   end end
   if once then
     i.n = i.n + 1
-    push(i._row, row)
+    push(i._rows, row)
   end
 end
 
@@ -282,8 +286,11 @@ end
 function furthest(i, row1, best, bt, out)
   best = best and best or -1
   bt   = bt   and bt   or gt
+  out = row1
   for row2 in items(i._rows) do
+    print(row1.id, row2.id)
     local d = dists(i,row1,row2)
+    print(">",d,best)
     if bt(d,best) then
       best,out = d,row2
   end end
@@ -311,7 +318,7 @@ function from(lo,hi)
 end
 
 function decs(m,twin)
-  local i = {x={},y={}}
+  local i = row0()
   for j,f in ipairs(m.x) do i.x[j] = f.get() end
   if twin then twinx1(twin,i) end
   return i
@@ -339,18 +346,29 @@ function model1()
   }
 end
 
-function __model1()
-  twin = twin0()
+function __model1(n,model)
+  n     = n and n or 10
+  model = model and model or model1
+  local twin = twin0()
   rseed()
-  local m = model1()
-  for _ = 1,10 do
+  local all = {}
+  local m = model()
+  for _ = 1,n do
     local i = decs(m,twin)
     i = objs(i,m,twin)
+    push(all, i)
     print(i)
   end
-  print(twin.y.abouts[1])
+  print(twin.y.abouts[2])
+  return twin,all
 end
 
+function __model2()
+  local twin,all = __model1(10)
+  print("T>",twin.x.abouts[2])
+  print("A>",all[1])
+  print("F>",furthest(twin.x, all[1]))
+end
 ----------------------------------------------
 if arg and arg[1] then
   if arg[1]:sub(1,2) == "__" then
