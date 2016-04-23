@@ -6,11 +6,19 @@ id = 1
 function MISSING(x) return x == "_" end
 
 -------------------------------------------------------
+
+function map(t,f)
+  local out = {}
+  if t ~= nil then
+    for i,v in pairs(t) do out[i] = f(v)
+  end end
+  return out
+end
+
 push = table.insert
 
 function pushs(t,t1)
-  for item in items(t1) do
-    push(t,item) end
+  map(t1, function(x) push(t,x) end)
   return t
 end
 
@@ -35,10 +43,13 @@ function items(t)
 end
 
 function __items()
-  local tmp={}
+  local a={}
   for x in items{10,20,30} do
-    push(tmp,x) end
-  return tmp[1] == 10 and tmp[2]==20 and tmp[3] == 30
+    push(a,x) end
+  local c1= a[1] == 10 and a[2]==20 and a[3] == 30
+  b= pushs({}, {10,20,30})
+  local c2= b[1] == 10 and b[2]==20 and b[3] == 30
+  return c1 and c2
 end
 
 function keys(t)
@@ -363,7 +374,7 @@ function __model1(n,model)
   return twin,all
 end
 
-function __model2()
+function x__model2()
   local twin,all = __model1(10)
   print("T>",twin.x.abouts[2])
   print("A>",all[1])
