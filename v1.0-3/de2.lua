@@ -2,10 +2,55 @@
 -- xx0(items), xx0() creates new "xx", initilize with items
 -- xx1(i, item) : increatement "i" of type "xx" with item
 
-id = 1
-function MISSING(x) return x == "_" end
+The= {missing = "_",
+      id      = 0,
+      builtin = { "jit", "bit", "true","math",
+		  "package","table","coroutine",
+		  "os","io","bit32","string","arg",
+		  "debug","_VERSION","_G"}}
 
--------------------------------------------------------
+function member(x,t)
+  for y in items(t) do
+    if x== y then return true end end
+  return false
+end
+
+do
+  local y,n = 0,0
+  function eman(x)
+    for k,v in pairs(_G) do
+      if v==x then return k end
+  end end
+  function rogue()
+    local tmp={}
+    for k,v in pairs( _G ) do
+      if type(v) ~= 'function' then  
+	if not member(k, The.builtin) then
+	  table.insert(tmp,k) end end end
+    table.sort(tmp)
+    print("-- Globals: ",tmp)
+  end
+  local function report() 
+    print(string.format(
+          ":PASS %s :FAIL %s :percentPASS %s%%",
+	  y,n,math.floor(100*y/(0.001+y+n))))
+    rogue() end
+  local function test(s,x) 
+    print("\n-------------------------------------")
+    print("-- test:", s,eman(x),"\n")
+    y = y + 1
+    local passed,err = pcall(x) 
+    if not passed then   
+       n = n + 1
+       print("Failure: ".. err) end end 
+  local function tests(t)
+    for s,x in pairs(t) do test(s,x) end end 
+  function ok(t) 
+    if   not t then report()
+    else tests(t);report() end end
+end
+
+----------------------------------------------------
 
 function map(t,f)
   local out = {}
@@ -28,10 +73,10 @@ function sort(t,fn)
   return t
 end
 
-function __sort()
+function _sort()
   local t = {20,10,20,5}
   t = sort(t)
-  return t[1] <= t[#t]
+  assert(t[1] <= t[#t])
 end
 
 function items(t)
@@ -42,14 +87,13 @@ function items(t)
       if i <= #t then return t[i] end end end
 end
 
-function __items()
+function _items()
   local a={}
   for x in items{10,20,30} do
     push(a,x) end
-  local c1= a[1] == 10 and a[2]==20 and a[3] == 30
+  assert(a[1] == 10 and a[2]==20 and a[3] == 30)
   b= pushs({}, {10,20,30})
-  local c2= b[1] == 10 and b[2]==20 and b[3] == 30
-  return c1 and c2
+  assert(b[1] == 10 and b[2]==20 and b[3] == 30)
 end
 
 function keys(t)
@@ -63,36 +107,18 @@ function keys(t)
       return ks[i],t[ks[i]] end end
 end
 
-function __keys()
+function _keys()
   local tmp, t = {}, {bb=1,aa=2,cc=3}
   for k,v in keys(t) do
     push(tmp,{k,v})
   end
-  return tmp[1][1] == "aa" and tmp[1][2]==2
+  assert(tmp[1][1] == "aa" and tmp[1][2]==2)
 end
 
-function member(x,t)
-  for y in items(t) do
-    if x== y then return true end end
-  return false
-end
-
+function dot(x) io.write(x); io.flush() end
 
 function gt(a,b) return a > b end
 function lt(a,b) return a < b end
-
-function rogue()
-  local builtin = { "jit", "bit", "true","math",
-		    "package","table","coroutine",
-		    "os","io","bit32","string","arg",
-		    "debug","_VERSION","_G"}
-  local tmp={}
-  for k,v in pairs( _G ) do
-    if type(v) ~= 'function' then
-      if not member(k, builtin) then
-	push(tmp,k) end end end
-  print("-- Globals: ",sort(tmp))
-end
 
 function tests()
   for k,v in keys( _G ) do
@@ -121,14 +147,16 @@ do
   end
 end
 
-function __r()
+function _r()
   n=5
   rseed(n)
   local a,b = {},{}
   for i=1,n do push(a,r()) end
   rseed(n)
   for i=1,n do push(b,r()) end
-  return sort(a,lt) == sort(b,lt)
+  a = sort(a,lt)
+  b = sort(b,lt)
+  assert(a[1] == b[1] and a[#a] == b[#b])
 end
 
 do
@@ -166,13 +194,12 @@ do
   end
 end
 
-function __show()
+function _show()
   local t1 = {kk=22,_ll=341,bb=31}
   t1.a = t1
   print{3,2,1, t1}
   print{1,2,3}
   print{aa=1,bb=2,cc=3}
-  return true
  end
 
 -------------------------------------------------------
@@ -184,7 +211,7 @@ function num0(some)
 end
 
 function num1(i, one)
-  if not MISSING(one) then 
+  if one ~= The.missing then 
     i.n  = i.n + 1
     if one < i.lo then i.lo = one end
     if one > i.up then i.up = one end
@@ -209,7 +236,7 @@ function sym0(some)
 end
 
 function sym1(i, one)
-  if not MISSING(one) then
+  if one ~= The.missing then
     i.n  = i.n + 1
     local old = t.counts[one]
     local new = old and old + 1 or 1
@@ -219,7 +246,7 @@ function sym1(i, one)
 end end end
   
 function dist(i,a,b)
-  if (MISSING(a) and MISSING(b)) then
+  if (a == The.missing and b == The.missing) then
     return nil
   end
   if i.put == sym1 then
@@ -229,12 +256,11 @@ function dist(i,a,b)
   if a == b then
     return 0
   end
-  if     MISSING(a) then
+  if     a == The.missing then
          b = norm(i, b)
          a = b > 0.5 and 0 or 1
-  elseif MISSING(b) then
-         a = norm(i, a)
-    
+  elseif b == The.missing then
+         a = norm(i, a) 
          b = b > 0.5 and 0 or 1
   else   a = norm(i, a)
          b = norm(i, b)
@@ -243,21 +269,27 @@ function dist(i,a,b)
 end 
   
 ----------------------------------------------------
+function xx(z)   return z.x end
+function yy(z)   return z.y end
+function same(z) return z end
+
 function row0(x,y)
+  The.id = The.id + 1
   x = x and x or {}
   y = y and y or {}
-  id = id + 1
-  return {id=id, x=x, y=y}
+  return {x=x, y=y, id=The.id}
 end
 ----------------------------------------------------
-function sp0()
-  return {abouts={}, _rows={}, n=0, dists={}}
+function sp0(get)
+  return {abouts={}, _rows={}, n=0,
+	  get=get or same,
+	  dists={}}
 end
 
 function sp1(i,row)
   local once=false
-  for pos,item in ipairs(row) do
-    if not MISSING(item) then
+  for pos,item in ipairs( i.get(row) ) do
+    if item ~= The.missing then
       once=true
       if not i.abouts[pos] then
 	local tmp = tonumber(item)
@@ -279,11 +311,13 @@ function dists(i,row1,row2)
     row1,row2 = row2,row1
   end
   local k = {row1.id, row2.id}
+  row1=i.get(row1)
+  row2=i.get(row2)
   local d = i.dists[k]
   if not d then
     local all,n = 0, 0.0000001
     for j=1,#row1 do
-      local inc = dist(i.abouts[i],row1[j],row2[j])
+      local inc = dist(i.abouts[j],row1[j],row2[j])
       if   inc
       then n   = n   + 1
 	   all = all + inc
@@ -299,26 +333,26 @@ function furthest(i, row1, best, bt, out)
   bt   = bt   and bt   or gt
   out = row1
   for row2 in items(i._rows) do
-    print(row1.id, row2.id)
-    local d = dists(i,row1,row2)
-    print(">",d,best)
-    if bt(d,best) then
-      best,out = d,row2
-  end end
+    if row1.id ~= row2.id then 
+      local d = dists(i,row1,row2)
+      if bt(d,best) then
+	best,out = d,row2
+  end end end
   return out
 end
 
 function closest(i, row1)
   return furthest(i, row1, 1e32, lt)
 end
-  
+--------------------------------------------------
+
 ---------------------------------------------------
 function twin0()
-  return {x=sp0(), y=sp0()}
+  return {x=sp0(xx), y=sp0(yy)}
 end
 
-function twinx1(i,row) sp1(i.x,row.x) end
-function twiny1(i,row) sp1(i.y,row.y) end
+function twinx1(i,row) sp1(i.x,row) end
+function twiny1(i,row) sp1(i.y,row) end
 ---------------------------------------------------
 function def( txt, get, better)
   return {txt=txt, get=get, better=better}
@@ -351,42 +385,54 @@ function model1()
     ok = ok,
     x  = { def("age",            from(0,120)),
 	   def("showSize",       from(1,12)),
-	   def("height",         from(0,120)) },
+	   def("height",         from(0,120)),
+	   def("1age",            from(0,120)),
+	   def("1showSize",       from(1,12)),
+	   def("1height",         from(0,120)),
+	   def("2age",            from(0,120)),
+	   def("2showSize",       from(1,12)),
+	   def("2height",         from(0,120))
+         },
     y  = { def("lifeExpectancy", f1, gt),
 	   def("weight",         f2, lt) }
   }
 end
 
-function __model1(n,model)
-  n     = n and n or 10
-  model = model and model or model1
-  local twin = twin0()
-  rseed()
-  local all = {}
-  local m = model()
-  for _ = 1,n do
-    local i = decs(m,twin)
-    i = objs(i,m,twin)
-    push(all, i)
-    print(i)
-  end
-  print(twin.y.abouts[2])
-  return twin,all
+function _model1(n,model)
+     n     = n and n or 10000
+     model = model and model or model1
+     rseed()
+     local twin = twin0()
+     local all  = {}
+     local m    = model()
+     for j = 1,n do
+       local i = decs(m,twin)
+       i = objs(i,m,twin)
+       push(all, i)
+     end
+     return twin,all
 end
 
-function x__model2()
-  local twin,all = __model1(10)
-  print("T>",twin.x.abouts[2])
-  print("A>",all[1])
-  print("F>",furthest(twin.x, all[1]))
+function _model2()
+  local twin,all = _model1()
+  print("T>", twin.y.abouts[1])
+  print("R>", #twin.x._rows)
+  print("A>", all[1].y)
+  print("F>", furthest(twin.x, all[1]).y)
+  print("C>", closest( twin.x, all[1]).y)
 end
 ----------------------------------------------
-if arg and arg[1] then
-  if arg[1]:sub(1,2) == "__" then
-    print(loadstring( arg[1] .. '()')()) 
-  else
-    tests()
+
+if arg then
+  if arg[1] == "--tests" then
+    ok{_sort,   _items, _keys,
+       _r,      _show,
+       _model1, _model2}
+  elseif arg[1] == "--test" then
+    print(arg[2])
+    ok{loadstring("_" .. arg[2] .. "()")}
   end
   rogue()
 end
+
 
