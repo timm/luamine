@@ -283,7 +283,7 @@ end
 function sp0(get)
   return {abouts={}, _rows={}, n=0,
 	  get=get or same,
-	  dists={}}
+	  dists={}, subs={}}
 end
 
 function sp1(i,row)
@@ -345,7 +345,26 @@ function closest(i, row1)
   return furthest(i, row1, 1e32, lt)
 end
 --------------------------------------------------
+function range0(lo,hi,items, score)
+  return {lo=lo, hi=hi,
+	  score = score or 1,
+	  items=items}
+end
 
+--- XXX cluster here
+function cluster0(sp)
+  return {enough=0.5,min=20,sp=sp,
+	  tooStrange=20,tiny=0.05}
+end
+function cluster(sp)
+  i = cluster0(sp)
+  local tiny = #sp._rows ^ i.enough
+  tiny = tiny > i.min and tiny or i.min
+  ---------------------------
+  local function recurse(items, lvl)
+    local t = sp
+  end
+end
 ---------------------------------------------------
 function twin0()
   return {x=sp0(xx), y=sp0(yy)}
