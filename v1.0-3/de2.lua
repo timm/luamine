@@ -37,7 +37,7 @@ do
     rogue() end
   local function test(s,x) 
     print("\n-------------------------------------")
-    print("-- test:", s,eman(x),"\n")
+    print("-- test:", s,eman(x))
     y = y + 1
     local passed,err = pcall(x) 
     if not passed then   
@@ -52,6 +52,9 @@ end
 
 ----------------------------------------------------
 
+
+function same(z) return z end
+
 function map(t,f)
   local out = {}
   if t ~= nil then
@@ -60,11 +63,32 @@ function map(t,f)
   return out
 end
 
+function copy(t)
+  return map(t,same)
+end
+
+function _copy()
+  local t1 = {"aa","bb","cc","dd"}
+  local t2 = copy(t1)
+  t2[1]="ee"
+  assert(t1[1] ~= "ee")
+end
+
 push = table.insert
 
 function pushs(t,t1)
   map(t1, function(x) push(t,x) end)
   return t
+end
+
+function sub(t, first, last)
+  last = last or #t
+  local out = {}
+  if last < first then last = first end
+  for i = first,last do
+    push(out, t[i])
+  end
+  return out
 end
 
 function sort(t,fn)
@@ -117,8 +141,10 @@ end
 
 function dot(x) io.write(x); io.flush() end
 
-function gt(a,b) return a > b end
-function lt(a,b) return a < b end
+function gt( a,b) return a > b end
+function lt( a,b) return a < b end
+function max(a,b) return a > b and a or b end
+function min(a,b) return a < b and a or b end
 
 function tests()
   for k,v in keys( _G ) do
@@ -220,6 +246,14 @@ function num1(i, one)
     i.m2 = i.m2 + delta * (one - i.mu) 
 end end
 
+function unnum(i, one)
+  i.n  = i.n - 1
+  local delta = one - i.mu
+  i.mu = i.mu - delta/i.n
+  i.m2 = i.m2 - delta*(one - i.mu) -- untrustworthy for very small n and z
+  return t
+end
+
 function sd(i)
   return i.n <= 1 and 0 or (i.m2 / (i.n - 1))^0.5
 end
@@ -271,7 +305,6 @@ end
 ----------------------------------------------------
 function xx(z)   return z.x end
 function yy(z)   return z.y end
-function same(z) return z end
 
 function row0(x,y)
   The.id = The.id + 1
@@ -345,6 +378,82 @@ function closest(i, row1)
   return furthest(i, row1, 1e32, lt)
 end
 --------------------------------------------------
+function bins0() return {
+    enough     = nil,
+    cohen      = 0.3,
+    maxBins    = 10,
+    minBin     = 2,
+    small      = nil,
+    verbose    = false,
+    trivial    = 1.05}
+end 
+
+do
+  local function bins1(i, nums, all, ranges,lvl)
+    if i.verbose then
+      print(string.rep('|.. ',lvl),nums)
+    end
+    local cut,lo,hi
+    local n = #nums
+    local start, stop = nums[1], nums[n]
+    if stop - start >= i.small then
+      local lhs, rhs = num0(), copy(all)
+      local score, score1 = sd(rhs), nil
+      local new, old
+      for j,new in ipairs(nums) do
+	num1( lhs, new)
+	unnum(rhs, new)	
+	if new  ~= old            and
+	   lhs.n >= i.enough      and
+	   rhs.n >= i.enough      and
+	   new - start >= i.small
+	then
+	  -- dont trust unnum for small "n". only if n > i.enough
+	   score1 = lhs.n/n*sd(lhs) + rhs.n/n*sd(rhs) 
+	   if score1*i.trivial < score
+	   then
+	     cut, score, lo, hi = j, score1, copy(lhs), copy(rhs)
+	   end
+	end 
+	old = new
+      end
+    end
+    if cut then -- divide the ranage
+      bins1(i, sub(nums,1,cut-1), lo, ranges,lvl+1)
+      bins1(i, sub(nums,cut),     hi, ranges,lvl+1)
+    else        -- we've found a leaf range
+      push(ranges, {id=#ranges+1,
+		    lo=start, also=nil,
+		    n=#nums,  up=stop})
+  end end
+
+  function bins(t,i)
+    i          = i or bins0()
+    i.maxBins = 7
+    i.cohen   = 0.3
+    local nums = sort(t)
+    local all  = num0(t)
+
+    i.enough   = i.enough or max(i.minBin, all.n/i.maxBins)
+    i.small    = i.small  or sd(all) * i.cohen
+    print{min=i.minBin, n=all.n, maxBins=i.maxBins, enough=i.enough}
+    local ranges = {} 
+    bins1(i, nums, all, ranges,1)
+    return ranges
+  end
+end
+
+function _bins()
+  local t={}
+  for i=1,1000 do
+    pushs(t,{r()^2, r()^4}) --, r()^6})
+  end
+  for x in items(bins(t)) do
+    print(x)
+  end
+end
+
+--------------------------------------------------
 function range0(lo,hi,items, score)
   return {lo=lo, hi=hi,
 	  score = score or 1,
@@ -353,8 +462,8 @@ end
 
 --- XXX cluster here
 function cluster0(sp)
-  return {enough=0.5,min=20,sp=sp,
-	  tooStrange=20,tiny=0.05}
+  return {enough=0.5,    min=20, sp=sp, get=sp.get,
+	  tooStrange=20, tiny=0.05,     ranges={}}
 end
 function cluster(sp)
   i = cluster0(sp)
@@ -442,7 +551,7 @@ function _model2()
 end
 ----------------------------------------------
 
-if arg then
+if arg and arg[1] then
   if arg[1] == "--tests" then
     ok{_sort,   _items, _keys,
        _r,      _show,
