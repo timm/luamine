@@ -526,9 +526,9 @@ function cluster(sp,i)
     return west,east, ranges
   end
   ------------------------------
-  local function prune(noeast,nowest, ranges)
+  local function prune(noeast,nowest, branches)
     local oddp =  number %2 == 1
-    local k,l,m =1, #ranges, math.floor(#ranges/2)
+    local k,l,m =1, #branches, math.floor(#branches/2)
     if noeast and nowest then
       return {}
     elseif noeast then
@@ -536,23 +536,26 @@ function cluster(sp,i)
     elseif nowest then
       k = oddp and m+1 or m
     end
-    return sub(ranges,k,l)
+    return sub(branches,k,l)
   end
   ------------------------------
   local function recurse(items, lvl)
     if i.verbose then print(string.rep("-- ",lvl), #items) end
     local here = sp0(sp.get)
     for item in items do sp1(here,item) end
-    here.lvl = lvl; here.strange=0
+    here.lvl     = lvl
+    here.strange = 0
     if #items >= tiny then
-      local west,east, ranges = split(here, items)
-      here.ranges = prune(i.better(west,east),
+      local west,east,subs = split(here, items)
+      here.subs = prune(i.better(west,east),
 		          i.better(east,west),
-		          ranges)
-      for r in items(here.ranges) do
-	recurse(r.items,lvl+1)
-  end end end
-  return recurse(items, lvl)
+		          subs)
+      for sub in items(here.subs) do
+	recurse(sub.items,lvl+1)
+      end
+    end
+  end
+  return recurse(sp._rows, lvl)
 end
 -------------------------------------------------
 function twin0()
