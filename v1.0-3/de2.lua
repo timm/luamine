@@ -137,6 +137,10 @@ function _keys()
   assert(tmp[1][1] == "aa" and tmp[1][2]==2)
 end
 
+function weaktable()
+  return setmetatable({}, { __mode = 'v' })
+end
+
 function dot(x) io.write(x); io.flush() end
 
 function gt( a,b) return a > b end
@@ -226,9 +230,9 @@ end
 function _show()
   local t1 = {kk=22,_ll=341,bb=31}
   t1.a = t1
-  assert(tostring{3,2,1, t1} == "{3, 2, 1, {a=..., bb=31, kk=22}}")
-  assert(tostring{1,2,3} == "{1, 2, 3}")
+  assert(tostring{1,2,3}          == "{1, 2, 3}")
   assert(tostring{aa=1,bb=2,cc=3} == "{aa=1, bb=2, cc=3}")
+  assert(tostring{3,2,1, t1}      == "{3, 2, 1, {a=..., bb=31, kk=22}}")
  end
 
 -------------------------------------------------------
@@ -317,8 +321,9 @@ function row0(x,y)
 end
 ----------------------------------------------------
 function sp0(get)
+  The.id = The.id + 1
   return {abouts={}, _rows={}, n=0,
-	  get=get or same,
+	  get=get or same, id = The.id,
 	  dists={}, subs={}}
 end
 
@@ -425,7 +430,7 @@ do
       bins1(i, sub(nums,1,cut-1), lo, ranges,lvl+1)
       bins1(i, sub(nums,cut),     hi, ranges,lvl+1)
     else        -- we've found a leaf range
-      push(ranges, {lo=start, up=stop})
+      push(ranges, {id=#ranges+1, lo=start, up=stop, items={}})
   end end
 
   function bins(t,i)
@@ -460,32 +465,32 @@ function range0(lo,hi,items, score)
 	  items=items}
 end
 
-function range(pair,ranges)
-  local gaps={}
-  local val = pair[1]
-  for range in items(ranges) do
-    if ranges.lo <= pair[1] and pair[1] < ranges.hi then
-      return pair[2],range
+function range(x,row,ranges) 
+  local near, min = ranges[1], 1e32
+  for r in items(ranges) do
+    local lo, up = r.lo, r.up
+    if lo <= x and x <= up then
+      return r
     end
-    push(gaps, { math.abs(val - ranges.lo), pair, range} )
-    push(gaps, { math.abs(val - ranges.hi), pair, range} )
+    local d1 = math.abs(val - lo)
+    local d2 = math.abs(val - up)
+    if d1 < near then near,min = r, d1 end   
+    if d2 < near then near,min = r, d2 end
   end
-  gaps = sort(gaps, function (x,y) return x[1] < y[1] end)
-  local out = gaps[1]
-  return out[2][2], out[3]
+  return r
 end
 
 --- XXX cluster here
 function cluster0(sp)
-  return {enough=0.5,    min=20, sp=sp, get=sp.get,
+  return {enough=0.5,    min=20, sp=sp, get=sp.get, deltac=0.1,
+	  better = function (x,y) return false end, verbose=true,
 	  tooStrange=20, tiny=0.05,     ranges={}}
 end
-function cluster(sp)
-  i = cluster0(sp)
+
+function cluster(sp,i)
+  i = i and i or cluster0(sp)
   local tiny = #sp._rows ^ i.enough
   tiny = tiny > i.min and tiny or i.min
-  
-  
   ---------------------------
   local function project(here,one,c,west,east)
     local a = dists(here,one,west)
@@ -496,37 +501,60 @@ function cluster(sp)
     return x,y
   end
   ---------------------------------
-  function splits(here, items)
+  function split(here, items)
     local z    = any(items)
     local east = furthest(here, z)
     local west = furthest(here, east)
     local c    = dists(here, west, east)
     here.east=east; here.west=west; here.c=c
+    local deltac = i.deltac * c
     local xs   = {}
-    local cache= {}
+    local cache= weaktable()
     for _,item in ipairs(items) do
-      x,y = project(here,item,c,west,east)
-      cache[item.id] = x
+      local x,y = project(here,item,c,west,east)
+      if x > c  + deltac or x < -1 * deltac then
+	here.strange = here.strange + 1
+      end
+      cache[item] = x
       push(xs,x)
     end
-    here.ranges = bins(xs)
-    for id,x in ipairs(cache) do
-      -- XXX get the range right here
-    return cache
+    local ranges = bins(xs)
+    for item,x in ipairs(cache) do
+      local r   = range(x,item,ranges)
+      push(r.items, item)
+    end
+    return west,east, ranges
   end
-  return recurse(items, lvl)
-end
+  ------------------------------
+  local function prune(noeast,nowest, ranges)
+    local oddp =  number %2 == 1
+    local k,l,m =1, #ranges, math.floor(#ranges/2)
+    if noeast and nowest then
+      return {}
+    elseif noeast then
+      l = oddp and m+1 or m
+    elseif nowest then
+      k = oddp and m+1 or m
+    end
+    return sub(ranges,k,l)
+  end
   ------------------------------
   local function recurse(items, lvl)
+    if i.verbose then print(string.rep("-- ",lvl), #items) end
     local here = sp0(sp.get)
     for item in items do sp1(here,item) end
-    t.lvl = lvl; t.strange=0
+    here.lvl = lvl; here.strange=0
     if #items >= tiny then
-      
-  end
-  return recurse(sp._rows,lvl)
+      local west,east, ranges = split(here, items)
+      here.ranges = prune(i.better(west,east),
+		          i.better(east,west),
+		          ranges)
+      for r in items(here.ranges) do
+	recurse(r.items,lvl+1)
+  end end end
+  return recurse(items, lvl)
 end
----------------------------------------------------
+-------------------------------------------------
 function twin0()
   return {x=sp0(xx), y=sp0(yy)}
 end
