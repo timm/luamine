@@ -4,7 +4,7 @@
 
 The= {missing = "_",
       id      = 0,
-      builtin = { "jit", "bit", "true","math",
+      builtin = { "The","jit", "bit", "true","math",
 		  "package","table","coroutine",
 		  "os","io","bit32","string","arg",
 		  "debug","_VERSION","_G"}}
@@ -33,8 +33,8 @@ do
   local function report() 
     print(string.format(
           ":PASS %s :FAIL %s :percentPASS %s%%",
-	  y,n,math.floor(100*y/(0.001+y+n))))
-    rogue() end
+	  y,n,math.floor(0.5 + 100*y/(0.001+y+n))))
+    end
   local function test(s,x) 
     print("\n-------------------------------------")
     print("-- test:", s,eman(x))
@@ -63,9 +63,7 @@ function map(t,f)
   return out
 end
 
-function copy(t)
-  return map(t,same)
-end
+function copy(t) return map(t,same) end
 
 function _copy()
   local t1 = {"aa","bb","cc","dd"}
@@ -173,6 +171,11 @@ do
   end
 end
 
+function any(t) 
+  local pos =  math.floor(0.5 + r() * #t)
+  return t[ min(#t, pos) ]
+end
+
 function _r()
   n=5
   rseed(n)
@@ -223,9 +226,9 @@ end
 function _show()
   local t1 = {kk=22,_ll=341,bb=31}
   t1.a = t1
-  print{3,2,1, t1}
-  print{1,2,3}
-  print{aa=1,bb=2,cc=3}
+  assert(tostring{3,2,1, t1} == "{3, 2, 1, {a=..., bb=31, kk=22}}")
+  assert(tostring{1,2,3} == "{1, 2, 3}")
+  assert(tostring{aa=1,bb=2,cc=3} == "{aa=1, bb=2, cc=3}")
  end
 
 -------------------------------------------------------
@@ -422,9 +425,7 @@ do
       bins1(i, sub(nums,1,cut-1), lo, ranges,lvl+1)
       bins1(i, sub(nums,cut),     hi, ranges,lvl+1)
     else        -- we've found a leaf range
-      push(ranges, {id=#ranges+1,
-		    lo=start, also=nil,
-		    n=#nums,  up=stop})
+      push(ranges, {lo=start, up=stop})
   end end
 
   function bins(t,i)
@@ -433,7 +434,6 @@ do
     i.cohen   = 0.3
     local nums = sort(t)
     local all  = num0(t)
-
     i.enough   = i.enough or max(i.minBin, all.n/i.maxBins)
     i.small    = i.small  or sd(all) * i.cohen
     print{min=i.minBin, n=all.n, maxBins=i.maxBins, enough=i.enough}
@@ -460,6 +460,21 @@ function range0(lo,hi,items, score)
 	  items=items}
 end
 
+function range(pair,ranges)
+  local gaps={}
+  local val = pair[1]
+  for range in items(ranges) do
+    if ranges.lo <= pair[1] and pair[1] < ranges.hi then
+      return pair[2],range
+    end
+    push(gaps, { math.abs(val - ranges.lo), pair, range} )
+    push(gaps, { math.abs(val - ranges.hi), pair, range} )
+  end
+  gaps = sort(gaps, function (x,y) return x[1] < y[1] end)
+  local out = gaps[1]
+  return out[2][2], out[3]
+end
+
 --- XXX cluster here
 function cluster0(sp)
   return {enough=0.5,    min=20, sp=sp, get=sp.get,
@@ -469,10 +484,47 @@ function cluster(sp)
   i = cluster0(sp)
   local tiny = #sp._rows ^ i.enough
   tiny = tiny > i.min and tiny or i.min
+  
+  
   ---------------------------
-  local function recurse(items, lvl)
-    local t = sp
+  local function project(here,one,c,west,east)
+    local a = dists(here,one,west)
+    local b = dists(here,one,east)
+    local x = (a*a + c*c - b*b) / (2*c + 0.000001)
+    x = x^2 <= a^2 and x or a
+    local y = (a^2 - x^2)^0.5
+    return x,y
   end
+  ---------------------------------
+  function splits(here, items)
+    local z    = any(items)
+    local east = furthest(here, z)
+    local west = furthest(here, east)
+    local c    = dists(here, west, east)
+    here.east=east; here.west=west; here.c=c
+    local xs   = {}
+    local cache= {}
+    for _,item in ipairs(items) do
+      x,y = project(here,item,c,west,east)
+      cache[item.id] = x
+      push(xs,x)
+    end
+    here.ranges = bins(xs)
+    for id,x in ipairs(cache) do
+      -- XXX get the range right here
+    return cache
+  end
+  return recurse(items, lvl)
+end
+  ------------------------------
+  local function recurse(items, lvl)
+    local here = sp0(sp.get)
+    for item in items do sp1(here,item) end
+    t.lvl = lvl; t.strange=0
+    if #items >= tiny then
+      
+  end
+  return recurse(sp._rows,lvl)
 end
 ---------------------------------------------------
 function twin0()
@@ -511,9 +563,9 @@ function model1()
   local function f2(x) return (x[2] + x[3])^2 end
   return {
     ok = ok,
-    x  = { def("age",            from(0,120)),
-	   def("showSize",       from(1,12)),
-	   def("height",         from(0,120)),
+    x  = { def("age",             from(0,120)),
+	   def("showSize",        from(1,12)),
+	   def("height",          from(0,120)),
 	   def("1age",            from(0,120)),
 	   def("1showSize",       from(1,12)),
 	   def("1height",         from(0,120)),
@@ -557,7 +609,6 @@ if arg and arg[1] then
        _r,      _show,
        _model1, _model2}
   elseif arg[1] == "--test" then
-    print(arg[2])
     ok{loadstring("_" .. arg[2] .. "()")}
   end
   rogue()
