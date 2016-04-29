@@ -5,9 +5,9 @@
 The= {missing = "_",
       id      = 0,
       builtin = { "The","jit", "bit", "true","math",
-		  "package","table","coroutine",
-		  "os","io","bit32","string","arg",
-		  "debug","_VERSION","_G"}}
+      "package","table","coroutine",
+      "os","io","bit32","string","arg",
+      "debug","_VERSION","_G"}}
 
 function member(x,t)
   for y in items(t) do
@@ -24,28 +24,28 @@ do
   function rogue()
     local tmp={}
     for k,v in pairs( _G ) do
-      if type(v) ~= 'function' then  
-	if not member(k, The.builtin) then
-	  table.insert(tmp,k) end end end
+      if type(v) ~= 'function' then
+  if not member(k, The.builtin) then
+    table.insert(tmp,k) end end end
     table.sort(tmp)
     print("-- Globals: ",tmp)
   end
-  local function report() 
+  local function report()
     print(string.format(
           ":PASS %s :FAIL %s :percentPASS %s%%",
-	  y,n,math.floor(0.5 + 100*y/(0.001+y+n))))
+    y,n,math.floor(0.5 + 100*y/(0.001+y+n))))
     end
-  local function test(s,x) 
+  local function test(s,x)
     print("\n-------------------------------------")
     print("-- test:", s,eman(x))
     y = y + 1
-    local passed,err = pcall(x) 
-    if not passed then   
+    local passed,err = pcall(x)
+    if not passed then
        n = n + 1
-       print("Failure: ".. err) end end 
+       print("Failure: ".. err) end end
   local function tests(t)
-    for s,x in pairs(t) do test(s,x) end end 
-  function ok(t) 
+    for s,x in pairs(t) do test(s,x) end end
+  function ok(t)
     if   not t then report()
     else tests(t);report() end end
 end
@@ -124,7 +124,7 @@ function keys(t)
   ks = sort(ks)
   local i = 0
   return function ()
-   if i < #ks then 
+   if i < #ks then
       i = i + 1
       return ks[i],t[ks[i]] end end
 end
@@ -151,7 +151,7 @@ function min(a,b) return a < b and a or b end
 function tests()
   for k,v in keys( _G ) do
     if type(v) == 'function' and
-       k:sub(1,2) == "__"  
+       k:sub(1,2) == "__"
     then
       print("\n=====| "..k.." |============================")
       print(v() == true) end end
@@ -165,7 +165,7 @@ do
   local function park_miller_randomizer()
     seed = (multipler * seed) % modulus
     return seed / modulus
-  end 
+  end
   function rseed(n)
     if n then seed = n else seed = seed0 end
     randomtable = nil
@@ -175,7 +175,7 @@ do
   end
 end
 
-function any(t) 
+function any(t)
   local pos =  math.floor(0.5 + r() * #t)
   return t[ min(#t, pos) ]
 end
@@ -213,14 +213,14 @@ do
     local out,pre  = {'{'},""
     if stringkeys(t) then
       for k,v in keys(t) do
-	if k:sub(1,1) ~= "_" then
-	  pushs(out,{pre,k,"=",tostring(v,seen)})
-	  pre=", "
+  if k:sub(1,1) ~= "_" then
+    pushs(out,{pre,k,"=",tostring(v,seen)})
+    pre=", "
       end end
     else
       for item in items(t) do
-	pushs(out, {pre, tostring(item,seen)})
-	pre=", "
+  pushs(out, {pre, tostring(item,seen)})
+  pre=", "
     end end
     push(out,"}")
     return table.concat(out)
@@ -244,13 +244,13 @@ function num0(some)
 end
 
 function num1(i, one)
-  if one ~= The.missing then 
+  if one ~= The.missing then
     i.n  = i.n + 1
     if one < i.lo then i.lo = one end
     if one > i.up then i.up = one end
     local delta = one - i.mu
     i.mu = i.mu + delta / i.n
-    i.m2 = i.m2 + delta * (one - i.mu) 
+    i.m2 = i.m2 + delta * (one - i.mu)
 end end
 
 function unnum(i, one)
@@ -285,7 +285,7 @@ function sym1(i, one)
     if new > t.most then
       t.most, t.mode = new,one
 end end end
-  
+
 function dist(i,a,b)
   if (a == The.missing and b == The.missing) then
     return nil
@@ -301,14 +301,14 @@ function dist(i,a,b)
          b = norm(i, b)
          a = b > 0.5 and 0 or 1
   elseif b == The.missing then
-         a = norm(i, a) 
+         a = norm(i, a)
          b = b > 0.5 and 0 or 1
   else   a = norm(i, a)
          b = norm(i, b)
   end
   return (a-b)^2
-end 
-  
+end
+
 ----------------------------------------------------
 function xx(z)   return z.x end
 function yy(z)   return z.y end
@@ -323,8 +323,8 @@ end
 function sp0(get)
   The.id = The.id + 1
   return {abouts={}, _rows={}, n=0,
-	  get=get or same, id = The.id,
-	  dists={}, subs={}}
+    get=get or same, id = The.id,
+    dists={}, subs={}}
 end
 
 function sp1(i,row)
@@ -333,9 +333,9 @@ function sp1(i,row)
     if item ~= The.missing then
       once=true
       if not i.abouts[pos] then
-	local tmp = tonumber(item)
-	i.abouts[pos] = tmp and num0() or sym0()
-	i.abouts[pos].pos = pos
+  local tmp = tonumber(item)
+  i.abouts[pos] = tmp and num0() or sym0()
+  i.abouts[pos].pos = pos
       end
       local about = i.abouts[pos]
       local put   = about.put
@@ -361,7 +361,7 @@ function dists(i,row1,row2)
       local inc = dist(i.abouts[j],row1[j],row2[j])
       if   inc
       then n   = n   + 1
-	   all = all + inc
+     all = all + inc
     end end
     d = all^0.5 / n^0.5
     i.dists[k] = d
@@ -374,10 +374,10 @@ function furthest(i, row1, best, bt, out)
   bt   = bt   and bt   or gt
   out = row1
   for row2 in items(i._rows) do
-    if row1.id ~= row2.id then 
+    if row1.id ~= row2.id then
       local d = dists(i,row1,row2)
       if bt(d,best) then
-	best,out = d,row2
+  best,out = d,row2
   end end end
   return out
 end
@@ -394,7 +394,7 @@ function bins0() return {
     small      = nil,
     verbose    = false,
     trivial    = 1.05}
-end 
+end
 
 do
   local function bins1(i, nums, all, ranges,lvl)
@@ -409,21 +409,21 @@ do
       local score, score1 = sd(rhs), nil
       local new, old
       for j,new in ipairs(nums) do
-	num1( lhs, new)
-	unnum(rhs, new)	
-	if new  ~= old            and
-	   lhs.n >= i.enough      and
-	   rhs.n >= i.enough      and
-	   new - start >= i.small
-	then
-	  -- dont trust unnum for small "n". only if n > i.enough
-	   score1 = lhs.n/n*sd(lhs) + rhs.n/n*sd(rhs) 
-	   if score1*i.trivial < score
-	   then
-	     cut, score, lo, hi = j, score1, copy(lhs), copy(rhs)
-	   end
-	end 
-	old = new
+  num1( lhs, new)
+  unnum(rhs, new)
+  if new  ~= old            and
+     lhs.n >= i.enough      and
+     rhs.n >= i.enough      and
+     new - start >= i.small
+  then
+    -- dont trust unnum for small "n". only if n > i.enough
+     score1 = lhs.n/n*sd(lhs) + rhs.n/n*sd(rhs)
+     if score1*i.trivial < score
+     then
+       cut, score, lo, hi = j, score1, copy(lhs), copy(rhs)
+     end
+  end
+  old = new
       end
     end
     if cut then -- divide the ranage
@@ -442,7 +442,7 @@ do
     i.enough   = i.enough or max(i.minBin, all.n/i.maxBins)
     i.small    = i.small  or sd(all) * i.cohen
     print{min=i.minBin, n=all.n, maxBins=i.maxBins, enough=i.enough}
-    local ranges = {} 
+    local ranges = {}
     bins1(i, nums, all, ranges,1)
     return ranges
   end
@@ -461,11 +461,11 @@ end
 --------------------------------------------------
 function range0(lo,hi,items, score)
   return {lo=lo, hi=hi,
-	  score = score or 1,
-	  items=items}
+    score = score or 1,
+    items=items}
 end
 
-function range(x,row,ranges) 
+function range(x,row,ranges)
   local near, min = ranges[1], 1e32
   for r in items(ranges) do
     local lo, up = r.lo, r.up
@@ -474,7 +474,7 @@ function range(x,row,ranges)
     end
     local d1 = math.abs(val - lo)
     local d2 = math.abs(val - up)
-    if d1 < near then near,min = r, d1 end   
+    if d1 < near then near,min = r, d1 end
     if d2 < near then near,min = r, d2 end
   end
   return r
@@ -483,8 +483,8 @@ end
 --- XXX cluster here
 function cluster0(sp)
   return {enough=0.5,    min=20, sp=sp, get=sp.get, deltac=0.1,
-	  better = function (x,y) return false end, verbose=true,
-	  tooStrange=20, tiny=0.05,     ranges={}}
+    better = function (x,y) return false end, verbose=true,
+    tooStrange=20, tiny=0.05,     ranges={}}
 end
 
 function cluster(sp,i)
@@ -513,7 +513,7 @@ function cluster(sp,i)
     for _,item in ipairs(items) do
       local x,y = project(here,item,c,west,east)
       if x > c  + deltac or x < -1 * deltac then
-	here.strange = here.strange + 1
+        here.strange = here.strange + 1
       end
       cache[item] = x
       push(xs,x)
@@ -548,10 +548,10 @@ function cluster(sp,i)
     if #items >= tiny then
       local west,east,subs = split(here, items)
       here.subs = prune(i.better(west,east),
-		          i.better(east,west),
-		          subs)
+              i.better(east,west),
+              subs)
       for sub in items(here.subs) do
-	recurse(sub.items,lvl+1)
+  recurse(sub.items,lvl+1)
       end
     end
   end
@@ -595,17 +595,17 @@ function model1()
   return {
     ok = ok,
     x  = { def("age",             from(0,120)),
-	   def("showSize",        from(1,12)),
-	   def("height",          from(0,120)),
-	   def("1age",            from(0,120)),
-	   def("1showSize",       from(1,12)),
-	   def("1height",         from(0,120)),
-	   def("2age",            from(0,120)),
-	   def("2showSize",       from(1,12)),
-	   def("2height",         from(0,120))
+     def("showSize",        from(1,12)),
+     def("height",          from(0,120)),
+     def("1age",            from(0,120)),
+     def("1showSize",       from(1,12)),
+     def("1height",         from(0,120)),
+     def("2age",            from(0,120)),
+     def("2showSize",       from(1,12)),
+     def("2height",         from(0,120))
          },
     y  = { def("lifeExpectancy", f1, gt),
-	   def("weight",         f2, lt) }
+     def("weight",         f2, lt) }
   }
 end
 
@@ -644,5 +644,3 @@ if arg and arg[1] then
   end
   rogue()
 end
-
-
