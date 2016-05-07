@@ -584,10 +584,8 @@ function cluster(sp,i)
               i.better(east,west),
               subs)
       for sub in items(here.subs) do
-  recurse(sub.items,lvl+1)
-      end
-    end
-  end
+	recurse(sub.items,lvl+1)
+  end end end
   return recurse(sp._rows, lvl)
 end
 -------------------------------------------------
@@ -682,8 +680,7 @@ do
 	end
 	old = t[i]
 	return #buffer , t[i-1]
-    end end
-  end
+  end end end
 
   function cliffsDelta(lst1,lst2)
     local m, n = #lst1, #lst2
@@ -721,8 +718,7 @@ do
 	n=n+1
 	if x > y then gt = gt + 1 end
 	if x < y then lt = lt + 1 end
-      end
-    end
+    end end
     return math.abs(gt-lt)/n
   end
 
@@ -742,8 +738,7 @@ do
 	push(t2,r()^0.5)
       end
       worker(10^i,t1,t2)
-    end
-  end
+  end end
 end
 ---------------------------------------------
 do
@@ -774,6 +769,5 @@ if arg and arg[1] then
       The[ arg[i+1] ] = with(The[ arg[i+1] ], settings())
       i = i + 2
       rseed()
-    end
-  end
+  end end
 end
