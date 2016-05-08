@@ -1,4 +1,5 @@
 ; -*- elisp -*-
+(progn
 (setq ispell-program-name "/usr/local/bin/ispell")
 
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
@@ -63,3 +64,4 @@
 
 (set-fill-column 70)
 
+)

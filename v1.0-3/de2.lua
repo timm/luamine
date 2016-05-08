@@ -10,23 +10,25 @@ The= {missing = "_",
       "debug","_VERSION","_G"}}
 
 function member(x,t)
-  for y in items(t) do
+  for _,y in pairs(t) do
     if x== y then return true end end
   return false
 end
 
+function eman(x)
+  for k,v in pairs(_G) do
+    if v==x then return k end
+end end
+ 
 do
   local y,n = 0,0
-  function eman(x)
-    for k,v in pairs(_G) do
-      if v==x then return k end
-  end end
+ 
   function rogue()
     local tmp={}
     for k,v in pairs( _G ) do
       if type(v) ~= 'function' then
-  if not member(k, The.builtin) then
-    table.insert(tmp,k) end end end
+	if not member(k, The.builtin) then
+	  table.insert(tmp,k) end end end
     table.sort(tmp)
     print("-- Globals: ",tmp)
   end
@@ -114,7 +116,7 @@ function _items()
   for x in items{10,20,30} do
     push(a,x) end
   assert(a[1] == 10 and a[2]==20 and a[3] == 30)
-  b= pushs({}, {10,20,30})
+  local b= pushs({}, {10,20,30})
   assert(b[1] == 10 and b[2]==20 and b[3] == 30)
 end
 
@@ -181,7 +183,7 @@ function any(t)
 end
 
 function _r()
-  n=5
+  local n=5
   rseed(n)
   local a,b = {},{}
   for i=1,n do push(a,r()) end
@@ -205,7 +207,7 @@ do
     return true
   end
   function tostring(t,seen)
-    if type(t) == 'function' then return "FUNC" end
+    if type(t) == 'function' then return "FUNC(".. (eman(t) or "") ..")" end
     if type(t) ~= 'table'    then return _tostring(t) end
     seen = seen and seen or {}
     if seen[t] then return "..." end
@@ -228,11 +230,11 @@ do
 end
 
 function _show()
-  local t1 = {kk=22,_ll=341,bb=31}
+  local t1 = {kk=22,_ll=341,bb=31,show=_show}
   t1.a = t1
   assert(tostring{1,2,3}          == "{1, 2, 3}")
   assert(tostring{aa=1,bb=2,cc=3} == "{aa=1, bb=2, cc=3}")
-  assert(tostring{3,2,1, t1}      == "{3, 2, 1, {a=..., bb=31, kk=22}}")
+  assert(tostring{3,2,1, t1}      == "{3, 2, 1, {a=..., bb=31, kk=22, show=FUNC(_show)}}")
  end
 
 -------------------------------------------------------
@@ -320,14 +322,14 @@ function row0(x,y)
   return {x=x, y=y, id=The.id}
 end
 ----------------------------------------------------
-function sp0(get)
+function tub0(get)
   The.id = The.id + 1
   return {abouts={}, _rows={}, n=0,
     get=get or same, id = The.id,
     dists={}, subs={}}
 end
 
-function sp1(i,row)
+function tub1(i,row)
   local once=false
   for pos,item in ipairs( i.get(row) ) do
     if item ~= The.missing then
@@ -481,15 +483,15 @@ function range(x,row,ranges)
 end
 
 --- XXX cluster here
-function cluster0(sp)
-  return {enough=0.5,    min=20, sp=sp, get=sp.get, deltac=0.1,
+function cluster0(tub)
+  return {enough=0.5,    min=20, tub=tub, get=tub.get, deltac=0.1,
     better = function (x,y) return false end, verbose=true,
     tooStrange=20, tiny=0.05,     ranges={}}
 end
 
-function cluster(sp,i)
-  i = i and i or cluster0(sp)
-  local tiny = #sp._rows ^ i.enough
+function cluster(tub,i)
+  i = i and i or cluster0(tub)
+  local tiny = #tub._rows ^ i.enough
   tiny = tiny > i.min and tiny or i.min
   ---------------------------
   local function project(here,one,c,west,east)
@@ -541,8 +543,8 @@ function cluster(sp,i)
   ------------------------------
   local function recurse(items, lvl)
     if i.verbose then print(string.rep("-- ",lvl), #items) end
-    local here = sp0(sp.get)
-    for item in items do sp1(here,item) end
+    local here = tub0(tub.get)
+    for item in items do tub1(here,item) end
     here.lvl     = lvl
     here.strange = 0
     if #items >= tiny then
@@ -555,15 +557,15 @@ function cluster(sp,i)
       end
     end
   end
-  return recurse(sp._rows, lvl)
+  return recurse(tub._rows, lvl)
 end
 -------------------------------------------------
 function twin0()
-  return {x=sp0(xx), y=sp0(yy)}
+  return {x=tub0(xx), y=tub0(yy)}
 end
 
-function twinx1(i,row) sp1(i.x,row) end
-function twiny1(i,row) sp1(i.y,row) end
+function twinx1(i,row) tub1(i.x,row) end
+function twiny1(i,row) tub1(i.y,row) end
 ---------------------------------------------------
 function def( txt, get, better)
   return {txt=txt, get=get, better=better}
