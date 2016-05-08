@@ -232,29 +232,61 @@ do
     seen = seen and seen or {}
     if seen[t] then return "..." end
     seen[t] = t
-    local out,pre  = {'{'},""
+     local out,sep= {'{'},""
     if stringkeys(t) then
       for k,v in keys(t) do
-  if k:sub(1,1) ~= "_" then
-    pushs(out,{pre,k,"=",tostring(v,seen)})
-    pre=", "
+	if k:sub(1,1) ~= "_" then
+	  pushs(out,{sep,k,"=",tostring(v,seen)})
+	  sep=", "
       end end
     else
       for item in items(t) do
-  pushs(out, {pre, tostring(item,seen)})
-  pre=", "
+	pushs(out, {sep, tostring(item,seen)})
+	sep=", "
     end end
     push(out,"}")
     return table.concat(out)
   end
 end
 
+do
+  local function is_t(x) return type(x) == "table" end
+  local function is_hidden(x)
+    return type(x)=="string" and  x:sub(1,1) == ".."
+  end
+  -------------------------------
+  local function showt1(t,spacing,seen)
+    if not is_t(t) then
+      print(spacing .. tostring(t))
+    else
+      if seen[t] then
+	print("..")
+      else
+	seen[t] = t
+	for k,v in keys(t) do
+	  if not is_hidden(k) then 
+	    print(spacing .. tostring(k),
+		  is_t(v) and "" or v)
+	    if is_t(v) then 
+	      showt1(v,spacing..'|   ',seen)
+  end end end end end end
+  -------------------------------
+  function showt(t)
+    print(""); showt1(t,"",{})
+  end 
+end
+
+table.print= showt
+
 function _show()
-  local t1 = {kk=22,_ll=341,bb=31}
+  local t1 = {kk=22,_ll=341,bb=31,cc={d44={ee={ff=2,gg={1,2,3,4,5}}}}}
   t1.a = t1
-  assert(tostring{1,2,3}          == "{1, 2, 3}")
-  assert(tostring{aa=1,bb=2,cc=3} == "{aa=1, bb=2, cc=3}")
-  assert(tostring{3,2,1, t1}      == "{3, 2, 1, {a=..., bb=31, kk=22}}")
+  showt(t1)
+  --assert(tostring{1,2,3,3}          == "{1, 2, 3, 3}")
+  --assert(tostring{aa=1,bb=2,cc=3} == "{aa=1, bb=2, cc=3}")
+  --assert(tostring{3,2,1, t1}      == "{3, 2, 1, {a=..., bb=31, cc={d44={ee={ff=2, gg={1, 2, 3, 4, 5}}}}, kk=22}}")
+  print("==")
+  showt(The)
  end
 
 -------------------------------------------------------
