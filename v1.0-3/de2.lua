@@ -2,12 +2,14 @@
 -- xx0(items), xx0() creates new "xx", initilize with items
 -- xx1(i, item) : increatement "i" of type "xx" with item
 
-The= {missing = "_",
-      id      = 0,
-      builtin = { "The","jit", "bit", "true","math",
-      "package","table","coroutine",
-      "os","io","bit32","string","arg",
-      "debug","_VERSION","_G"}}
+The={}
+The.all= {seed    = 10013,
+	  missing = "_",
+	  id      = 0,
+	  builtin = { "The","jit", "bit", "true","math",
+		      "package","table","coroutine",
+		      "os","io","bit32","string","arg",
+		      "debug","_VERSION","_G"}}
 
 function member(x,t)
   for _,y in pairs(t) do
@@ -27,7 +29,7 @@ do
     local tmp={}
     for k,v in pairs( _G ) do
       if type(v) ~= 'function' then
-	if not member(k, The.builtin) then
+	if not member(k, The.all.builtin) then
 	  table.insert(tmp,k) end end end
     table.sort(tmp)
     print("-- Globals: ",tmp)
@@ -67,11 +69,32 @@ end
 
 function copy(t) return map(t,same) end
 
+function deepcopy(t)
+  return type(t)=="table" and map(t,deepcopy) or t
+end
+
+function with(t1,t2)
+  t1 = deepcopy(t1)
+  for k,v in pairs(t2) do
+    assert(t1[k],"unknown key: "..k)
+    t1[k]=v
+  end
+  return t1
+end
+
+function fcreate(fs)
+  return assert(
+    loadstring(
+      "return function (x) return " .. fs.." end"))()
+end
+
 function _copy()
-  local t1 = {"aa","bb","cc","dd"}
-  local t2 = copy(t1)
+  local t1 = {"aa","bb","cc",dd={kk=3,ll=4}}
+  local t2 = deepcopy(t1)
   t2[1]="ee"
+  t2.dd.kk=30
   assert(t1[1] ~= "ee")
+  assert(t1.dd.kk ~= 30)
 end
 
 push = table.insert
@@ -169,8 +192,7 @@ do
     return seed / modulus
   end
   function rseed(n)
-    if n then seed = n else seed = seed0 end
-    randomtable = nil
+    seed = n and n or seed0
   end
   function r()
     return park_miller_randomizer()
@@ -212,32 +234,75 @@ do
     seen = seen and seen or {}
     if seen[t] then return "..." end
     seen[t] = t
-    local out,pre  = {'{'},""
+     local out,sep= {'{'},""
     if stringkeys(t) then
       for k,v in keys(t) do
-  if k:sub(1,1) ~= "_" then
-    pushs(out,{pre,k,"=",tostring(v,seen)})
-    pre=", "
+	if k:sub(1,1) ~= "_" then
+	  pushs(out,{sep,k,"=",tostring(v,seen)})
+	  sep=", "
       end end
     else
       for item in items(t) do
-  pushs(out, {pre, tostring(item,seen)})
-  pre=", "
+	pushs(out, {sep, tostring(item,seen)})
+	sep=", "
     end end
     push(out,"}")
     return table.concat(out)
   end
 end
 
+-- do
+--   _tostring = tostring
+--   local function is_t(x)      return type(x) == "table"  end
+--   local function is_s(x)      return type(x) == "string" end
+--   local function is_n(x)      return type(x) == "number" end
+--   local function is_hidden(x) return is_s(x) and x:sub(1,1) == "_" end
+--   function all_numericKeys(t)
+--     for key,_ in pairs(t) do
+--       if not is_n(key) then return false end
+--     end
+--     return true
+--   end
+--   -------------------------------
+--   local function tostring(t,spacing,seen,out)
+--     if not is_t(t) then
+--       push(out, spacing .. _tostring(t) )
+--     else
+--       if seen[t] then
+-- 	push(out, "..")
+--       else
+-- 	seen[t] = t
+-- 	if all_numericKeys(t) then
+-- 	  push(out, spacing .. _tostring(t))
+-- 	else
+-- 	  for k,v in keys(t) do
+-- 	    if not is_hidden(k) then
+-- 	      print("K>",k)
+-- 	      push(out, spacing .. _tostring(k) .. "\t ".. (not is_t(v) and _tostring(v) or ""))
+-- 	      if is_t(v) then
+-- 		tostring(v, spacing .. '|   ',seen,out)
+--     end end end end end end end
+--   -------------------------------
+--   function showt(t)
+--     local out = {}
+--     showt1(t, "", {}, out)
+--     print(out)
+--     return table.concat(out,"\n")
+--   end 
+-- end
+
+-- table.print= showt
+
 function _show()
-  local t1 = {kk=22,_ll=341,bb=31,show=_show}
+  local t1 = {kk=22,_ll=341,bb=31,cc={d44={ee={ff=2,gg={1,2,3,4,5}}}}}
   t1.a = t1
-  assert(tostring{1,2,3}          == "{1, 2, 3}")
+  assert(tostring{1,2,3,3}        == "{1, 2, 3, 3}")
   assert(tostring{aa=1,bb=2,cc=3} == "{aa=1, bb=2, cc=3}")
-  assert(tostring{3,2,1, t1}      == "{3, 2, 1, {a=..., bb=31, kk=22, show=FUNC(_show)}}")
+  assert(tostring{3,2,1, t1}      == "{3, 2, 1, {a=..., bb=31, cc={d44={ee={ff=2, gg={1, 2, 3, 4, 5}}}}, kk=22}}")
  end
 
 -------------------------------------------------------
+
 function num0(some)
   local i= {mu= 0, n= 0, m2= 0, up= -1e32, lo= 1e32, put=num1}
   for one in items(some) do
@@ -246,7 +311,7 @@ function num0(some)
 end
 
 function num1(i, one)
-  if one ~= The.missing then
+  if one ~= The.all.missing then
     i.n  = i.n + 1
     if one < i.lo then i.lo = one end
     if one > i.up then i.up = one end
@@ -279,7 +344,7 @@ function sym0(some)
 end
 
 function sym1(i, one)
-  if one ~= The.missing then
+  if one ~= The.all.missing then
     i.n  = i.n + 1
     local old = t.counts[one]
     local new = old and old + 1 or 1
@@ -289,7 +354,7 @@ function sym1(i, one)
 end end end
 
 function dist(i,a,b)
-  if (a == The.missing and b == The.missing) then
+  if (a == The.all.missing and b == The.all.missing) then
     return nil
   end
   if i.put == sym1 then
@@ -299,10 +364,10 @@ function dist(i,a,b)
   if a == b then
     return 0
   end
-  if     a == The.missing then
+  if     a == The.all.missing then
          b = norm(i, b)
          a = b > 0.5 and 0 or 1
-  elseif b == The.missing then
+  elseif b == The.all.missing then
          a = norm(i, a)
          b = b > 0.5 and 0 or 1
   else   a = norm(i, a)
@@ -316,23 +381,23 @@ function xx(z)   return z.x end
 function yy(z)   return z.y end
 
 function row0(x,y)
-  The.id = The.id + 1
+  The.all.id = The.all.id + 1
   x = x and x or {}
   y = y and y or {}
-  return {x=x, y=y, id=The.id}
+  return {x=x, y=y, id=The.all.id}
 end
 ----------------------------------------------------
 function tub0(get)
-  The.id = The.id + 1
+  The.all.id = The.all.id + 1
   return {abouts={}, _rows={}, n=0,
-    get=get or same, id = The.id,
-    dists={}, subs={}}
+	  get=get or same, id = The.all.id,
+	  dists={}, subs={}}
 end
 
 function tub1(i,row)
   local once=false
   for pos,item in ipairs( i.get(row) ) do
-    if item ~= The.missing then
+    if item ~= The.all.missing then
       once=true
       if not i.abouts[pos] then
   local tmp = tonumber(item)
@@ -388,7 +453,7 @@ function closest(i, row1)
   return furthest(i, row1, 1e32, lt)
 end
 --------------------------------------------------
-function bins0() return {
+The.bins0 =  {
     enough     = nil,
     cohen      = 0.3,
     maxBins    = 10,
@@ -396,7 +461,8 @@ function bins0() return {
     small      = nil,
     verbose    = false,
     trivial    = 1.05}
-end
+
+function bins0() return copy(The.bins0) end
 
 do
   local function bins1(i, nums, all, ranges,lvl)
@@ -482,11 +548,20 @@ function range(x,row,ranges)
   return r
 end
 
+
 --- XXX cluster here
-function cluster0(tub)
-  return {enough=0.5,    min=20, tub=tub, get=tub.get, deltac=0.1,
-    better = function (x,y) return false end, verbose=true,
-    tooStrange=20, tiny=0.05,     ranges={}}
+The.cluster0= {enough=0.5,
+	       min=20,
+	       deltac=0.1,
+	       verbose=true,
+	       tooStrange=20,
+	       tiny=0.05}
+
+function cluster0(sp)
+  return with(The.cluster0,
+	      {sp=sp, get=sp.get,ranges={},
+	       better = function (x,y) return false end,
+	       verbose=true})			  
 end
 
 function cluster(tub,i)
@@ -553,11 +628,9 @@ function cluster(tub,i)
               i.better(east,west),
               subs)
       for sub in items(here.subs) do
-  recurse(sub.items,lvl+1)
-      end
-    end
-  end
-  return recurse(tub._rows, lvl)
+	recurse(sub.items,lvl+1)
+  end end end
+  return recurse(sp._rows, lvl)
 end
 -------------------------------------------------
 function twin0()
@@ -628,21 +701,117 @@ end
 
 function _model2()
   local twin,all = _model1()
-  print("T>", twin.y.abouts[1])
+  print("T1>", twin.y.abouts[1])
+  print("T2>", twin.y.abouts[2])
   print("R>", #twin.x._rows)
   print("A>", all[1].y)
-  print("F>", furthest(twin.x, all[1]).y)
-  print("C>", closest( twin.x, all[1]).y)
+  print("F>", furthest(twin.y, all[1]).y)
+  print("C>", closest( twin.y, all[1]).y)
 end
 ----------------------------------------------
 
-if arg and arg[1] then
-  if arg[1] == "--tests" then
-    ok{_sort,   _items, _keys,
-       _r,      _show,
-       _model1, _model2}
-  elseif arg[1] == "--test" then
-    ok{loadstring("_" .. arg[2] .. "()")}
+The.cliffs={dull= 0.147} --small  0.33,  # medium   0.474 # large
+
+do
+  local function runs(t)
+    local i,old = 1,t[1]
+    return function ()
+      if i <= #t then
+	local buffer = {}
+	while old == t[i] do
+	  buffer[ #buffer+1 ] = t[i]
+	  i = i + 1
+	end
+	old = t[i]
+	return #buffer , t[i-1]
+  end end end
+
+  function cliffsDelta(lst1,lst2)
+    local m, n = #lst1, #lst2
+    lst2 = sort(lst2)
+    local j,more,less=1,0,0
+    for repeats,x in runs(sort(lst1)) do
+      while lst2[j] and lst2[j] <  x do 
+	j = j+1
+      end
+      more = more + (j-1)*repeats
+      while lst2[j] and lst2[j] == x do
+	j = j+1
+      end
+      less = less + (n - j +1)*repeats
+    end
+    local d= (more - less) / (m*n)
+    return math.abs(d)  --> The.cliffs.dull
   end
-  rogue()
+end
+
+function time(f,n)
+  n=n and n or 1
+  local m = n
+  local t1=os.clock()
+  local out
+  while m > 0 do m=m - 1; out=f(); end
+  return (os.clock() - t1)/n,out
+end
+
+do
+  local function cdSlow(t1,t2)
+    local n,gt,lt=0,0,0
+    for x in items(t1) do
+      for y in items(t2) do
+	n=n+1
+	if x > y then gt = gt + 1 end
+	if x < y then lt = lt + 1 end
+    end end
+    return math.abs(gt-lt)/n
+  end
+
+  local function worker(pre,t1,t2)
+      local n1,a=time(function () cliffsDelta(t1,t2) end,10)
+      local n2,b=time(function () cdSlow(t1,t2)      end,10)
+      print(pre,{fast=n1,slow=n2,delta=n2/n1})
+      assert(a == b)
+  end
+  
+  function _cliffs()
+    worker("simple",{1,2,3,4,5},{1,8,9,10,11})
+    for i=1,4 do
+      local t1,t2={},{}
+      for j=1,10^i do
+	push(t1, r()^2  )
+	push(t2, r()^0.5)
+      end
+      worker(10^i,t1,t2)
+  end end
+end
+---------------------------------------------
+do
+  local backup = deepcopy(The)
+  function reset(seed)
+    The = deepcopy(backup)
+    rseed(seed and seed or The.all.seed)
+    return The
+  end
+  reset()
+end
+
+if arg and arg[1] then
+  local i = 0
+  while i <= #arg do
+    i = i + 1
+    if arg[i] == "--tests" then
+      ok{_sort,   _items, _keys,
+	 _r,      _show,
+	 _model1, _model2}
+      rogue()
+    elseif arg[i] == "--test" then
+      ok{loadstring("_" .. arg[i+1] .. "()")}
+      rogue()
+    elseif arg[i] == "--with" then
+      -- eg --with cluster0 bin=01
+      local settings= fcreate("{" .. arg[i+2] .. "}")
+      The[ arg[i+1] ] = with(The[ arg[i+1] ], settings())
+      i = i + 2
+      rseed()
+  end end
 end
