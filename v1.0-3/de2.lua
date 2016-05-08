@@ -76,7 +76,6 @@ end
 function with(t1,t2)
   t1 = deepcopy(t1)
   for k,v in pairs(t2) do
-    assert(t1[k],"unknown key: "..k)
     t1[k]=v
   end
   return t1
@@ -557,16 +556,16 @@ The.cluster0= {enough=0.5,
 	       tooStrange=20,
 	       tiny=0.05}
 
-function cluster0(sp)
+function cluster0(tub)
   return with(The.cluster0,
-	      {sp=sp, get=sp.get,ranges={},
+	      {tub=tub, get=tub.get,ranges={},
 	       better = function (x,y) return false end,
 	       verbose=true})			  
 end
 
 function cluster(tub,i)
   i = i and i or cluster0(tub)
-  local tiny = #tub._rows ^ i.enough
+  local tiny = (#tub._rows) ^ i.enough
   tiny = tiny > i.min and tiny or i.min
   ---------------------------
   local function project(here,one,c,west,east)
@@ -604,8 +603,8 @@ function cluster(tub,i)
   end
   ------------------------------
   local function prune(noeast,nowest, branches)
-    local oddp =  number %2 == 1
-    local k,l,m =1, #branches, math.floor(#branches/2)
+    local oddp  =  #branches %2 == 1
+    local k,l,m = 1, #branches, math.floor(#branches/2)
     if noeast and nowest then
       return {}
     elseif noeast then
@@ -616,22 +615,34 @@ function cluster(tub,i)
     return sub(branches,k,l)
   end
   ------------------------------
-  local function recurse(items, lvl)
-    if i.verbose then print(string.rep("-- ",lvl), #items) end
+  local function recurse(pop, lvl)
+    if i.verbose then print(string.rep("-- ",lvl), #pop) end
     local here = tub0(tub.get)
-    for item in items do tub1(here,item) end
+    for item in items(pop) do tub1(here,item) end
     here.lvl     = lvl
     here.strange = 0
-    if #items >= tiny then
-      local west,east,subs = split(here, items)
-      here.subs = prune(i.better(west,east),
-              i.better(east,west),
-              subs)
+    if #pop >= tiny then
+      local west,east
+      west, east, here.subs = split(here, pop)
+      print("#",#here.subs)
+      print(here.subs)
+      -- why is items empty?
+      --here.subs = prune(i.better(west,east),
+	--		i.better(east,west),
+	--		subs)
       for sub in items(here.subs) do
 	recurse(sub.items,lvl+1)
   end end end
-  return recurse(sp._rows, lvl)
+  return recurse(tub._rows,0)
 end
+
+function _cluster()
+  local twin, all = _model1(100)
+  print(#twin.x._rows)
+  local i = cluster0(twin.x)
+  cluster(twin.x,i)
+end
+
 -------------------------------------------------
 function twin0()
   return {x=tub0(xx), y=tub0(yy)}
