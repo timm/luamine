@@ -1,17 +1,21 @@
-SEP        = ","
-WHITESPACE = "[ \t\n\r]*"
-COMMENTS   = "#.*"
+function show (x)
+  if #x > 0 then print(table.concat(x)) end
+end
 
-pre, line = "", io.read()
+cache, line = {}, io.read()
+
 while line ~= nil do
-  line = line:gsub(WHITESPACE,""):gsub(COMMENTS,"")
+  line = line:gsub("%s*(.-)%s*","%1") -- kill space around words
+             :gsub("[\t\n\r]*","")    -- kill other white space
+             :gsub("#.*","")          -- kill comments
   if line ~= "" then
-    if string.sub(line, -1) == SEP then
-      pre  = pre .. line
-    else
-      print(pre .. line)
-      pre = ""
+    cache[#cache + 1] = line       -- always cache current line
+    if string.sub(line, -1) ~= "," -- and if lines does not end with ","
+      then
+	show(cache)                -- dump cache
+	cache = {}                 -- reset cache
   end end
   line = io.read()
 end
-if string.len(pre) > 0 then print(line) end
+
+show(cache) 
