@@ -1,19 +1,22 @@
 require "tprint"
 
-SEP  = "([^,]+)" 
+local SEP  = "([^,]+)" 
+
+local function same(x) return x end
+local function nump(x) return string.find(x,"[<>\\$]") ~= nil end
 
 function tbl()
-  local n,t, line = 0, {cols={},rows={},nump={}}, io.read()
+  local n,t, line = 0, {cols={},rows={},prep={}}, io.read()
   return function ()
     while line ~= nil do
       local col,row = 0,{}
-      for z in string.gmatch(line, SEP ) do
+      for word in string.gmatch(line, SEP ) do
 	col = col + 1
 	if   n == 0
-        then t.nump[col] = string.find(z,"[<>\\$]") ~= nil
-	else z = t.nump[col] and tonumber(z) or z
+        then t.prep[col] = nump(word) and tonumber or same
+	else word = t.prep[col](word)
 	end
-	row[col] = z
+	row[col] = word
       end
       if   n == 0
       then t.cols = row
@@ -28,9 +31,7 @@ function tbl()
   end
 end
 
-t1=nil
 for t,row in tbl() do
-  t1= t
-  print(row[1], type(row[1]))
+   print(row[1], type(row[1]))
 end
-print(">>",t1.nump)
+print(">>",t1.prep)

@@ -6,7 +6,7 @@ cache, line = {}, io.read()
 
 while line ~= nil do
   line = line:gsub("%s*(.-)%s*","%1") -- kill space around words
-             :gsub("[\t\n\r]*","")    -- kill other white space
+             :gsub("['\"\t\n\r]*","")  -- kill white space
              :gsub("#.*","")          -- kill comments
   if line ~= "" then
     cache[#cache + 1] = line       -- always cache current line
