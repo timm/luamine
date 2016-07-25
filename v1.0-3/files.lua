@@ -4,7 +4,7 @@ IGNORE   = "?"             -- columns, cells to ignore
 PADDING  = "%s*(.-)%s*"    -- space around words
 COMMENTS = "#.*"           -- comments
 WANTS    = function (t)
-    return  {
+    return  { -- first entry is defult, rest are special cases
       {who= "_X_", what= sym0, wheres= {t.things, t.ins,  t.syms  }},
       {who= "$",   what= num0, wheres= {t.things, t.ins,  t.nums  }},
       {who= "<",   what= num0, wheres= {t.things, t.outs, t.nums, t.less}},
@@ -47,7 +47,7 @@ end end end
 
 function csv2tbl(f,     t)
   for row in csv(f) do
-    t = row1(t,row)
+    t = row1(row, t)
   end
   return t
 end
@@ -55,7 +55,7 @@ end
 function row1(row, t)
   local function whatWhere(cell,wanted)
     for _,want in pairs(wanted) do
-      if string.find(cell,what.who) ~= nil then
+      if string.find(cell,want.who) ~= nil then
 	return want.what, want.wheres
     end end
     return wanted[1].what, wanted[1].wheres
