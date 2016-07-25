@@ -30,7 +30,7 @@ end end
 function tostring(t,seen)
   if type(t) == 'function' then return "FUNC(".. (eman(t) or "") ..")" end
   if type(t) ~= 'table'    then return _tostring(t) end
-  seen = seen and seen or {}
+  seen = seen or {}
   if seen[t] then return "..." end
   seen[t] = t
   local out,sep= {'{'},""
