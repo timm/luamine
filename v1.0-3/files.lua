@@ -79,26 +79,30 @@ local function csv(f)
       line = io.read()
       if #row > 0 then return row end
 end end end
+
 ----------------------------------------------------------------
-local function row1(row, t)
-  local function whatWhere(cell)
+local function row1(cells, t)
+  table0 = {things={}, rows={}, less={}, more={}, outs={}, ins={}, syms={}, nums{}}
+  row0   = {id=nil, cells=nil, normy={}, normx={}}
+  ------------------------------
+  local function whatWhere(cell,t)
     local WANTS =  { -- first entry is defult, rest are special cases
-      {who= "_X_", what= sym0, wheres= {t.things, t.ins,  t.syms  }},
-      {who= "$",   what= num0, wheres= {t.things, t.ins,  t.nums  }},
-      {who= "<",   what= num0, wheres= {t.things, t.outs, t.nums, t.less}},
-      {who= ">",   what= num0, wheres= {t.things, t.outs, t.nums, t.more}},
-      {who= "=",   what= sym0, wheres= {t.things, t.outs, t.syms  }}} 
+      {what= "_X_", who= sym0, wheres= {t.things, t.ins,  t.syms  }},
+      {what= "$",   who= num0, wheres= {t.things, t.ins,  t.nums  }},
+      {what= "<",   who= num0, wheres= {t.things, t.outs, t.nums, t.less}},
+      {what= ">",   who= num0, wheres= {t.things, t.outs, t.nums, t.more}},
+      {what= "=",   who= sym0, wheres= {t.things, t.outs, t.syms  }}} 
     local DEFAULT = WANTS[1]
     for _,want in pairs(WANTS) do
-      if string.find(cell,want.who) ~= nil then
-	return want.what, want.wheres
+      if string.find(cell,want.what) ~= nil then
+	return want.who, want.wheres
     end end
-    return DEFAULT.what, DEFAULT.wheres
+    return DEFAULT.who, DEFAULT.wheres
   end
   ------------------------------
-  local function header(row,t)
-    for col,cell in ipairs(row) do
-      local what, wheres = whatWheres(cell)
+  local function header(t)
+    for col,cell in ipairs(cells) do
+      local what, wheres = whatWheres(cell,t)
       local thing = what()
       thing.col = col
       for _,where in ipair(wheres) do
@@ -107,22 +111,18 @@ local function row1(row, t)
     return t
   end
   ------------------------------
-  local function data(row,t) 
-    nrows = nrows+1
-    local new= {id=nrows, cells=row,normy={},normx={}}
-    t.rows[nrows] = new
+  local function data(t,row) 
+    nrows         = nrows+1
+    row.id        = nrows
+    row.cells     = cells
+    t.rows[nrows] = row
     for _,thing in pairs(t.things) do
-      thing1(thing, row[thing.col])
+      thing1(thing, cells[thing.col])
     end
     return t
   end
   -----------------------------
-  if t then
-    return data(row,t)
-  else
-    return header(row,{things={}, rows={}, less={}, more={},
-		       outs={},   ins={},  syms={}, nums{} })
-  end
+  return t and data(t,row0) or header(table0)
 end
 
 local function csv2tbl(f,     t)
