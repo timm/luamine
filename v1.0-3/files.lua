@@ -1,63 +1,58 @@
-local IGNORE = "?"             -- columns, cells to ignore
-local NROWS  = 0 -- counter for unique row ids (do not change)
-local SYM    = {n=0, counts={}, most=0, mode=nil }
-local NUM    = {n=0, mu=0, m2=0, up=-1e32, lo=1e32}
-local ROW    = {id=nil, cells=nil, normy={}, normx={}}
-local TBL    = {things={}, rows={}, less={}, more={},
-	        outs={}, ins={}, syms={}, nums{}}
-----------------------------------------------------------------
-local function same(x) return x end
+require "lib"
 
-local function map(t,f)
-  if t then
-    for i,v in pairs(t) do f(v)
-end end end
-
-local function collect(t,f)
-  out={}
-  if t then  
-    for i,v in pairs(t) do out[i] = f(v) end end
-  return out
-end 
-
-local function copy(t)
-  return collect(t,same)
+local IGNORE = "?"    -- marks which columns or cells to ignore
+local NROWS  = 0      -- counter for unique row ids 
+local function SYM()  return {n=0, counts={}, most=0, mode=nil } end
+local function NUM()  return {n=0, mu=0, m2=0, up=-1e32, lo=1e32} end
+local function TBL(t) return {things={}, _rows={}, less={}, ynums={}, xnums={},
+			      more={},   spec=t,  outs={},
+			      ins={},    syms={}, nums={}} end
+local function ROW(t)
+  NROWS = NROWS+1
+  return {id=NROWS, cells=t, normy={}, normx={}} 
 end
 
+local function nump(x) return x.mu ~= nil end
 ----------------------------------------------------------------
-local function thing1(i,one)
-  local function sym1()
+local function sym1(i,one)
+  if one ~= IGNORE then
+    i.n = i.n + 1
     local old = i.counts[one]
     local new = old and old + 1 or 1
     i.counts[one] = new
     if new > i.most then
       i.most, i.mode = new,one
-    end
-  end
-  local function num1()
+end end end
+
+local function num1(i,one)
+  if one ~= IGNORE then
+    i.n = i.n + 1
     if one < i.lo then i.lo = one end
     if one > i.up then i.up = one end
     local delta = one - i.mu
     i.mu = i.mu + delta / i.n
     i.m2 = i.m2 + delta * (one - i.mu)
-  end
-  if one ~= IGNORE then
-    i.n = i.n + 1
-    if i.mu == nil then sym1() else num1() end
-    return i
 end end
 
-local function things(i,t)
-  map(t, function (one) thing1(i,one) end)
-  return i
+local function thing1(i,one)
+  return (nump(i) and num1 or sym1)(i,one)
 end
 
-local function sym0(t) return things(copy(SYM),t) end
-local function num0(t) return things(copy(NUM),t) end
+local function sym0(inits) return map2(inits, SYM(), sym1) end
+local function num0(inits) return map2(inits, NUM(), num1) end
 
 local function sd(i)     return i.n <= 1 and 0 or (i.m2 / (i.n - 1))^0.5 end
-local function norm(i,x) return (x - i.lo) / (i.up - i.lo + 1e-32)     end
+local function norm(i,x)
+  if x==IGNORE then return x end
+  return (x - i.lo) / (i.up - i.lo + 1e-32)     end
 
+local function ent(i)
+  local e = 0
+  for _,f in pairs(i.counts) do
+    e = e + (f/i.n) * math.log((f/i.n), 2)
+  end
+  return -1*e
+end
 ----------------------------------------------------------------
 local function csv(f)
   local sep      = "([^,]+)"       -- cell seperator
@@ -96,13 +91,13 @@ end end end
 ----------------------------------------------------------------
 local function row1(cells, t)
   local function whoWheres(cell,t)
-    local wants =  { 
-      {what= "$", who= num0, wheres= {t.things, t.ins,  t.nums  }},
-      {what= "<", who= num0, wheres= {t.things, t.outs, t.nums, t.less}},
-      {what= ">", who= num0, wheres= {t.things, t.outs, t.nums, t.more}},
-      {what= "=", who= sym0, wheres= {t.things, t.outs, t.syms  }},
-      {what= "",  who= sym0, wheres= {t.things, t.ins,  t.syms  }}}
-    for _,want in pairs(wants) do
+    local spec =  { 
+      {what= "%$", who= num0, wheres= {t.things, t.ins,  t.nums, t.xnums  }},
+      {what= "<",  who= num0, wheres= {t.things, t.outs, t.nums, t.less, t.ynums}},
+      {what= ">",  who= num0, wheres= {t.things, t.outs, t.nums, t.more, t.ynums}},
+      {what= "=",  who= sym0, wheres= {t.things, t.outs, t.syms  }},
+      {what= "",   who= sym0, wheres= {t.things, t.ins,  t.syms  }}}
+    for _,want in pairs(spec) do
       if string.find(cell,want.what) ~= nil then
 	return want.who, want.wheres
   end end end
@@ -112,45 +107,67 @@ local function row1(cells, t)
       local who, wheres = whoWheres(cell,t)
       local thing = who()
       thing.col = col
-      for _,where in ipair(wheres) do
+      thing.txt = cell
+      for _,where in ipairs(wheres) do
 	where[ #where + 1 ] = thing
     end end
     return t
   end
   ------------------------------
   local function data(t,row) 
-    NROWS         = NROWS+1
-    row.id        = nrows
-    row.cells     = cells
-    t.rows[nrows] = row
+    t._rows[row.id] = row
     for _,thing in pairs(t.things) do
-      thing1(thing, cells[thing.col])
+      local passed,err = pcall(function () thing1(thing, cells[thing.col]) end)
+      if not passed then
+	print('read fail>', thing.txt, thing.col, cells[thing.col], err)
+      end
     end
     return t
   end
   -----------------------------
-  return t and data(t,copy(ROW)) or header(copy(TBL))
+  return t and data(t, ROW(cells)) or header(TBL(cells))
 end
 
-local function csv2tbl(f,     t)
+function csv2tbl(f,     t)
   for row in csv(f) do
     t = row1(row, t)
+  end
+  for _,row in pairs(t._rows) do
+    for _,thing in pairs(t.ynums) do
+      row.normy[#tow.normy + 1] = norm(thing, row.cells[thing.col])
+    end
+    for _,thing in pairs(t.xnums) do
+      row.normx[#row.normx + 1] = norm(thing, row.cells[thing.col])
+    end 
   end
   return t
 end
 
+function _csv()
+  local n=0
+  for line in csv('../data/weather.csv') do
+    n= n+1
+    if line then
+      print(n,#line, table.concat(line,","))
+end end end
 
--- n=0
--- for line in cells() do
---   n= n+1
---   if line then
---     print(n,#line, table.concat(line,","))
---   end
--- end
+function _row()
+  local t = csv2tbl('../data/autos.arff')
+  for _,thing in pairs(t.nums) do
+    print(thing.txt, {mu=f5(thing.mu), sd=f5(sd(thing)), lo=thing.lo,up=thing.up})
+  end
+  for _,thing in pairs(t.syms) do
+    print(thing.txt, {mode=thing.mode, most=thing.most,
+		      ent=f5(ent(thing))},thing.counts)
+  end
+  for _,row in pairs(t._rows) do
+    print(row.normy)
+  end
+end
 
-return {map=map,same=same,
-	num0=num0, sym0=sym0,
-	thing1 = thing1,
-	sd=sd, norm=norm,
-	row1=row1,
-	csv2tbl=csv2tbl, csv=csv}
+if arg[1]=='--run' then
+  loadstring(arg[2] .. '()')()
+end
+
+
+rogue()

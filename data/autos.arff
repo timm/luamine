@@ -102,7 +102,7 @@
  make,
  fuel-type,
  aspiration,
- $num-of-doors,
+ num-of-doors,
  body-style,
  drive-wheels,
  engine-location,
