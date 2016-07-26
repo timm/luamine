@@ -218,9 +218,6 @@ function nwhere( population, cull,stop)
 	return split(items, mid, item, east, redo-1)
     end end
     table.sort(items,function (r1,r2) return xs[r1.id] < xs[r2.id] end)
-    lefts=sub(items,1,mid)
-    rights=sub(items,mid+1)
-    print(#items, #lefts, #rights, #lefts+#rights)
     return west, east, sub(items,1,mid), sub(items,mid+1)
   end
   ------------------------------------------------------
