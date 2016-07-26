@@ -129,18 +129,7 @@ local function row1(cells, t)
 end
 
 function csv2tbl(f,     t)
-  for row in csv(f) do
-    t = row1(row, t)
-  end
-  print(t.ynums)
-  for _,row in pairs(t._rows) do
-    for _,thing in pairs(t.ynums) do
-      row.normy[#row.normy + 1] = norm(thing, row.cells[thing.col])
-    end
-    for _,thing in pairs(t.xnums) do
-      row.normx[#row.normx + 1] = norm(thing, row.cells[thing.col])
-    end 
-  end
+  for row in csv(f) do t = row1(row, t) end
   return t
 end
 
@@ -165,8 +154,85 @@ function _row()
   for _,row in pairs(t._rows) do
     print(row.normy)
   end
+  normys(t)
+  nwhere(t._rows)
 end
 
+function normys(t)
+  for _,row in pairs(t._rows) do
+    for _,thing in pairs(t.ynums) do
+      row.normy[#row.normy+1] =
+         norm(thing, row.cells[thing.col]) end end
+  return t
+end
+ 
+function nwhere( population, cull,stop)
+  local cull= cull or 0.5
+  local stop= stop or 20
+  ------------------------------------------------------
+  local function  dist(r1,r2)
+    local sum, n = 0,  0
+    for i, y1 in pairs(r1.normy) do
+      local y2 = r2.normy[i]
+      if not (y2 == IGNORE and y1 == IGNORE) then
+	
+	if y2==IGNORE then
+	  y2 = y1 < 0.5 and 1 or 0 end
+	if y1==IGNORE then
+	  y1 = y2 < 0.5 and 1 or 0 end
+	sum = sum + (y1 -  y2)^2
+	n = n + 1
+    end end
+    return sum^0.5 / n^0.5
+  end
+  ------------------------------------------------------
+  local function furthest(r1, items)
+    local out,most=r1,0
+    for _,r2 in pairs(items) do
+      local d = dist(r1,r2)
+      if d > most then
+	out,most = r2,d end end
+    return out
+  end
+  ------------------------------------------------------
+  local function split(items, mid,west,east,redo)
+    redo= redo or 20
+    assert(redo > 0,"max depth exceeded")
+    local cos = function (a,b,c) return (a*a + c*c - b*b) / (2*c + 0.0001) end
+    local west = west or furthest(any(items),items)
+    local east = east or furthest(west, items)
+    while east.id == west.id do
+      east = any(items)
+    end
+    local c = dist(west,east)
+    local xs = {}
+    for n,item in pairs(items) do
+      local a = dist(item,west)
+      local b = dist(item,east)
+      xs[ item.id ] = cos(a,b,c)
+      if a > c then
+	dot(">".. #n.." ")
+	return split(items, mid, west, item, redo-1)
+      elseif b > c then
+	dot("<"..#n.." ")
+	return split(items, mid, item, east, redo-1)
+    end end
+    table.sort(items,function (r1,r2) return xs[r1.id] < xs[r2.id] end)
+    return west, east, sub(items,1,mid), sub(items,mid+1)
+  end
+  ------------------------------------------------------
+  local function cluster(items,out)
+    if #items < max((#population)^cull,stop) then
+      out[#out+1] = items
+    else
+      local west,east,left,right = split(items, round(#items/2))
+      cluster(left,out)
+      cluster(right,out)
+  end end
+  ------------------------------------------------------
+  return cluster(copy(population), {})
+end
+ 
 if arg[1]=='--run' then
   loadstring(arg[2] .. '()')()
 end
