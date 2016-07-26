@@ -132,9 +132,10 @@ function csv2tbl(f,     t)
   for row in csv(f) do
     t = row1(row, t)
   end
+  print(t.ynums)
   for _,row in pairs(t._rows) do
     for _,thing in pairs(t.ynums) do
-      row.normy[#tow.normy + 1] = norm(thing, row.cells[thing.col])
+      row.normy[#row.normy + 1] = norm(thing, row.cells[thing.col])
     end
     for _,thing in pairs(t.xnums) do
       row.normx[#row.normx + 1] = norm(thing, row.cells[thing.col])
@@ -160,6 +161,7 @@ function _row()
     print(thing.txt, {mode=thing.mode, most=thing.most,
 		      ent=f5(ent(thing))},thing.counts)
   end
+  print(t.ynums)
   for _,row in pairs(t._rows) do
     print(row.normy)
   end
