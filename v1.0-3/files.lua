@@ -210,7 +210,6 @@ function nwhere( population, cull,stop)
       local a = dist(item,west)
       local b = dist(item,east)
       xs[ item.id ] = cos(a,b,c)
-      print(n,xs[item.id])
       if a > c then
 	dot(">".. n.." ")
 	return split(items, mid, west, item, redo-1)
@@ -219,15 +218,17 @@ function nwhere( population, cull,stop)
 	return split(items, mid, item, east, redo-1)
     end end
     table.sort(items,function (r1,r2) return xs[r1.id] < xs[r2.id] end)
-    return west, east, sub(items,1,mid-1), sub(items,mid)
+    lefts=sub(items,1,mid)
+    rights=sub(items,mid+1)
+    print(#items, #lefts, #rights, #lefts+#rights)
+    return west, east, sub(items,1,mid), sub(items,mid+1)
   end
   ------------------------------------------------------
   local function cluster(items,out)
     if #items < max((#population)^cull,stop) then
       out[#out+1] = items
     else
-      print(">>",round(#items/2),#items)
-      local west,east,left,right = split(items, round(#items/2))
+      local west,east,left,right = split(items, math.floor(#items/2))
       cluster(left,out)
       cluster(right,out)
   end end
