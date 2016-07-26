@@ -14,7 +14,7 @@ function dot(x) io.write(x); io.flush() end
 
 function any(t)
   local pos =  math.floor(0.5 + r() * #t)
-  return t[ min(#t, pos) ]
+  return t[ min(#t,max(1,pos)) ]
 end
 
 function sub(t, first, last)
@@ -46,10 +46,6 @@ do
   end
 end
 
-function any(t)
-  local pos =  math.floor(0.5 + r() * #t)
-  return t[ min(#t, pos) ]
-end
 
 -------------------------------------------------------
 function map(t,f)
@@ -186,4 +182,27 @@ function tostring(t,seen)
   end end
   out[#out+1] = "}"
   return table.concat(out)
+end
+-------------------------------------------
+do
+  local y,n = 0,0
+  -------------------------------
+  local function report()
+    print(string.format(
+	    ":PASS %s :FAIL %s :percentPASS %s%%",
+	    y,n,math.floor(0.5 + 100*y/(0.001+y+n)))) end
+  -------------------------------
+  local function test(s,x)
+    print("\n",string.rep("-",20))
+    print("-- test:", s,eman(x))
+    y = y + 1
+    local passed,err = pcall(x)
+    if not passed then
+      n = n + 1
+      print("Failure: ".. err) end end
+  -------------------------------
+  function ok(t)
+    if   not t then report()
+    else for s,x in pairs(t) do test(s,x) end
+         report() end end
 end

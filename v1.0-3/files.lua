@@ -34,6 +34,14 @@ local function num1(i,one)
     i.m2 = i.m2 + delta * (one - i.mu)
 end end
 
+function unnum(i, one)
+  if one ~= IGNORE then
+    i.n  = i.n - 1
+    local delta = one - i.mu
+    i.mu = i.mu - delta/i.n
+    i.m2 = i.m2 - delta*(one - i.mu) -- untrustworthy for very small n and z
+end end
+
 local function thing1(i,one)
   return (nump(i) and num1 or sym1)(i,one)
 end
@@ -133,7 +141,7 @@ function csv2tbl(f,     t)
   return t
 end
 
-function _csv()
+function _csv()   
   local n=0
   for line in csv('../data/weather.csv') do
     n= n+1
@@ -143,19 +151,20 @@ end end end
 
 function _row()
   local t = csv2tbl('../data/autos.arff')
-  for _,thing in pairs(t.nums) do
-    print(thing.txt, {mu=f5(thing.mu), sd=f5(sd(thing)), lo=thing.lo,up=thing.up})
-  end
-  for _,thing in pairs(t.syms) do
-    print(thing.txt, {mode=thing.mode, most=thing.most,
-		      ent=f5(ent(thing))},thing.counts)
-  end
-  print(t.ynums)
-  for _,row in pairs(t._rows) do
-    print(row.normy)
-  end
+  -- for _,thing in pairs(t.nums) do
+  --   print(thing.txt, {mu=f5(thing.mu), sd=f5(sd(thing)), lo=thing.lo,up=thing.up})
+  -- end
+  -- for _,thing in pairs(t.syms) do
+  --   print(thing.txt, {mode=thing.mode, most=thing.most,
+  -- 		      ent=f5(ent(thing))},thing.counts)
+  -- end
+  
   normys(t)
-  nwhere(t._rows)
+  print("======")
+  for i,rows in pairs(nwhere(t._rows,true)) do
+    print(i,#rows)
+    for _,row in pairs(rows) do
+      row.cluster = i end end
 end
 
 function normys(t)
@@ -165,20 +174,27 @@ function normys(t)
          norm(thing, row.cells[thing.col]) end end
   return t
 end
+
+function z(t)
+  for i,pop in pairs(t) do
+    if pop== nil then
+      print(">>",i)
+end end end
  
-function nwhere( population, cull,stop)
-  local cull= cull or 0.5
-  local stop= stop or 20
+function nwhere( population, verbose,cull,stop)
+  local verbose = verbose or false
+  local cull    = cull or 0.5
+  local stop    = stop or 20
+  local enough  =  max((#population)^cull,stop)
   ------------------------------------------------------
   local function  dist(r1,r2)
-    local sum, n = 0,  0
+    local sum, n = 0,  1e-32
     for i, y1 in pairs(r1.normy) do
       local y2 = r2.normy[i]
       if not (y2 == IGNORE and y1 == IGNORE) then
-	
-	if y2==IGNORE then
+	if y2 == IGNORE then
 	  y2 = y1 < 0.5 and 1 or 0 end
-	if y1==IGNORE then
+	if y1 == IGNORE then
 	  y1 = y2 < 0.5 and 1 or 0 end
 	sum = sum + (y1 -  y2)^2
 	n = n + 1
@@ -198,13 +214,14 @@ function nwhere( population, cull,stop)
   local function split(items, mid,west,east,redo)
     redo= redo or 20
     assert(redo > 0,"max depth exceeded")
-    local cos = function (a,b,c) return (a*a + c*c - b*b) / (2*c + 0.0001) end
+    local cos = function (a,b,c)
+                   return (a*a + c*c - b*b) / (2*c + 0.0001) end 
     local west = west or furthest(any(items),items)
     local east = east or furthest(west, items)
     while east.id == west.id do
       east = any(items)
     end
-    local c = dist(west,east)
+    local c  = dist(west,east)
     local xs = {}
     for n,item in pairs(items) do
       local a = dist(item,west)
@@ -221,18 +238,31 @@ function nwhere( population, cull,stop)
     return west, east, sub(items,1,mid), sub(items,mid+1)
   end
   ------------------------------------------------------
-  local function cluster(items,out)
-    if #items < max((#population)^cull,stop) then
+  local function cluster(items,out,lvl)
+    lvl = lvl or 1
+    if verbose then
+      print(string.format("%6s ",#items)..string.rep("|..",lvl-1)) end
+    if #items < enough then
       out[#out+1] = items
     else
       local west,east,left,right = split(items, math.floor(#items/2))
-      cluster(left,out)
-      cluster(right,out)
-  end end
+      cluster(left,  out, lvl+1)
+      cluster(right, out, lvl+1)
+    end
+    return out
+  end
   ------------------------------------------------------
   return cluster(copy(population), {})
 end
- 
+
+function div(items,label,x,y)
+  label=label or 1
+  x = x or same
+  y = x or same
+  function divide(lst,out,lvl,cut)
+  end
+end
+
 if arg[1]=='--run' then
   loadstring(arg[2] .. '()')()
 end
