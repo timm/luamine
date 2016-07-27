@@ -26,12 +26,12 @@ local function TBL(t) return {
 end
 
 local function RANGE(t) return {
-    label=t.label, score=t.score, report=t.report, has=t.has,
+    label=t.label, score=t.score, x=t.x, y=t.y, has=t.has,
     n=t.n, id=t.id, lo=t.lo, up=t.up}
 end
 
 local function RANGES(t) return plus(
-    {label=1, x=first, y=last, verbose=true,
+    {label=1, x=first, y=last, verbose=false,
      trivial=1.05, cohen=0.3, tiny=nil,
      enough=nil},t)
 end
@@ -321,7 +321,8 @@ function ranges1(items,o)
     local ylhs, yrhs   = sym0(), sym0(collect(items,o.y))
     local score,score1 = ent(yrhs), nil
     local k0,e0,ke0    = ke(yrhs) 
-    local report       = copy(yrhs)
+    local reportx       = copy(xrhs)
+    local reporty      = copy(yrhs)
     local n            = #items
     local start, stop  = o.x(first(items)), o.x(last(items))
     for i,new in pairs(items) do
@@ -336,23 +337,24 @@ function ranges1(items,o)
 	  if xlhs.n >= o.enough then
 	    if x1 - start > o.tiny then
 	      if stop - x1 > o.tiny then
-		local score1 = xpect(ylhs,yrhs,n)
-		if score1 * o.trivial < score then
-		  local gain       = e0 - score1
-		  local k1,e1, ke1 = ke(yrhs) -- k1,e1 not used
-		  local k2,e2, ke2 = ke(ylhs) -- k2,e2 not used
-		  local delta      = math.log(3^k0 - 2,2) - (ke0 - ke1 - ke2)
-		  local border     = (math.log(n-1,2)  + delta) / n
-		  if gain > border then
-		    cut,score = i,score1 end end end end end end end
+		if x1 < o.x(items[i+1])  then
+		  local score1 = xpect(ylhs,yrhs,n)
+		  if score1 * o.trivial < score then
+		    local gain       = e0 - score1
+		    local k1,e1, ke1 = ke(yrhs) -- k1,e1 not used
+		    local k2,e2, ke2 = ke(ylhs) -- k2,e2 not used
+		    local delta      = math.log(3^k0 - 2,2) - (ke0 - ke1 - ke2)
+		    local border     = (math.log(n-1,2)  + delta) / n
+		    if gain > border then
+		      cut,score = i,score1 end end end end end end end end
     end -- for loop
     if o.verbose then
       print(s5(n),nstr('|..',lvl)) end
     if cut then
-      divide( sub(items,1,cut), out, lvl+1)
+      divide( sub(items,1,   cut), out, lvl+1)
       divide( sub(items,cut+1), out, lvl+1)
     else
-      out[#out+1] = RANGE{label=o.label,score=score,report=report,
+      out[#out+1] = RANGE{label=o.label,score=score,x=reportx,y=reporty,
 			  n=n, id=#out, lo=start, up=stop, _has=items}
     end
     return out
@@ -374,29 +376,32 @@ function _ranges1()
   local t1 = shuffle(t)
   print("===")
   for _,r in pairs(ranges1(t1,RANGES{verbose=true})) do
-    print(r)
+    print(r,ent(r.y))
   end
 end
 
-function xx(col)
-  print(col)
-  return (function (z) return z.cells[col] end)
-end
-function yy()
-  return function (w) return w.cluster end
-end
+--- ranges needs repportx and reporty.
+--- looke like tostring is eating all numberic idenxes
 
 function _ranges2()
   local t= csv2tbl('../data/autos.arff')
   normys(t)
   print("======")
   for i,rows in pairs(nwhere(t._rows,{verbose=true})) do
-    print(i,#rows)
     for _,row in pairs(rows) do
-      row.cluster = i end end
-  for _,thing in pairs(t.nums) do
-    r = ranges1(t._rows,RANGES{x=xx(thing.col) ,  y=yy})
-    print("num",thing.col,#r)
+      t._rows[row.id].cluster  = "C"..i end end
+  for _,thing in pairs(t.xnums) do
+    local rs = ranges1(t._rows,
+		      RANGES{x=function (z) return z.cells[thing.col] end,
+			     y=function (z) return z.cluster end
+                            })
+    if #rs > 1 then
+      print("\nnum",thing.txt,thing.col,#rs)
+      for _,r in pairs(rs) do
+	print(r.lo, r.up, ent(r.y))
+      end
+    end
+    
   end
 end
 

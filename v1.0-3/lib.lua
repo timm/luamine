@@ -94,7 +94,7 @@ function select(t,f)
   if t then  
     for i,v in pairs(t) do
       if f(v) then
-	out[i] = v  end end end
+	out[#out + 1] = v  end end end
   return out
 end 
 
@@ -203,8 +203,10 @@ local function eman(x)
 end end
 
 function tostring(t,seen)
+  -- if type(t) == 'number' then return f3(t) end
   if type(t) == 'function' then return "FUNC(".. (eman(t) or "") ..")" end
   if type(t) ~= 'table'    then return _tostring(t) end
+  
   seen = seen or {}
   if seen[t] then return "..." end
   seen[t] = t
