@@ -2,6 +2,9 @@ function max(a,b) return a > b and a or b end
 function min(a,b) return a < b and a or b end
 function abs(x)   return x >= 0 and x or -1*x end
 
+function first(x) return x[1]  end
+function last(x)  return x[#x] end
+
 function round(num, idp)
   if idp and idp>0 then
     local mult = 10^idp
@@ -9,6 +12,17 @@ function round(num, idp)
   end
   return math.floor(num + 0.5)
 end
+
+function shuffle( t )
+  local i = #t + 1
+  while i >= 1 do
+    i = i - 1
+    local j = min(#t,max(1, math.floor(r()*i)))
+    t[i], t[j] = t[j], t[i]
+  end
+  return t
+end
+
 
 function dot(x) io.write(x); io.flush() end
 
@@ -205,4 +219,9 @@ do
     if   not t then report()
     else for s,x in pairs(t) do test(s,x) end
          report() end end
+end
+
+------------
+for i=1,100 do
+  print(shuffle{1,2,3,4,5,6})
 end

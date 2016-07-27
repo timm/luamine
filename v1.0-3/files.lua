@@ -1,15 +1,22 @@
 require "lib"
 
 local IGNORE = "?"    -- marks which columns or cells to ignore
-local NROWS  = 0      -- counter for unique row ids 
-local function SYM()  return {n=0, counts={}, most=0, mode=nil } end
-local function NUM()  return {n=0, mu=0, m2=0, up=-1e32, lo=1e32} end
-local function TBL(t) return {things={}, _rows={}, less={}, ynums={}, xnums={},
-			      more={},   spec=t,  outs={},
-			      ins={},    syms={}, nums={}} end
-local function ROW(t)
-  NROWS = NROWS+1
-  return {id=NROWS, cells=t, normy={}, normx={}} 
+
+local _ID = 0
+local function ID() _ID = _ID + 1; return _ID end 
+
+local function SYM()  return {n=0,       counts={}, most=0,   mode=nil         } end
+local function NUM()  return {n=0,       mu=0,      m2=0,     up=-1e32, lo=1e32} end
+local function ROW(t) return {id=ID(),   cells=t,   normy={}, normx={}         } end
+
+local function TBL(t) return {
+    things={}, _rows={},  less={},  ynums={}, xnums={},
+    more={},   spec=t,    outs={},  ins={},   syms={}, nums={}}
+end
+
+local function RANGE(t) return {
+    label=t.label,  score=t.score, report=t.report, has=t.has,
+    n=t.n,          id=t.id,       lo=t.lo,         up=t.up}
 end
 
 local function nump(x) return x.mu ~= nil end
@@ -42,17 +49,27 @@ function unnum(i, one)
     i.m2 = i.m2 - delta*(one - i.mu) -- untrustworthy for very small n and z
 end end
 
-local function thing1(i,one)
-  return (nump(i) and num1 or sym1)(i,one)
-end
+function unsym(i, one)
+  if one ~= IGNORE then
+    i.n  = i.n - 1
+    i.most,i.mode = 0,nil
+    i.counts[one] = i.counts[one] - 1
+end end
+
+local function thing1(i,one)   return (nump(i) and num1  or sym1 )(i,one) end
+local function unthing1(i,one) return (nump(i) and unnum or unsym)(i,one) end
 
 local function sym0(inits) return map2(inits, SYM(), sym1) end
 local function num0(inits) return map2(inits, NUM(), num1) end
 
-local function sd(i)     return i.n <= 1 and 0 or (i.m2 / (i.n - 1))^0.5 end
+local function sd(i)
+  return i.n <= 1 and 0 or (i.m2 / (i.n - 1))^0.5
+end
+
 local function norm(i,x)
   if x==IGNORE then return x end
-  return (x - i.lo) / (i.up - i.lo + 1e-32)     end
+  return (x - i.lo) / (i.up - i.lo + 1e-32)
+end
 
 local function ent(i)
   local e = 0
@@ -61,6 +78,18 @@ local function ent(i)
   end
   return -1*e
 end
+
+local function ke(i)
+  local e,k = 0,0
+  for _,f in pairs(i.counts) do
+    e = e + (f/i.n) * math.log((f/i.n), 2)
+    k = k + 1
+  end
+  e = -1*e
+  return k,e,k*e
+end
+
+
 ----------------------------------------------------------------
 local function csv(f)
   local sep      = "([^,]+)"       -- cell seperator
@@ -255,14 +284,71 @@ function nwhere( population, verbose,cull,stop)
   return cluster(copy(population), {})
 end
 
-function div(items,label,x,y)
-  label=label or 1
-  x = x or same
-  y = x or same
-  function divide(lst,out,lvl,cut)
+
+function ranges(items,label,x,y, trivial,verbose, cohen, tiny, enough)
+  label   = label or 1
+  x       = x or first
+  y       = x or last
+  trivial = trivial or 1.05
+  verbose = verbose or false
+  cohen   = cohen or 0.3
+  tiny    = tiny or num0(map(items,x)).sd() * cohen
+  enough  = enough or #items^0.5
+  local function xpect(l,r,n) return l.n/n*ent(l) + r.n/n*ent(r) end
+  local function divide(items,out,lvl,cut)
+    local xlhs, xrhs   = num0(), num0(map(items,x))
+    local ylhs, yrhs   = sym0(), sym0(map(items,y))
+    local score,score1 = ent(yrhs), nil
+    local k0,e0,ke0    = ke(yrhs) 
+    local report       = copy(yrhs)
+    local n            = #items
+    local start, stop  = x(first(items)), x(last(items))
+    for i,new in pairs(items) do
+      local x1 = x(new)
+      local y1 = y(new)
+      if x1 ~= IGNORE then
+	num1( xlhs,x1); sym1( ylhs,y1)  -- the code giveth
+	unnum(xrhs,x1); unsym(yrhs,y1)  -- the code taketh away
+	if xrhs.n < enough then
+	  break
+	else
+	  if xlhs.n >= enough then
+	    if x1 - start > tiny then
+	      if stop - x1 > tiny then
+		local score1 = xpect(ylhs,yrhs,n)
+		if score1 * trivial < score then
+		  local gain       = e0 - score1
+		  local k1,e1, ke1 = ke(yrhs) -- k1,e1 not used
+		  local k2,e2, ke2 = ke(ylhs) -- k2,e2 not used
+		  local delta      = math.log(3^k0 - 2,2) - (ke0 - ke1 - ke2)
+		  local border     = (math.log(n-1,2)  + delta) / n
+		  if gain > border then
+		    cut,score = i,score1 end end end end end end end
+    end -- for loop
+    if verbose then
+      print(string.repn('|..',lvl),n,score1 or '.') end
+    if cut then
+      divide( sub(items,1,cut), out, lvl+1)
+      divide( sub(items,cut+1), out, lvl+1)
+    else
+      out[#out+1] = RANGE{label=label,score=score,report=report,
+			  n=n, id=#out, lo=start, up=stop, _has=items}
+    end
+    return out
   end
+  -----------------------------------
+  items1 = copy(items)
+  table.sort(items1, function (item) return x(item) end)
+  return divide(items1, {}, 0)
 end
 
+function _ranges()
+  local a,b="a","b"
+  for i in 1,100 do t[#t+1] = {i+r()*100,a} end
+  for i in 1,100 do t[#t+1] = {i+r()*100,b} end
+  local t = shuffle(t)
+  ranges(t)
+  
 if arg[1]=='--run' then
   loadstring(arg[2] .. '()')()
 end
