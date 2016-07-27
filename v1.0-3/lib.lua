@@ -14,11 +14,9 @@ function round(num, idp)
 end
 
 function shuffle( t )
-  local i = #t + 1
-  while i >= 1 do
-    i = i - 1
-    local j = min(#t,max(1, math.floor(r()*i)))
-    t[i], t[j] = t[j], t[i]
+  for i= 1,#t do
+    j = i + math.floor((#t - i) * r() + 0.5)
+    t[i],t[j] = t[j], t[i]
   end
   return t
 end
@@ -221,3 +219,11 @@ do
          report() end end
 end
 
+for i=1,40 do
+  local t = shuffle{1,2,3,4,5,6}
+  t1={}
+  for i,_ in pairs(t) do
+    t1[#t1+1] = i
+  end
+  print(t, t1)
+end

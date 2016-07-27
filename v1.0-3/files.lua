@@ -346,10 +346,16 @@ end
 function _ranges()
   local a,b="a","b"
   local t={}
-  for i= 1,100,1 do t[#t+1] = {i+r()*100, a} end
-  for i= 1,100,1 do t[#t+1] = {i+r()*100, b} end
-  t = shuffle(t)
-  ranges(t)
+  local n = 10
+  for i= 1,n,1 do t[#t+1] = {i+r()*n, a} end
+  for i= n+1,n+n,1 do t[#t+1] = {i+r()*n, b} end
+  t1 = shuffle(t)
+  print(t1)
+  print(last(t1),t1[#t1],#t1,t1[6])
+  for i,x in pairs(t1) do
+    print(i,x)
+  end
+  ranges(t1)
 end
 
 if arg[1]=='--run' then
