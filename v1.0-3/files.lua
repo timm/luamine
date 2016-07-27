@@ -3,23 +3,43 @@ require "lib"
 local IGNORE = "?"    -- marks which columns or cells to ignore
 
 local _ID = 0
-local function ID() _ID = _ID + 1; return _ID end 
+local function ID()
+  _ID = _ID + 1;
+  return _ID
+end 
 
-local function SYM()  return {n=0,       counts={}, most=0,   mode=nil         } end
-local function NUM()  return {n=0,       mu=0,      m2=0,     up=-1e32, lo=1e32} end
-local function ROW(t) return {id=ID(),   cells=t,   normy={}, normx={}         } end
+local function SYM()
+  return {n=0, counts={}, most=0,   mode=nil } end
+
+local function NUM()
+  return {n=0,  mu=0, m2=0,up=-1e32, lo=1e32 } end
+
+local function nump(x)
+  return x.mu ~= nil end
+
+local function ROW(t)
+  return {id=ID(),   cells=t,   normy={}, normx={}} end
 
 local function TBL(t) return {
-    things={}, _rows={},  less={},  ynums={}, xnums={},
-    more={},   spec=t,    outs={},  ins={},   syms={}, nums={}}
+    things={}, _rows={}, less={}, ynums={}, xnums={},
+    more={}, spec=t, outs={}, ins={}, syms={}, nums={}}
 end
 
 local function RANGE(t) return {
-    label=t.label,  score=t.score, report=t.report, has=t.has,
-    n=t.n,          id=t.id,       lo=t.lo,         up=t.up}
+    label=t.label, score=t.score, report=t.report, has=t.has,
+    n=t.n, id=t.id, lo=t.lo, up=t.up}
 end
 
-local function nump(x) return x.mu ~= nil end
+local function RANGES(t) return plus(
+    {label=1, x=first, y=last, verbose=true,
+     trivial=1.05, cohen=0.3, tiny=nil,
+     enough=nil},t)
+end
+
+local function NWHERE(t) return plus(
+    {verbose=false, cull=0.5, stop=20}, t)
+end
+
 ----------------------------------------------------------------
 local function sym1(i,one)
   if one ~= IGNORE then
@@ -32,7 +52,6 @@ local function sym1(i,one)
 end end end
 
 local function num1(i,one)
-  print("N",one)
   if one ~= IGNORE then
     i.n = i.n + 1
     if one < i.lo then i.lo = one end
@@ -179,23 +198,7 @@ function _csv()
       print(n,#line, table.concat(line,","))
 end end end
 
-function _row()
-  local t = csv2tbl('../data/autos.arff')
-  -- for _,thing in pairs(t.nums) do
-  --   print(thing.txt, {mu=f5(thing.mu), sd=f5(sd(thing)), lo=thing.lo,up=thing.up})
-  -- end
-  -- for _,thing in pairs(t.syms) do
-  --   print(thing.txt, {mode=thing.mode, most=thing.most,
-  -- 		      ent=f5(ent(thing))},thing.counts)
-  -- end
-  
-  normys(t)
-  print("======")
-  for i,rows in pairs(nwhere(t._rows,true)) do
-    print(i,#rows)
-    for _,row in pairs(rows) do
-      row.cluster = i end end
-end
+
 
 function normys(t)
   for _,row in pairs(t._rows) do
@@ -210,12 +213,11 @@ function z(t)
     if pop== nil then
       print(">>",i)
 end end end
- 
-function nwhere( population, verbose,cull,stop)
-  local verbose = verbose or false
-  local cull    = cull or 0.5
-  local stop    = stop or 20
-  local enough  =  max((#population)^cull,stop)
+
+function nwhere(all,t) return nwhere1(all, NWHERE(t)) end
+
+function nwhere1( all, o)
+  o.enough = max((#all)^o.cull,o.stop)
   ------------------------------------------------------
   local function  dist(r1,r2)
     local sum, n = 0,  1e-32
@@ -270,9 +272,9 @@ function nwhere( population, verbose,cull,stop)
   ------------------------------------------------------
   local function cluster(items,out,lvl)
     lvl = lvl or 1
-    if verbose then
-      print(string.format("%6s ",#items)..string.rep("|..",lvl-1)) end
-    if #items < enough then
+    if o.verbose then
+      print(s5(#items)..nstr("|..",lvl-1)) end
+    if #items < o.enough then
       out[#out+1] = items
     else
       local west,east,left,right = split(items, math.floor(#items/2))
@@ -282,42 +284,55 @@ function nwhere( population, verbose,cull,stop)
     return out
   end
   ------------------------------------------------------
-  return cluster(copy(population), {})
+  return cluster(copy(all), {})
 end
 
+function _row()
+  local t = csv2tbl('../data/autos.arff')
+  -- for _,thing in pairs(t.nums) do
+  --   print(thing.txt, {mu=f5(thing.mu), sd=f5(sd(thing)), lo=thing.lo,up=thing.up})
+  -- end
+  -- for _,thing in pairs(t.syms) do
+  --   print(thing.txt, {mode=thing.mode, most=thing.most,
+  -- 		      ent=f5(ent(thing))},thing.counts)
+  -- end
+  
+  normys(t)
+  print("======")
+  for i,rows in pairs(nwhere(t._rows,{verbose=true})) do
+    print(i,#rows)
+    for _,row in pairs(rows) do
+      row.cluster = i end end
+end
 
-function ranges(items,label,x,y, trivial,verbose, cohen, tiny, enough)
-  label   = label or 1
-  x       = x or first
-  y       = x or last
-  trivial = trivial or 1.05
-  verbose = verbose or false
-  cohen   = cohen or 0.3
-  tiny    = tiny or sd(num0(collect(items,x))) * cohen
-  enough  = enough or #items^0.5
+function ranges(items,t) return ranges1(items, RANGES(t)) end
+ 
+function ranges1(items,o)
+  o.tiny   = o.tiny   or sd(num0(collect(items,o.x))) * o.cohen
+  o.enough = o.enough or (#items)^0.5
   local function xpect(l,r,n) return l.n/n*ent(l) + r.n/n*ent(r) end
   local function divide(items,out,lvl,cut)
-    local xlhs, xrhs   = num0(), num0(collect(items,x))
-    local ylhs, yrhs   = sym0(), sym0(collect(items,y))
+    local xlhs, xrhs   = num0(), num0(collect(items,o.x))
+    local ylhs, yrhs   = sym0(), sym0(collect(items,o.y))
     local score,score1 = ent(yrhs), nil
     local k0,e0,ke0    = ke(yrhs) 
     local report       = copy(yrhs)
     local n            = #items
-    local start, stop  = x(first(items)), x(last(items))
+    local start, stop  = o.x(first(items)), o.x(last(items))
     for i,new in pairs(items) do
-      local x1 = x(new)
-      local y1 = y(new)
+      local x1 = o.x(new)
+      local y1 = o.y(new)
       if x1 ~= IGNORE then
 	num1( xlhs,x1); sym1( ylhs,y1)  -- the code giveth
 	unnum(xrhs,x1); unsym(yrhs,y1)  -- the code taketh away
-	if xrhs.n < enough then
+	if xrhs.n < o.enough then
 	  break
 	else
-	  if xlhs.n >= enough then
-	    if x1 - start > tiny then
-	      if stop - x1 > tiny then
+	  if xlhs.n >= o.enough then
+	    if x1 - start > o.tiny then
+	      if stop - x1 > o.tiny then
 		local score1 = xpect(ylhs,yrhs,n)
-		if score1 * trivial < score then
+		if score1 * o.trivial < score then
 		  local gain       = e0 - score1
 		  local k1,e1, ke1 = ke(yrhs) -- k1,e1 not used
 		  local k2,e2, ke2 = ke(ylhs) -- k2,e2 not used
@@ -326,36 +341,35 @@ function ranges(items,label,x,y, trivial,verbose, cohen, tiny, enough)
 		  if gain > border then
 		    cut,score = i,score1 end end end end end end end
     end -- for loop
-    if verbose then
-      print(string.repn('|..',lvl),n,score1 or '.') end
+    if o.verbose then
+      print(s5(n),nstr('|..',lvl)) end
     if cut then
       divide( sub(items,1,cut), out, lvl+1)
       divide( sub(items,cut+1), out, lvl+1)
     else
-      out[#out+1] = RANGE{label=label,score=score,report=report,
+      out[#out+1] = RANGE{label=o.label,score=score,report=report,
 			  n=n, id=#out, lo=start, up=stop, _has=items}
     end
     return out
   end
   -----------------------------------
-  items1 = copy(items)
-  table.sort(items1, function (item) return x(item) end)
+  local items1 = copy(items)
+  table.sort(items1, function (z1,z2) return o.x(z1) < o.x(z2) end)
   return divide(items1, {}, 0)
 end
 
 function _ranges()
-  local a,b="a","b"
+  local a,b,c="a","b","c"
   local t={}
-  local n = 10
-  for i= 1,n,1 do t[#t+1] = {i+r()*n, a} end
-  for i= n+1,n+n,1 do t[#t+1] = {i+r()*n, b} end
-  t1 = shuffle(t)
-  print(t1)
-  print(last(t1),t1[#t1],#t1,t1[6])
-  for i,x in pairs(t1) do
-    print(i,x)
+  local n = 100000
+  for i= 1,n,1      do t[#t+1] = {i- n + n*2*r(), a} end
+  for i= n+1,n+n,1  do t[#t+1] = {i- n + n*2*r(), b} end
+  for i= 2*n+1,3*n,1 do t[#t+1]= {i- n + n*2*r(), c} end
+  local t1 = shuffle(t)
+  print("===")
+  for _,r in pairs(ranges1(t1,RANGES{verbose=true})) do
+    print(r)
   end
-  ranges(t1)
 end
 
 if arg[1]=='--run' then

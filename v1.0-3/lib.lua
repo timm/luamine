@@ -15,12 +15,22 @@ end
 
 function shuffle( t )
   for i= 1,#t do
-    j = i + math.floor((#t - i) * r() + 0.5)
+    local j = i + math.floor((#t - i) * r() + 0.5)
     t[i],t[j] = t[j], t[i]
   end
   return t
 end
 
+function _shuffle()
+  for i=1,40 do
+    local t = shuffle{1,2,3,4,5,6}
+    t1={}
+    for i,_ in pairs(t) do
+      t1[#t1+1] = i
+    end
+    print(t, t1)
+  end
+end
 
 function dot(x) io.write(x); io.flush() end
 
@@ -67,7 +77,7 @@ end end end
 
 function map2(t,i,f)
   if t then
-    for i,v in pairs(t) do f(i,v) end
+    for _,v in pairs(t) do f(i,v) end
   end
   return i
 end
@@ -79,8 +89,16 @@ function collect(t,f)
   return out
 end 
 
+function plus(old,new)
+  if new ~= nil then
+    for k,v in pairs(new) do
+      old[k] = v
+  end end
+  return old
+end
+
 function copy(t)
-  return collect(t,same)
+  return type(t) ~= 'table' and t or collect(t,copy)
 end
 
 function member(x,t)
@@ -91,6 +109,11 @@ end
 
 function f3(x) return string.format('%.3f',x) end
 function f5(x) return string.format('%.5f',x) end
+
+function s3(x) return string.format('%3s',x) end
+function s5(x) return string.format('%5s',x) end
+
+function nstr(x,n) return string.rep(x,n) end
 ------------------------------------------------------
 function args(settings,ignore, updates)
   updates = updates or arg
@@ -217,13 +240,4 @@ do
     if   not t then report()
     else for s,x in pairs(t) do test(s,x) end
          report() end end
-end
-
-for i=1,40 do
-  local t = shuffle{1,2,3,4,5,6}
-  t1={}
-  for i,_ in pairs(t) do
-    t1[#t1+1] = i
-  end
-  print(t, t1)
 end
