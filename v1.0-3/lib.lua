@@ -89,6 +89,16 @@ function collect(t,f)
   return out
 end 
 
+function select(t,f)
+  local out={}
+  if t then  
+    for i,v in pairs(t) do
+      if f(v) then
+	out[i] = v  end end end
+  return out
+end 
+
+
 function plus(old,new)
   if new ~= nil then
     for k,v in pairs(new) do

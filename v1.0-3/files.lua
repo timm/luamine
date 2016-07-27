@@ -289,14 +289,19 @@ end
 
 function _row()
   local t = csv2tbl('../data/autos.arff')
-  -- for _,thing in pairs(t.nums) do
-  --   print(thing.txt, {mu=f5(thing.mu), sd=f5(sd(thing)), lo=thing.lo,up=thing.up})
-  -- end
-  -- for _,thing in pairs(t.syms) do
-  --   print(thing.txt, {mode=thing.mode, most=thing.most,
-  -- 		      ent=f5(ent(thing))},thing.counts)
-  -- end
-  
+  print("\n----| NUMBERS |---------------------------")
+  for _,thing in pairs(t.nums) do
+    print(thing.txt, {mu=f5(thing.mu), sd=f5(sd(thing)), lo=thing.lo,up=thing.up})
+  end
+  print("\n----| SYMBOLS |---------------------------")
+  for _,thing in pairs(t.syms) do
+    print(thing.txt, {mode=thing.mode, most=thing.most,
+  		      ent=f5(ent(thing))},thing.counts)
+  end
+end
+
+function _nwhere()
+  local t= csv2tbl('../data/autos.arff')
   normys(t)
   print("======")
   for i,rows in pairs(nwhere(t._rows,{verbose=true})) do
@@ -353,15 +358,16 @@ function ranges1(items,o)
     return out
   end
   -----------------------------------
-  local items1 = copy(items)
+  
+  local items1 = select(items, function(z) return o.x(z) ~= IGNORE end)
   table.sort(items1, function (z1,z2) return o.x(z1) < o.x(z2) end)
   return divide(items1, {}, 0)
 end
 
-function _ranges()
+function _ranges1()
   local a,b,c="a","b","c"
   local t={}
-  local n = 100000
+  local n = 1000
   for i= 1,n,1      do t[#t+1] = {i- n + n*2*r(), a} end
   for i= n+1,n+n,1  do t[#t+1] = {i- n + n*2*r(), b} end
   for i= 2*n+1,3*n,1 do t[#t+1]= {i- n + n*2*r(), c} end
@@ -369,6 +375,28 @@ function _ranges()
   print("===")
   for _,r in pairs(ranges1(t1,RANGES{verbose=true})) do
     print(r)
+  end
+end
+
+function xx(col)
+  print(col)
+  return (function (z) return z.cells[col] end)
+end
+function yy()
+  return function (w) return w.cluster end
+end
+
+function _ranges2()
+  local t= csv2tbl('../data/autos.arff')
+  normys(t)
+  print("======")
+  for i,rows in pairs(nwhere(t._rows,{verbose=true})) do
+    print(i,#rows)
+    for _,row in pairs(rows) do
+      row.cluster = i end end
+  for _,thing in pairs(t.nums) do
+    r = ranges1(t._rows,RANGES{x=xx(thing.col) ,  y=yy})
+    print("num",thing.col,#r)
   end
 end
 
