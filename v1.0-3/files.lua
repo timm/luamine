@@ -32,6 +32,7 @@ local function sym1(i,one)
 end end end
 
 local function num1(i,one)
+  print("N",one)
   if one ~= IGNORE then
     i.n = i.n + 1
     if one < i.lo then i.lo = one end
@@ -292,12 +293,12 @@ function ranges(items,label,x,y, trivial,verbose, cohen, tiny, enough)
   trivial = trivial or 1.05
   verbose = verbose or false
   cohen   = cohen or 0.3
-  tiny    = tiny or num0(map(items,x)).sd() * cohen
+  tiny    = tiny or sd(num0(collect(items,x))) * cohen
   enough  = enough or #items^0.5
   local function xpect(l,r,n) return l.n/n*ent(l) + r.n/n*ent(r) end
   local function divide(items,out,lvl,cut)
-    local xlhs, xrhs   = num0(), num0(map(items,x))
-    local ylhs, yrhs   = sym0(), sym0(map(items,y))
+    local xlhs, xrhs   = num0(), num0(collect(items,x))
+    local ylhs, yrhs   = sym0(), sym0(collect(items,y))
     local score,score1 = ent(yrhs), nil
     local k0,e0,ke0    = ke(yrhs) 
     local report       = copy(yrhs)
@@ -344,11 +345,13 @@ end
 
 function _ranges()
   local a,b="a","b"
-  for i in 1,100 do t[#t+1] = {i+r()*100,a} end
-  for i in 1,100 do t[#t+1] = {i+r()*100,b} end
-  local t = shuffle(t)
+  local t={}
+  for i= 1,100,1 do t[#t+1] = {i+r()*100, a} end
+  for i= 1,100,1 do t[#t+1] = {i+r()*100, b} end
+  t = shuffle(t)
   ranges(t)
-  
+end
+
 if arg[1]=='--run' then
   loadstring(arg[2] .. '()')()
 end

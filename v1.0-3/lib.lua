@@ -221,7 +221,3 @@ do
          report() end end
 end
 
-------------
-for i=1,100 do
-  print(shuffle{1,2,3,4,5,6})
-end
