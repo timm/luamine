@@ -24,7 +24,7 @@ end
 function _shuffle()
   for i=1,40 do
     local t = shuffle{1,2,3,4,5,6}
-    t1={}
+    local t1={}
     for i,_ in pairs(t) do
       t1[#t1+1] = i
     end
@@ -107,9 +107,8 @@ function plus(old,new)
   return old
 end
 
-function copy(t)
-  return type(t) ~= 'table' and t or collect(t,copy)
-end
+function copy(t)        return type(t) ~= 'table' and t or collect(t,copy) end
+function shallowCopy(t) return map(t,same) end
 
 function member(x,t)
   for _,y in pairs(t) do

@@ -405,6 +405,19 @@ function _ranges2()
   end
 end
 
+
+function _demos()
+  for k,v in pairs(_G) do
+    if type(v) == 'function' and
+      string.find(k,'^_') ~= nil and
+      k ~= '_tostring' and
+      k ~= '_demos' 
+    then
+      print(k)
+      print(string.format("\n---| %s |-------",k))
+      v()
+end end end
+
 if arg[1]=='--run' then
   loadstring(arg[2] .. '()')()
 end
