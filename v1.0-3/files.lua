@@ -22,7 +22,7 @@ local function ROW(t)
 
 local function TBL(t) return {
     things={}, _rows={}, less={}, ynums={}, xnums={},
-    more={}, spec=t, outs={}, ins={}, syms={}, nums={}}
+    more={}, spec=t, outs={}, ins={}, syms={}, xsyms={}, nums={}}
 end
 
 local function RANGE(t) return {
@@ -153,7 +153,7 @@ local function row1(cells, t)
       {what= "<",  who= num0, wheres= {t.things, t.outs, t.nums, t.less, t.ynums}},
       {what= ">",  who= num0, wheres= {t.things, t.outs, t.nums, t.more, t.ynums}},
       {what= "=",  who= sym0, wheres= {t.things, t.outs, t.syms  }},
-      {what= "",   who= sym0, wheres= {t.things, t.ins,  t.syms  }}}
+      {what= "",   who= sym0, wheres= {t.things, t.ins,  t.syms, t.xysms }}}
     for _,want in pairs(spec) do
       if string.find(cell,want.what) ~= nil then
 	return want.who, want.wheres
@@ -366,6 +366,36 @@ function ranges1(items,o)
   return divide(items1, {}, 0)
 end
 
+local function thingScore(t,thing)
+  local syms={}
+  for row in _,row in pairs(t._rows) do
+    local x1 = x(thing,row)
+    if syms[x1] == nil then syms[x1] = sym0() end
+    sym1(syms[x1],y(row))
+  end
+  local xpect = 0
+  for _,sym in pairs(syms) do
+    xpect = xpect + sym.n/#t._rows * ent(sym)
+  end
+  return xpect
+end
+
+function bestThing(t)
+  score,best=1e31,nil
+  for _,thing in pairs(t.xsysm) do
+    tmp = thingScore(
+            t,thing,
+	    function (row) return row.cells[thing.col] end
+	    function(row)  return row.cluster end)
+    if tmp < best then
+      score, best = tmp, thing
+    end
+  end
+  return best
+end
+       
+
+  
 function _ranges1()
   local a,b,c="a","b","c"
   local t={}
@@ -413,9 +443,8 @@ function _demos()
       k ~= '_tostring' and
       k ~= '_demos' 
     then
-      print(k)
-      print(string.format("\n---| %s |-------",k))
-      v()
+      print(string.format("\n---| %s |-------\n",k))
+      pcall(v)
 end end end
 
 if arg[1]=='--run' then
