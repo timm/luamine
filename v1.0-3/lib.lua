@@ -13,6 +13,10 @@ function round(num, idp)
   return math.floor(num + 0.5)
 end
 
+function pround(num)
+  return math.floor(100*num+0.5)
+end
+
 function shuffle( t )
   for i= 1,#t do
     local j = i + math.floor((#t - i) * r() + 0.5)
@@ -60,12 +64,8 @@ do
     seed = (multipler * seed) % modulus
     return seed / modulus
   end
-  function rseed(n)
-    seed = n or seed0
-  end
-  function r()
-    return park_miller_randomizer()
-  end
+  function rseed(n) seed = n or seed0               end
+  function r()      return park_miller_randomizer() end
 end
 
 
@@ -185,7 +185,7 @@ local function stringkeys(t)
   return true
 end
 
-local function keys(t)
+function keys(t)
   local ks={}
   for k,_ in pairs(t) do ks[#ks+1] = k end
   table.sort(ks)
@@ -196,6 +196,20 @@ local function keys(t)
       return ks[i],t[ks[i]] end end
 end
 
+function ordered(t)
+  local n,tmp= 1,{}
+  for k,v in pairs(t) do
+    tmp[#tmp+1] = {_tostring(k),k,v} end
+  table.sort(tmp,function (x,y) return first(x) < first(y) end)
+  print(tmp[1])
+  local i = 0
+  return function()
+    if i < #tmp then
+      i = i+1
+      local _,k,v = tmp[i]
+      return k,v end end end
+
+
 function eman(x)
   for k,v in pairs(_G) do
     if v==x then return k end
@@ -204,8 +218,7 @@ end end
 function tostring(t,seen)
   -- if type(t) == 'number' then return f3(t) end
   if type(t) == 'function' then return "FUNC(".. (eman(t) or "") ..")" end
-  if type(t) ~= 'table'    then return _tostring(t) end
-  
+  if type(t) ~= 'table'    then return _tostring(t) end 
   seen = seen or {}
   if seen[t] then return "..." end
   seen[t] = t

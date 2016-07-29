@@ -371,56 +371,58 @@ function ranges1(items,o)
 end
 
 local function thingScore(rows,x,y)
-  local syms, splits={},{}
+  local syms, splits,keys = {},{},{}
   for  _,row in pairs(rows) do
     local x1 = x(row)
     if syms[x1] == nil then
       syms[x1] = sym0()
       splits[x1] = {}
+      keys[#keys+1] = x1
     end
     sym1(syms[x1],y(row))
     local v = splits[x1]
     v[#v + 1] = row
-    splits[x] = v 
+    splits[x1] = v 
   end
+  --table.sort(keys)
   local xpect = 0
   for x,sym in pairs(syms) do
     xpect = xpect + sym.n/#rows * ent(sym)
   end
-  return xpect,splits
+  return xpect,splits,keys
 end
 
 function bestThing(rows,t)
-  local score,best,splits = 1e31,nil,{}
+  local score,best,splits,keys = 1e31,nil,{},nil
   for _,thing in pairs(t.xsyms) do
-    local tmp,some = thingScore(
+    local tmp,some,keys0 = thingScore(
       rows,
       function (row) return row.cells[thing.col] end,
       function (row) return row.cluster end)
     if tmp < score then
-      score, best, splits = tmp, thing, some
+      score, best, splits, keys = tmp, thing, some,keys0
     end
   end
-  return best,splits
+  return best,splits,keys
 end
 
-function dichotomize(t)    return dichotomize1(t,DICHOTOMIZE()) end
-function dichotomize1(t,o) return dichotomize2(t._rows,t,o) end
+function dichotomize(t,report)
+  return dichotomize1(t,DICHOTOMIZE(),report) end
+function dichotomize1(t,o,report)
+  return dichotomize2(t._rows,t,o,report) end
 
-function dichotomize2(rows,t,o,lvl)
+function dichotomize2(rows,t,o,report,lvl)
   lvl= lvl or 0
+  report = report or function (z) return #z end
   assert(lvl < 20)
-  if #rows >= o.min then
-   -- true -- print(nstr('|.. ',lvl) .. #rows)
-  --else
-    local best, splits  = bestThing(rows,t)
-    for k,subs in pairs(splits) do
-      if #subs >= o.min then
-	print(nstr('|.. ',lvl) ..
-		_tostring(best.txt) ..  " = " .. _tostring(k)
-		.. ':', _tostring(#subs))
-	dichotomize2(subs,t,o,lvl+1)
-end end end end
+  local best, splits, keys  = bestThing(rows,t)
+  for i=1,#keys do
+    local k = keys[i]
+    local subs= splits[k]
+    if #subs >= o.min then
+      print(nstr('|.. ',lvl) .. best.txt ..  " = " .. k .. ':', #subs)
+      dichotomize2(subs,t,o,report, lvl+1)
+end end end 
     
 function _ranges1()
   local a,b,c="a","b","c"
@@ -438,12 +440,26 @@ end
 
 function _dich()
   rseed(1)
-  t= csv2tbl('../data/autos.arff')
+  print("")
+  local t= csv2tbl('../data/autos.arff')
+  s=function(t,n) return pround(norm(t,n)) end
   normys(t)
+  local clusters={}
   for i,rows in pairs(nwhere(t._rows)) do
+    local tmp= {}
+    for _,thing in pairs(t.ynums) do
+      tmp[thing] = num0() end
     for _,row in pairs(rows) do
-      t._rows[row.id].cluster  = "C"..i end end
-  dichotomize(t)  
+      for _,thing in pairs(t.ynums) do
+	num1(tmp[thing], row.cells[thing.col]) end
+      t._rows[row.id].cluster  = i end
+    local new={}
+    for thing,num in pairs(tmp) do
+      new[#new+1] = {thing.txt,s(thing,num.mu)} end
+    clusters[i] = new
+  end
+  local function report(z) return clusters[z] end
+  dichotomize(t,report)  
 end
 
 -- xxx everything not adding sys to non-syjs
@@ -467,8 +483,7 @@ function _ranges2()
       for _,r in pairs(rs) do
 	print(r.lo, r.up, ent(r.y))
       end
-    end
-    
+    end    
   end
 end
 
