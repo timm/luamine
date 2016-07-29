@@ -40,6 +40,9 @@ local function NWHERE(t) return plus(
     {verbose=false, cull=0.5, stop=20}, t)
 end
 
+local function DICHOTOMIZE(t) return plus(
+    {min=2}, t)
+end  
 ----------------------------------------------------------------
 local function sym1(i,one)
   if one ~= IGNORE then
@@ -366,36 +369,55 @@ function ranges1(items,o)
   return divide(items1, {}, 0)
 end
 
-local function thingScore(t,thing)
-  local syms={}
-  for row in _,row in pairs(t._rows) do
-    local x1 = x(thing,row)
-    if syms[x1] == nil then syms[x1] = sym0() end
+local function thingScore(rows)
+  local syms, splits={},{}
+  for  _,row in pairs(rows) do
+    local x1 = x(row)
+    if syms[x1] == nil then
+      syms[x1] = sym0()
+      splits[x1] = {}
+    end
     sym1(syms[x1],y(row))
+    t = splits[x1]
+    t[#t + 1] = row
+    splits[x] = t 
   end
   local xpect = 0
   for _,sym in pairs(syms) do
-    xpect = xpect + sym.n/#t._rows * ent(sym)
+    xpect = xpect + sym.n/#rows * ent(sym)
   end
-  return xpect
+  return xpect,splits
 end
 
-function bestThing(t)
-  score,best=1e31,nil
+function bestThing(rows,t)
+  score,best,splits = 1e31,nil,{}
   for _,thing in pairs(t.xsysm) do
-    tmp = thingScore(
-            t,thing,
-	    function (row) return row.cells[thing.col] end
-	    function(row)  return row.cluster end)
+    tmp,some = thingScore(
+      rows,
+      function (row) return row.cells[thing.col] end,
+      function (row) return row.cluster end)
     if tmp < best then
-      score, best = tmp, thing
+      score, best, splits = tmp, thing, some
     end
   end
-  return best
+  return best,splits
 end
-       
 
-  
+function dichotomize(t)    return dichotomize1(t,DICHOTOMIZE()) end
+function dichotomize1(t,o) return dichotomize2(t._rows,t,o) end
+
+function dichotomize2(rows,t,o,lvl)
+  lvl= lvl or 0
+  if #rows < o.min then
+    print(nstr('|..',lvl+1), #rows)
+  else
+    best, splits  = bestThing(Rows,t)
+    print(nstr('|..',lvl), thing.txt)
+    for k,subs in ipairs(splits) do
+      print(nstr('|..',lvl+1), k)
+      dichotomize2(subs,t,o,lvl+2)
+end end end
+    
 function _ranges1()
   local a,b,c="a","b","c"
   local t={}
@@ -408,6 +430,10 @@ function _ranges1()
   for _,r in pairs(ranges1(t1,RANGES{verbose=true})) do
     print(r,ent(r.y))
   end
+end
+
+function _dichotimize()
+  dichotomize(csv2tbl('../data/autos.arff'))
 end
 
 --- ranges needs repportx and reporty.
