@@ -390,16 +390,19 @@ local function thingScore(rows)
 end
 
 function bestThing(rows,t)
-  score,best,splits = 1e31,nil,{}
-  for _,thing in pairs(t.xsysm) do
+  local score,best,splits = 1e31,nil,{}
+  print(t.xsyms, #t.xsyms)
+  for _,thing in pairs(t.xsyms) do
     tmp,some = thingScore(
       rows,
       function (row) return row.cells[thing.col] end,
       function (row) return row.cluster end)
-    if tmp < best then
+    print("tmp", tmp)
+    if tmp < score then
       score, best, splits = tmp, thing, some
     end
   end
+  print(best)
   return best,splits
 end
 
@@ -411,8 +414,8 @@ function dichotomize2(rows,t,o,lvl)
   if #rows < o.min then
     print(nstr('|..',lvl+1), #rows)
   else
-    best, splits  = bestThing(Rows,t)
-    print(nstr('|..',lvl), thing.txt)
+    local best, splits  = bestThing(rows,t)
+    print(nstr('|..',lvl), best.txt)
     for k,subs in ipairs(splits) do
       print(nstr('|..',lvl+1), k)
       dichotomize2(subs,t,o,lvl+2)
