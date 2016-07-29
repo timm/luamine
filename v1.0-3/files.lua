@@ -446,17 +446,9 @@ function _dich()
   normys(t)
   local clusters={}
   for i,rows in pairs(nwhere(t._rows)) do
-    local tmp= {}
-    for _,thing in pairs(t.ynums) do
-      tmp[thing] = num0() end
     for _,row in pairs(rows) do
-      for _,thing in pairs(t.ynums) do
-	num1(tmp[thing], row.cells[thing.col]) end
       t._rows[row.id].cluster  = i end
-    local new={}
-    for thing,num in pairs(tmp) do
-      new[#new+1] = {thing.txt,s(thing,num.mu)} end
-    clusters[i] = new
+    clusters[i] = rows
   end
   local function report(z) return clusters[z] end
   dichotomize(t,report)  
