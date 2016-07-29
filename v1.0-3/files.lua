@@ -41,7 +41,7 @@ local function NWHERE(t) return plus(
 end
 
 local function DICHOTOMIZE(t) return plus(
-    {min=2}, t)
+    {min=10}, t)
 end  
 ----------------------------------------------------------------
 local function sym1(i,one)
@@ -139,7 +139,10 @@ local function csv(f)
 	      use[col] = string.find(word,IGNORE) == nil
 	    end
 	    if use[col] then
-	      row[#row+1] = tonumber(word) or word
+	      word = tonumber(word) or word
+	      row[#row+1] = word
+	      assert(type(word) ~= 'function')
+	      
 	    end
 	  end	  
 	  first, cache = false, {}
@@ -156,10 +159,9 @@ local function row1(cells, t)
       {what= "<",  who= num0, wheres= {t.things, t.outs, t.nums, t.less, t.ynums}},
       {what= ">",  who= num0, wheres= {t.things, t.outs, t.nums, t.more, t.ynums}},
       {what= "=",  who= sym0, wheres= {t.things, t.outs, t.syms  }},
-      {what= "",   who= sym0, wheres= {t.things, t.ins,  t.syms, t.xysms }}}
+      {what= "",   who= sym0, wheres= {t.things, t.ins,  t.syms, t.xsyms }}}
     for _,want in pairs(spec) do
       if string.find(cell,want.what) ~= nil then
-	print("isa",cell,want.what,want.wheres)
 	return want.who, want.wheres
   end end end
   ------------------------------
@@ -202,7 +204,7 @@ function _csv()
       print(n,#line, table.concat(line,","))
 end end end
 
-
+---- why an i getting functions in my trees?
 
 function normys(t)
   for _,row in pairs(t._rows) do
@@ -224,16 +226,14 @@ function nwhere1( all, o)
   o.enough = max((#all)^o.cull,o.stop)
   ------------------------------------------------------
   local function  dist(r1,r2)
-    local sum, n = 0,  1e-32
+    local sum, n = 0,  0
     for i, y1 in pairs(r1.normy) do
-      local y2 = r2.normy[i]
-      if not (y2 == IGNORE and y1 == IGNORE) then
-	if y2 == IGNORE then
-	  y2 = y1 < 0.5 and 1 or 0 end
-	if y1 == IGNORE then
-	  y1 = y2 < 0.5 and 1 or 0 end
+      local y2 = y1,r1.normy[i]
+      if not (y1== IGNORE and y2== IGNORE) then
+	if y1== IGNORE then y1= y2 > 0.5 and 0 or 1 end
+	if y2== IGNORE then y2= y1 > 0.5 and 0 or 1 end
 	sum = sum + (y1 -  y2)^2
-	n = n + 1
+	n   = n + 1
     end end
     return sum^0.5 / n^0.5
   end
@@ -370,7 +370,7 @@ function ranges1(items,o)
   return divide(items1, {}, 0)
 end
 
-local function thingScore(rows)
+local function thingScore(rows,x,y)
   local syms, splits={},{}
   for  _,row in pairs(rows) do
     local x1 = x(row)
@@ -379,12 +379,12 @@ local function thingScore(rows)
       splits[x1] = {}
     end
     sym1(syms[x1],y(row))
-    t = splits[x1]
-    t[#t + 1] = row
-    splits[x] = t 
+    local v = splits[x1]
+    v[#v + 1] = row
+    splits[x] = v 
   end
   local xpect = 0
-  for _,sym in pairs(syms) do
+  for x,sym in pairs(syms) do
     xpect = xpect + sym.n/#rows * ent(sym)
   end
   return xpect,splits
@@ -392,37 +392,35 @@ end
 
 function bestThing(rows,t)
   local score,best,splits = 1e31,nil,{}
-  print(t.xsyms, #t.xsyms)
   for _,thing in pairs(t.xsyms) do
-    tmp,some = thingScore(
+    local tmp,some = thingScore(
       rows,
       function (row) return row.cells[thing.col] end,
       function (row) return row.cluster end)
-    print("tmp", tmp)
     if tmp < score then
       score, best, splits = tmp, thing, some
     end
   end
-  print(best)
   return best,splits
 end
-
--- xysms not being filled in
 
 function dichotomize(t)    return dichotomize1(t,DICHOTOMIZE()) end
 function dichotomize1(t,o) return dichotomize2(t._rows,t,o) end
 
 function dichotomize2(rows,t,o,lvl)
   lvl= lvl or 0
-  if #rows < o.min then
-    print(nstr('|..',lvl+1), #rows)
-  else
+  assert(lvl < 20)
+  if #rows >= o.min then
+   -- true -- print(nstr('|.. ',lvl) .. #rows)
+  --else
     local best, splits  = bestThing(rows,t)
-    print(nstr('|..',lvl), best.txt)
-    for k,subs in ipairs(splits) do
-      print(nstr('|..',lvl+1), k)
-      dichotomize2(subs,t,o,lvl+2)
-end end end
+    for k,subs in pairs(splits) do
+      if #subs >= o.min then
+	print(nstr('|.. ',lvl) ..
+		_tostring(best.txt) ..  " = " .. _tostring(k)
+		.. ':', _tostring(#subs))
+	dichotomize2(subs,t,o,lvl+1)
+end end end end
     
 function _ranges1()
   local a,b,c="a","b","c"
@@ -439,10 +437,16 @@ function _ranges1()
 end
 
 function _dich()
+  rseed(1)
   t= csv2tbl('../data/autos.arff')
-  print(t.xsyms)
+  normys(t)
+  for i,rows in pairs(nwhere(t._rows)) do
+    for _,row in pairs(rows) do
+      t._rows[row.id].cluster  = "C"..i end end
+  dichotomize(t)  
 end
 
+-- xxx everything not adding sys to non-syjs
 --- ranges needs repportx and reporty.
 --- looke like tostring is eating all numberic idenxes
 

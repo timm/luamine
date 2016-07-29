@@ -61,7 +61,7 @@ do
     return seed / modulus
   end
   function rseed(n)
-    seed = n and n or seed0
+    seed = n or seed0
   end
   function r()
     return park_miller_randomizer()
@@ -196,7 +196,7 @@ local function keys(t)
       return ks[i],t[ks[i]] end end
 end
 
-local function eman(x)
+function eman(x)
   for k,v in pairs(_G) do
     if v==x then return k end
 end end
