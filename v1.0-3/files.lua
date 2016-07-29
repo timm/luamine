@@ -159,6 +159,7 @@ local function row1(cells, t)
       {what= "",   who= sym0, wheres= {t.things, t.ins,  t.syms, t.xysms }}}
     for _,want in pairs(spec) do
       if string.find(cell,want.what) ~= nil then
+	print("isa",cell,want.what,want.wheres)
 	return want.who, want.wheres
   end end end
   ------------------------------
@@ -406,6 +407,8 @@ function bestThing(rows,t)
   return best,splits
 end
 
+-- xysms not being filled in
+
 function dichotomize(t)    return dichotomize1(t,DICHOTOMIZE()) end
 function dichotomize1(t,o) return dichotomize2(t._rows,t,o) end
 
@@ -435,8 +438,9 @@ function _ranges1()
   end
 end
 
-function _dichotimize()
-  dichotomize(csv2tbl('../data/autos.arff'))
+function _dich()
+  t= csv2tbl('../data/autos.arff')
+  print(t.xsyms)
 end
 
 --- ranges needs repportx and reporty.
