@@ -415,13 +415,20 @@ function dichotomize2(rows,t,o,report,lvl)
   lvl= lvl or 0
   report = report or function (z) return #z end
   assert(lvl < 20)
-  local best, splits, keys  = bestThing(rows,t)
-  for i=1,#keys do
-    local k = keys[i]
-    local subs= splits[k]
-    if #subs >= o.min then
-      print(nstr('|.. ',lvl) .. best.txt ..  " = " .. k .. ':', #subs)
+  if #rows <= o.min then
+    print(#rows, report(rows))
+  else
+    print("")
+    local best, splits, keys  = bestThing(rows,t)
+    for i=1,#keys do
+      local k = keys[i]
+      local subs= splits[k]
+      local str = nstr('|.. ',lvl) .. best.txt ..  "=" .. k .. ':'
+      --if #subs >= o.min then
+      io.write(str .. nstr(" ", 50-#str))
       dichotomize2(subs,t,o,report, lvl+1)
+    
+      
 end end end 
     
 function _ranges1()
@@ -450,10 +457,20 @@ function _dich()
       t._rows[row.id].cluster  = i end
     clusters[i] = rows
   end
-  local function report(z) return clusters[z] end
+  local report= function (rows) return summary(t,rows) end
   dichotomize(t,report)  
 end
 
+function summary(t,rows)
+  local tmp,out={},{}
+  for _,thing in pairs(t.ynums) do tmp[thing] = num0() end
+  for _,row in pairs(rows) do
+    for thing,num in pairs(tmp) do
+      num1(num, row.cells[thing.col]) end end
+  for thing,num in pairs(tmp) do
+    out[thing.txt] = pround(norm(thing, num.mu))     end
+  return out
+end
 -- xxx everything not adding sys to non-syjs
 --- ranges needs repportx and reporty.
 --- looke like tostring is eating all numberic idenxes
